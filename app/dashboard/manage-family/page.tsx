@@ -1,0 +1,62 @@
+import { auth } from "@/auth";
+
+import { redirect } from "next/navigation";
+// import AddMember from "./AddMember";
+import { getFamilies } from "@/prisma/queries";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import NewFamily from "./NewFamily";
+import AddMember from "./AddMember";
+import MembersList from "./MembersList";
+
+import DeleteFamily from "./DeleteFamily";
+import { getActiveFamilyId } from "@/lib/rscUtils";
+
+export default async function ManageFamily() {
+  const session = await auth();
+
+  if (!session?.user) {
+    redirect('/sign-in');
+  }
+
+  const {families} = await getFamilies();
+  
+  const activeFamilyId = getActiveFamilyId();
+  const family = activeFamilyId ? families.find(family => family.id === activeFamilyId) : families[0];
+
+  const isManager = family?.managerId === session.user.id;
+
+  return (
+    <div className="space-y-4 p-8 pt-6">
+      {family && isManager && (
+        <Card>
+          <CardHeader>
+            <CardTitle>{family.name}</CardTitle>
+            <CardDescription>Add, remove, or update family members and their permissions</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <AddMember family={family} />
+          </CardContent>
+        </Card>
+      )}
+      {family && (
+        <>
+          <MembersList family={family} isManager={isManager} />
+          <Card>
+            <CardHeader>
+              <CardTitle>Family Settings</CardTitle>
+            </CardHeader>
+            <CardContent>{isManager && <DeleteFamily family={family} />}</CardContent>
+          </Card>
+        </>
+      )}
+      <Card>
+        <CardHeader>
+          <CardTitle>Create a new Family</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <NewFamily />
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

@@ -1,0 +1,159 @@
+datasource db {
+  provider = "postgres"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                String          @id @default(cuid())
+  name              String?
+  email             String          @unique
+  emailVerified     DateTime?
+  image             String?
+  accounts          Account[]
+  sessions          Session[]
+  // Optional for WebAuthn support
+  Authenticator     Authenticator[]
+  role              String          @default("MEMBER")
+  managedFamilies   Family[]        @relation("FamilyManager")
+  familyMemberships FamilyMember[]  @relation("FamilyMembers")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+}
+
+// Optional for WebAuthn support
+model Authenticator {
+  credentialID         String  @unique
+  userId               String
+  providerAccountId    String
+  credentialPublicKey  String
+  counter              Int
+  credentialDeviceType String
+  credentialBackedUp   Boolean
+  transports           String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, credentialID])
+}
+
+model Family {
+  id        String         @id @default(cuid())
+  name      String
+  managerId String
+  manager   User           @relation("FamilyManager", fields: [managerId], references: [id])
+  members   FamilyMember[]
+  events    Event[]
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+model FamilyMember {
+  id          String       @id @default(cuid())
+  name        String
+  email       String
+  userId      String?
+  user        User?        @relation("FamilyMembers", fields: [userId], references: [id])
+  familyId    String
+  family      Family       @relation(fields: [familyId], references: [id])
+  inviteToken String?
+  joined      Boolean      @default(false)
+  giving      Assignment[] @relation("Giver")
+  receiving   Assignment[] @relation("Receiver")
+
+  items  Item[] @relation("MemberItems")
+  bought Item[] @relation("ItemBoughtBy")
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+model Item {
+  id         String        @id @default(cuid())
+  name       String
+  memberId   String
+  member     FamilyMember  @relation("MemberItems", fields: [memberId], references: [id])
+  link       String?
+  notes      String?
+  image      String?
+  category   String?
+  parentId   String?
+  parent     Item?         @relation("ChildParentItems", fields: [parentId], references: [id])
+  children   Item[]        @relation("ChildParentItems")
+  boughtBy   FamilyMember[] @relation("ItemBoughtBy")
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+model Event {
+  id          String       @id @default(cuid())
+  name        String
+  date        DateTime?
+  info        Json?
+  type        String?
+  location    String?
+  familyId    String
+  family      Family       @relation(fields: [familyId], references: [id])
+  assignments Assignment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Assignment {
+  id         String       @id @default(cuid())
+  eventId    String
+  event      Event        @relation(fields: [eventId], references: [id])
+  giverId    String
+  giver      FamilyMember @relation("Giver", fields: [giverId], references: [id])
+  receiverId String
+  receiver   FamilyMember @relation("Receiver", fields: [receiverId], references: [id])
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
