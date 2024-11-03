@@ -3,7 +3,7 @@
 import { getMembers as getMembersQuery } from '@/prisma/queries';
 import { AssignmentsType } from './Manager';
 import { auth } from '@/auth';
-import { FamilyMember, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { prisma } from '@/prisma';
 import { revalidatePath } from 'next/cache';
 

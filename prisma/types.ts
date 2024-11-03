@@ -11,6 +11,12 @@ export type FamilyMemberWithRefs = Prisma.FamilyMemberGetPayload<{
   };
 }>;
 
+export type FamilyMemberWithUser = Prisma.FamilyMemberGetPayload<{
+  include: {
+    user: true;
+  };
+}>;
+
 export type EventWithAssignments = Prisma.EventGetPayload<{
   include: {
     assignments: true;

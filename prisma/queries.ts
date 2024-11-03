@@ -4,6 +4,7 @@ import { prisma } from '@/prisma';
 import { Event, Family, FamilyMember } from '@prisma/client';
 import { addMonths } from 'date-fns';
 import { cache } from 'react';
+import { FamilyMemberWithUser } from './types';
 
 export const getItems = cache(async (limit?: number) => {
   const session = await auth();
@@ -125,7 +126,7 @@ export const getFamilies = cache(async () => {
 type GetMembersResult = {
   success: boolean;
   message: string;
-  members: FamilyMember[];
+  members: FamilyMemberWithUser[];
 };
 
 export const getMembers = cache(async (id: Family['id']): Promise<GetMembersResult> => {
