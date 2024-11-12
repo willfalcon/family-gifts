@@ -15,16 +15,15 @@ export default function NewItem({ categories }: { categories: string[] }) {
   });
 
   async function onSubmit(values: ItemSchemaType) {
-    console.log(values);
     try {
-      const newItem = await createItem(values);
+      const newItem = await createItem({
+        ...values,
+      });
       if (newItem.success) {
         toast.success('Item added!');
         form.reset();
         if (newItem?.item?.link && !newItem.item.image) {
-          console.log('getting image');
-          const imagereesult = await maybeGetImage(newItem.item);
-          console.log(imagereesult);
+          await maybeGetImage(newItem.item);
         }
       } else {
         toast.error(newItem.error);

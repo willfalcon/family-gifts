@@ -3,8 +3,9 @@ import ListItem from '@/app/dashboard/wish-list/ListItem';
 import SetBreadcrumbs from '@/components/SetBreadcrumbs';
 import Title from '@/components/Title';
 import { buttonVariants } from '@/components/ui/button';
+import { getFamilyMemberById } from '@/lib/queries/family-members';
+import { getList } from '@/lib/queries/items';
 
-import { getFamilyMemberById, getList } from '@/prisma/queries';
 import { ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
 

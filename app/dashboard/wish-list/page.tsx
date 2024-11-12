@@ -1,7 +1,6 @@
 import { auth } from '@/auth';
 import Title from '@/components/Title';
 import { redirect } from 'next/navigation';
-import { getItems } from '@/prisma/queries';
 import NewItem from './NewItem';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -9,6 +8,7 @@ import ItemList from './ItemList';
 import ListItem from './ListItem';
 import SetBreadcrumbs from '@/components/SetBreadcrumbs';
 import { ItemWithMember } from '@/prisma/types';
+import { getItems } from '@/lib/queries/items';
 
 type Result<T> = { success: true; message: string; items: T[] } | { success: false; message: string; items?: never };
 
@@ -34,6 +34,8 @@ export default async function page() {
     return acc;
   }, []);
 
+  const otherItems = items.filter((item) => !item.category).map((item) => <ListItem key={item.id} {...item} boughtBy={[]} categories={categories} />);
+
   return (
     <div className="space-y-4 p-8 pt-6">
       <SetBreadcrumbs
@@ -53,13 +55,7 @@ export default async function page() {
               ))}
           </ItemList>
         ))}
-        <ItemList category="Other">
-          {items
-            .filter((item) => !item.category)
-            .map((item) => (
-              <ListItem key={item.id} {...item} boughtBy={[]} categories={categories} />
-            ))}
-        </ItemList>
+        {!!otherItems.length && <ItemList category="Other">{otherItems}</ItemList>}
       </div>
       <Card>
         <CardHeader>

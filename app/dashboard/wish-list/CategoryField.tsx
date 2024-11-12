@@ -1,27 +1,26 @@
-import { Button } from "@/components/ui/button";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import { FormControl, FormItem, FormLabel } from "@/components/ui/form";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import { CaretSortIcon } from "@radix-ui/react-icons";
-import { CheckIcon } from "lucide-react";
-import { useState } from "react";
-import { useFormContext } from "react-hook-form";
+import { Button } from '@/components/ui/button';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { FormControl, FormItem, FormLabel } from '@/components/ui/form';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
+import { CaretSortIcon } from '@radix-ui/react-icons';
+import { CheckIcon } from 'lucide-react';
+import { useState } from 'react';
+import { useFormContext } from 'react-hook-form';
 
 type Props = {
   categories: string[];
   value: string;
-}
+};
 
-export default function CategoryField({categories, value}: Props) {
-  
+export default function CategoryField({ categories, value }: Props) {
   const form = useFormContext();
-  const [inputValue, setInputValue] = useState('')
-
+  const [inputValue, setInputValue] = useState('');
+  const [open, setOpen] = useState(false);
   return (
     <FormItem className="flex flex-col">
       <FormLabel>Category</FormLabel>
-      <Popover>
+      <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <FormControl>
             <Button variant="outline" role="combobox" className={cn('w-[200px] justify-between', !value && 'text-muted-foreground')}>
@@ -33,21 +32,28 @@ export default function CategoryField({categories, value}: Props) {
         <PopoverContent className="w-[200px] p-0">
           <Command>
             <CommandInput
-              placeholder="Search categories..."
+              placeholder="Search or add categories..."
               className="h-9"
               value={inputValue}
-              onValueChange={val => {
+              onValueChange={(val) => {
                 setInputValue(val);
               }}
             />
             <CommandList>
               <CommandEmpty>
-                <Button onClick={() => {
-                  form.setValue('category', inputValue);
-                }}>Add {inputValue}</Button>
+                {inputValue.length > 0 && (
+                  <Button
+                    onClick={() => {
+                      form.setValue('category', inputValue);
+                      setOpen(false);
+                    }}
+                  >
+                    Add {inputValue}
+                  </Button>
+                )}
               </CommandEmpty>
               <CommandGroup>
-                {categories.map(category => (
+                {categories.map((category) => (
                   <CommandItem
                     value={category}
                     key={category}

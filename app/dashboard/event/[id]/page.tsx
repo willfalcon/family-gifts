@@ -1,7 +1,6 @@
 import { auth } from '@/auth';
 import Title from '@/components/Title';
 import { getActiveFamilyId } from '@/lib/rscUtils';
-import { getEvent, getFamilies } from '@/prisma/queries';
 import { format } from 'date-fns';
 import { redirect } from 'next/navigation';
 import Manager from '../../secret-santa/Manager';
@@ -10,6 +9,8 @@ import { Button } from '@/components/ui/button';
 import Viewer from '@/components/ui/rich-text/viewer';
 import { JSONContent } from '@tiptap/react';
 import SetBreadcrumbs from '@/components/SetBreadcrumbs';
+import { getEvent } from '@/lib/queries/events';
+import { getFamilies } from '@/lib/queries/families';
 
 type PageProps = {
   params: {
@@ -27,7 +28,7 @@ export default async function EventPage({ params }: PageProps) {
     return <p>{message}</p>;
   }
 
-  const activeFamilyId = getActiveFamilyId();
+  const activeFamilyId = await getActiveFamilyId();
   const { families } = await getFamilies();
   const family = activeFamilyId ? families.find((family) => family.id === activeFamilyId) : families[0];
   const isManager = family?.managerId === session.user.id;

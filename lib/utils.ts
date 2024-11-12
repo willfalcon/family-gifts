@@ -1,10 +1,10 @@
-import { clsx, type ClassValue } from "clsx"
-import { setCookie } from "cookies-next";
-import { twMerge } from "tailwind-merge"
-import { z } from "zod";
+import { clsx, type ClassValue } from 'clsx';
+import { setCookie } from 'cookies-next';
+import { twMerge } from 'tailwind-merge';
+import { z } from 'zod';
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
 export function getDefaults<Schema extends z.AnyZodObject>(schema: Schema) {
@@ -12,7 +12,7 @@ export function getDefaults<Schema extends z.AnyZodObject>(schema: Schema) {
     Object.entries(schema.shape).map(([key, value]) => {
       if (value instanceof z.ZodDefault) return [key, value._def.defaultValue()];
       return [key, undefined];
-    })
+    }),
   );
 }
 
@@ -23,13 +23,17 @@ export async function getASIN(url: string) {
   if (match && match[1]) {
     return match[1];
   } else {
-    const response = await fetch(url, {method: 'GET', redirect: 'follow'});
-    const finalUrl = response.url;
-    console.log('url: ', finalUrl);
-    const matchAgain = finalUrl.match(asinRegex);
-    if (matchAgain && matchAgain[1]) {
-      return matchAgain[1];
-    } 
+    try {
+      const response = await fetch(url, { method: 'GET', redirect: 'follow' });
+      const finalUrl = response.url;
+      console.log('url: ', finalUrl);
+      const matchAgain = finalUrl.match(asinRegex);
+      if (matchAgain && matchAgain[1]) {
+        return matchAgain[1];
+      }
+    } catch {
+      return null;
+    }
   }
 }
 

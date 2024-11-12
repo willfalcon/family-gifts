@@ -9,6 +9,7 @@ import { createEvent } from '../actions';
 import { toast } from 'sonner';
 import EventForm from '../EventForm';
 import SetBreadcrumbs from '@/components/SetBreadcrumbs';
+import { useRouter } from 'next/navigation';
 
 export default function NewEventPage() {
   const form = useForm<EventSchemaType>({
@@ -16,12 +17,15 @@ export default function NewEventPage() {
     defaultValues: getDefaults(EventSchema),
   });
 
+  const router = useRouter();
+
   async function onSubmit(values: EventSchemaType) {
     console.log(values);
     try {
-      const { event, success, message } = await createEvent({ ...values, info: JSON.parse(JSON.stringify(values.info)) });
+      const { event, success, message } = await createEvent({ ...values, info: JSON.parse(JSON.stringify(values.info || {})) });
       if (success && event) {
         toast.success(`Created ${event.name}`);
+        router.push(`/dashboard/event/${event.id}`);
       } else {
         console.log(event);
         toast.error(message);

@@ -12,8 +12,9 @@ import {
 } from './ui/dropdown-menu';
 import SignOut from './SignOut';
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from './ui/sidebar';
-import { ChevronsUpDown } from 'lucide-react';
+import { ChevronsUpDown, UserPlus } from 'lucide-react';
 import { Session } from 'next-auth';
+import Link from 'next/link';
 
 export default function UserButton({ session }: { session: Session }) {
   const { isMobile } = useSidebar();
@@ -66,7 +67,13 @@ export default function UserButton({ session }: { session: Session }) {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuGroup></DropdownMenuGroup>
+            <DropdownMenuGroup>
+              <DropdownMenuItem>
+                <Link href="/dashboard/manage-family" className="flex">
+                  <UserPlus className="mr-2 h-4 w-4" /> <span>Manage Family</span>
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
               <SignOut />

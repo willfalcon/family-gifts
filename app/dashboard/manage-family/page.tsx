@@ -1,15 +1,16 @@
-import { auth } from "@/auth";
+import { auth } from '@/auth';
 
-import { redirect } from "next/navigation";
+import { redirect } from 'next/navigation';
 // import AddMember from "./AddMember";
-import { getFamilies } from "@/prisma/queries";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import NewFamily from "./NewFamily";
-import AddMember from "./AddMember";
-import MembersList from "./MembersList";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import NewFamily from './NewFamily';
+import AddMember from './AddMember';
+import MembersList from './MembersList';
 
-import DeleteFamily from "./DeleteFamily";
-import { getActiveFamilyId } from "@/lib/rscUtils";
+import DeleteFamily from './DeleteFamily';
+import { getActiveFamilyId } from '@/lib/rscUtils';
+import { getFamilies } from '@/lib/queries/families';
+import SetBreadcrumbs from '@/components/SetBreadcrumbs';
 
 export default async function ManageFamily() {
   const session = await auth();
@@ -18,15 +19,21 @@ export default async function ManageFamily() {
     redirect('/sign-in');
   }
 
-  const {families} = await getFamilies();
-  
-  const activeFamilyId = getActiveFamilyId();
-  const family = activeFamilyId ? families.find(family => family.id === activeFamilyId) : families[0];
+  const { families } = await getFamilies();
+
+  const activeFamilyId = await getActiveFamilyId();
+  const family = activeFamilyId ? families.find((family) => family.id === activeFamilyId) : families[0];
 
   const isManager = family?.managerId === session.user.id;
 
   return (
     <div className="space-y-4 p-8 pt-6">
+      <SetBreadcrumbs
+        items={[
+          { name: 'Dashboard', href: '/dashboard' },
+          { name: 'Manage Family', href: '/dashboard/manage-family' },
+        ]}
+      />
       {family && isManager && (
         <Card>
           <CardHeader>

@@ -1,7 +1,7 @@
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { getItems } from '@/prisma/queries';
+import { getItems } from '@/lib/queries/items';
 
 export default async function MyList() {
   const { items, success } = await getItems(3);

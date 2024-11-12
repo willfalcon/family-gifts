@@ -1,6 +1,6 @@
 import { Users } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { getFamilyMemberCount } from '@/prisma/queries';
+import { getFamilyMemberCount } from '@/lib/queries/family-members';
 
 export default async function TotalMembers() {
   const { count } = await getFamilyMemberCount();

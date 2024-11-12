@@ -1,7 +1,7 @@
 import { ShoppingBag } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Progress } from '../ui/progress';
-import { boughtCount } from '@/prisma/queries';
+import { boughtCount } from '@/lib/queries/items';
 
 type Result =
   | { success: true; message: string; items: number; bought: number }

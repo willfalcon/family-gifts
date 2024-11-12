@@ -6,7 +6,7 @@ import { prisma } from '@/prisma';
 import { revalidatePath } from 'next/cache';
 import { Item } from '@prisma/client';
 import { getASIN } from '@/lib/utils';
-import { getFamilyMember } from '@/prisma/queries';
+import { getFamilyMember } from '@/lib/queries/family-members';
 
 export type CreateItemReturn = {
   item?: Item;
@@ -86,7 +86,7 @@ export async function maybeGetImage(item: Item) {
         },
         body: JSON.stringify({ query }),
       }).then((res) => res.json());
-      console.log(productData);
+
       if (productData.data.amazonProduct) {
         const itemWithImage = await prisma.item.update({
           where: {

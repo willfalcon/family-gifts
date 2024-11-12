@@ -1,6 +1,6 @@
 'use server';
 
-import { getMembers as getMembersQuery } from '@/prisma/queries';
+import { getMembers as getMembersQuery } from '@/lib/queries/family-members';
 import { AssignmentsType } from './Manager';
 import { auth } from '@/auth';
 import { Prisma } from '@prisma/client';

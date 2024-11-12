@@ -1,7 +1,7 @@
 import Title from '@/components/Title';
 
-import { getFamilyMemberLists } from '@/prisma/queries';
 import FamilyLists from './FamilyLists';
+import { getFamilyMemberLists } from '@/lib/queries/family-members';
 
 export default async function Family() {
   const initialData = await getFamilyMemberLists();

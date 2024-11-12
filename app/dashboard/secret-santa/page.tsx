@@ -1,9 +1,6 @@
 import { auth } from '@/auth';
-// import { getActiveFamilyId } from "@/lib/rscUtils";
-// import { getFamilies } from "@/prisma/queries";
+
 import { redirect } from 'next/navigation';
-// import Manager from "./Manager";
-// import Member from "./Member";
 
 export default async function SecretSanta() {
   redirect('/dashboard/events');

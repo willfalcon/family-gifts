@@ -1,10 +1,11 @@
 import { CalendarDays } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { getEvents, getEventsCount } from '@/prisma/queries';
+import { getEvents, getEventsCount } from '@/lib/queries/events';
 
 export default async function UpcomingEvents() {
   const { count } = await getEventsCount();
-  if (count === 0) {
+
+  if (!count || count === 0) {
     return null;
   }
   const { events } = await getEvents(1);

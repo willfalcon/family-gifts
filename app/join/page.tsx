@@ -1,16 +1,16 @@
-import { auth } from "@/auth";
-import SignIn from "@/components/SignIn";
-import {  getInvitedMember } from "@/prisma/queries";
-import { redirect } from "next/navigation";
-import JoinButton from "./JoinButton";
+import { auth } from '@/auth';
+import SignIn from '@/components/SignIn';
+import { redirect } from 'next/navigation';
+import JoinButton from './JoinButton';
+import { getInvitedMember } from '@/lib/queries/onboarding';
 
 type PageProps = {
-  params: { slug: string },
-  searchParams: { [key: string]: string | undefined }
-}
+  params: { slug: string };
+  searchParams: { [key: string]: string | undefined };
+};
 
-export default async function JoinPage({searchParams}: PageProps) {
-  const {token} = searchParams;
+export default async function JoinPage({ searchParams }: PageProps) {
+  const { token } = searchParams;
 
   if (!token) {
     redirect('/');
@@ -29,13 +29,5 @@ export default async function JoinPage({searchParams}: PageProps) {
 
   const { familyMember, success, message } = await getInvitedMember(token);
 
-  return (
-    <div>
-      {!success ? (
-        <p>{message}</p>
-      ) : (
-        <JoinButton name={familyMember?.family.name || ''} token={token} />
-      )}
-    </div>
-  )
+  return <div>{!success ? <p>{message}</p> : <JoinButton name={familyMember?.family.name || ''} token={token} />}</div>;
 }

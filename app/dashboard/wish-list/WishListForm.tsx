@@ -1,27 +1,26 @@
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { UseFormReturn } from "react-hook-form";
-import { ItemSchemaType } from "./wishListSchema";
-import { Textarea } from "@/components/ui/textarea";
-import CategoryField from "./CategoryField";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { UseFormReturn } from 'react-hook-form';
+import { ItemSchemaType } from './wishListSchema';
+import { Textarea } from '@/components/ui/textarea';
+import CategoryField from './CategoryField';
 
 type WishListFormProps = {
   form: UseFormReturn<ItemSchemaType>;
   onSubmit: (data: ItemSchemaType) => Promise<void>;
   text: string;
-  categories: string[]
+  categories: string[];
 };
 
-export default function WishListForm({form, onSubmit, text, categories}: WishListFormProps) {
-
+export default function WishListForm({ form, onSubmit, text, categories }: WishListFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
           name="name"
-          render={({field}) => {
+          render={({ field }) => {
             return (
               <FormItem>
                 <FormLabel>Name</FormLabel>
@@ -31,29 +30,29 @@ export default function WishListForm({form, onSubmit, text, categories}: WishLis
                 <FormDescription>Name of the thing you want.</FormDescription>
                 <FormMessage />
               </FormItem>
-            )
-          }} 
+            );
+          }}
         />
         <FormField
           control={form.control}
           name="link"
-          render={({field}) => {
+          render={({ field }) => {
             return (
               <FormItem>
                 <FormLabel>Link</FormLabel>
                 <FormControl>
-                  <Input {...field} type="url" />
+                  <Input {...field} value={field.value ?? ''} />
                 </FormControl>
                 <FormDescription>Link to the item.</FormDescription>
                 <FormMessage />
               </FormItem>
-            )
-          }} 
+            );
+          }}
         />
         <FormField
           control={form.control}
           name="notes"
-          render={({field}) => {
+          render={({ field }) => {
             return (
               <FormItem>
                 <FormLabel>Notes</FormLabel>
@@ -63,20 +62,20 @@ export default function WishListForm({form, onSubmit, text, categories}: WishLis
                 <FormDescription>Link to the item.</FormDescription>
                 <FormMessage />
               </FormItem>
-            )
-          }} 
-        />
-        <FormField 
-          control={form.control}
-          name="category"
-          render={({field}) => {
-            return (
-              <CategoryField categories={categories} value={field.value} />
-            )
+            );
           }}
         />
-        <Button type="submit">{text}</Button>
+        <FormField
+          control={form.control}
+          name="category"
+          render={({ field }) => {
+            return <CategoryField categories={categories} value={field.value} />;
+          }}
+        />
+        <Button type="submit" disabled={form.formState.isSubmitting}>
+          {text}
+        </Button>
       </form>
     </Form>
-  )
+  );
 }

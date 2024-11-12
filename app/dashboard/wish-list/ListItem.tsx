@@ -7,11 +7,11 @@ import { Badge } from '@/components/ui/badge';
 import ItemDelete from './ItemDelete';
 import { ItemWithRefs } from '@/prisma/types';
 import MarkAsBought from './MarkAsBought';
-import { getActiveMember } from '@/prisma/queries';
 import { Tooltip, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { TooltipContent } from '@radix-ui/react-tooltip';
 import Image from 'next/image';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
+import { getActiveMember } from '@/lib/queries/family-members';
 
 export default async function ListItem(
   props: ItemWithRefs & {
@@ -27,7 +27,7 @@ export default async function ListItem(
   const me = await getActiveMember();
 
   return (
-    <Card>
+    <Card className="relative">
       <CardHeader className="flex-row items-center justify-between">
         <CardTitle>
           {item.link ? (

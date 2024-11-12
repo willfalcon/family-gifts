@@ -3,12 +3,12 @@ import { auth } from '@/auth';
 import Title from '@/components/Title';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { getEvents } from '@/prisma/queries';
 import { CalendarDays, ChevronRight, Gift, Users } from 'lucide-react';
 import { redirect } from 'next/navigation';
 import { buttonVariants } from '@/components/ui/button';
 import Link from 'next/link';
 import SetBreadcrumbs from '@/components/SetBreadcrumbs';
+import { getEvents } from '@/lib/queries/events';
 
 export default async function EventsPage() {
   const session = await auth();

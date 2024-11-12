@@ -1,15 +1,12 @@
 import { getActiveFamilyId } from '@/lib/rscUtils';
-// import FamilySelect from './FamilySelect';
-
-// import UserButton from './UserButton';
-import { getFamilies } from '@/prisma/queries';
 import { setActiveFamilyId } from '@/lib/utils';
 import { SidebarTrigger } from './ui/sidebar';
 import { Separator } from './ui/separator';
 import HeaderBreadcrumbs from './HeaderBreadcrumbs';
+import { getFamilies } from '@/lib/queries/families';
 
 export default async function Header() {
-  const activeFamilyId = getActiveFamilyId();
+  const activeFamilyId = await getActiveFamilyId();
   const { families } = await getFamilies();
   if (!activeFamilyId) {
     if (families) {

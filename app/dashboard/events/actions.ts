@@ -19,7 +19,7 @@ export async function createEvent(event: EventSchemaType) {
 
   const validatedData = EventSchema.parse(event);
 
-  const activeFamilyId = getActiveFamilyId();
+  const activeFamilyId = await getActiveFamilyId();
 
   if (!activeFamilyId) {
     return {

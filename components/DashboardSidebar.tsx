@@ -16,9 +16,9 @@ import {
   SidebarRail,
 } from './ui/sidebar';
 import FamilySelect from './FamilySelect';
-import { getFamilies } from '@/prisma/queries';
 import UserButton from './UserButton';
 import { redirect } from 'next/navigation';
+import { getFamilies } from '@/lib/queries/families';
 
 export default async function DashboardSidebar() {
   const session = await auth();

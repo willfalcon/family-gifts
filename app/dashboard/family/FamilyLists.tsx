@@ -19,6 +19,7 @@ type Props = {
         user?: User | null;
       }[]
     | null;
+  message: string;
 };
 
 async function queryFn(): Promise<Props> {
@@ -48,7 +49,7 @@ export default function FamilyLists(initialData: Props) {
               <AvatarImage src={member.user?.image || undefined} alt={member.name} />
               <AvatarFallback>{member.name[0]}</AvatarFallback>
             </Avatar>
-            {member.name}&apos;s List
+            {member.name}
           </Link>
         ))}
       </div>
