@@ -66,6 +66,7 @@ export async function createFamilyMember(data: FamilyMemberSchemaType & { family
     if (member) {
       const email = await sendInviteEmail(member);
       console.log(email);
+      revalidatePath('/manage-family');
       return {
         success: true,
         member,

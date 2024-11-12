@@ -3,8 +3,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Family } from '@prisma/client';
 import { Check } from 'lucide-react';
 import DeleteFamilyMember from './DeleteFamilyMember';
-import REsendInvite from './ResendInvite';
 import { getMembers } from '@/lib/queries/family-members';
+import ResendInvite from './ResendInvite';
 
 type MembersListProps = { family: Family; isManager: boolean };
 
@@ -38,7 +38,7 @@ export default async function MembersList({ family, isManager = false }: Members
                   {isManager && (
                     <TableCell>
                       <div className="flex space-x-2">
-                        <REsendInvite {...member} />
+                        <ResendInvite {...member} />
 
                         <DeleteFamilyMember {...member} />
                       </div>
