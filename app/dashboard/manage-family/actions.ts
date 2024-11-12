@@ -15,7 +15,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 async function sendInviteEmail(member: FamilyMember) {
   try {
     const { data, error } = await resend.emails.send({
-      from: 'Invite <invites@resend.dev>',
+      from: `Invite <${process.env.FROM_EMAIL_ADDRESS}>`,
       to: [member.email],
       subject: 'Join the family',
       react: InviteEmailTemplate(member),
