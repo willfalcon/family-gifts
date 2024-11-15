@@ -33,7 +33,7 @@ export default async function page() {
             <QuickActions className="col-span-2" />
           </>
         ) : (
-          <CreateFamily />
+          <CreateFamily variant="default" />
         )}
       </div>
     </div>
