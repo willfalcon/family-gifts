@@ -25,6 +25,8 @@ model User {
   role              String          @default("MEMBER")
   managedFamilies   Family[]        @relation("FamilyManager")
   familyMemberships FamilyMember[]  @relation("FamilyMembers")
+  lists             List[]
+  items             Item[]          @relation("UserItems")
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt()
 }
@@ -80,14 +82,16 @@ model Authenticator {
 }
 
 model Family {
-  id        String         @id() @default(cuid())
-  name      String
-  managerId String
-  manager   User           @relation("FamilyManager", fields: [managerId], references: [id])
-  members   FamilyMember[]
-  events    Event[]
-  createdAt DateTime?      @default(now())
-  updatedAt DateTime?      @updatedAt()
+  id              String         @id() @default(cuid())
+  name            String
+  managerId       String
+  manager         User           @relation("FamilyManager", fields: [managerId], references: [id])
+  managers        FamilyMember[] @relation("FamilyManagerMember")
+  members         FamilyMember[]
+  events          Event[]
+  listsVisible    List[]
+  createdAt       DateTime?      @default(now())
+  updatedAt       DateTime?      @updatedAt()
 }
 
 model FamilyMember {
@@ -104,15 +108,33 @@ model FamilyMember {
   receiving   Assignment[] @relation("Receiver")
   items       Item[]       @relation("MemberItems")
   bought      Item[]       @relation("ItemBoughtBy")
+  managing    Family[]     @relation("FamilyManagerMember")
+  info        Json?
   createdAt   DateTime?    @default(now())
   updatedAt   DateTime?    @updatedAt()
+}
+
+model List {
+  id        String    @id() @default(cuid())
+  name      String
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  items     Item[]
+  visibleTo Family[]
+  default   Boolean?
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt()
 }
 
 model Item {
   id        String         @id() @default(cuid())
   name      String
-  memberId  String
-  member    FamilyMember   @relation("MemberItems", fields: [memberId], references: [id])
+  memberId  String?
+  member    FamilyMember?  @relation("MemberItems", fields: [memberId], references: [id])
+  userId    String?
+  user      User?          @relation("UserItems", fields: [userId], references: [id])
+  listId    String?
+  list      List?          @relation(fields: [listId], references: [id])
   link      String?
   notes     String?
   image     String?

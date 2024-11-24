@@ -1,7 +1,7 @@
 'use client';
 
 // import { getActiveFamilyId } from "@/lib/rscUtils";
-import { getCookie } from 'cookies-next';
+// import { getCookie } from 'cookies-next';
 import { createContext, Dispatch, PropsWithChildren, SetStateAction, useContext, useState } from 'react';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -10,8 +10,8 @@ import { BreadcrumbsProvider } from '@/components/HeaderBreadcrumbs';
 
 const queryClient = new QueryClient();
 
-export default function Providers({ children }: PropsWithChildren) {
-  const activeFamilyId = getCookie('activeFamilyId');
+export default function Providers({ children, activeFamilyId }: PropsWithChildren & { activeFamilyId?: string }) {
+  // const activeFamilyId = getCookie('activeFamilyId');
   const activeFamilyState = useState(activeFamilyId);
 
   return (

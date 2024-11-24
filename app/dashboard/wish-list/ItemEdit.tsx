@@ -7,10 +7,10 @@ import { ItemSchema, ItemSchemaType } from './wishListSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { toast } from 'sonner';
-import { editItem } from './actions';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import WishListForm from './WishListForm';
 import { useState } from 'react';
+import ItemForm from './ItemForm';
+import { editItem } from './actions';
 
 export default function ItemEdit(props: Item & { categories: string[] }) {
   const { categories, ...item } = props;
@@ -29,7 +29,7 @@ export default function ItemEdit(props: Item & { categories: string[] }) {
         toast.success('Item edited!');
         setOpen(false);
       } else {
-        toast.error(res.error);
+        toast.error(res.message);
       }
     } catch (err) {
       console.error(err);
@@ -46,7 +46,7 @@ export default function ItemEdit(props: Item & { categories: string[] }) {
         <DialogHeader>
           <DialogTitle>Edit {item.name}</DialogTitle>
         </DialogHeader>
-        <WishListForm form={form} onSubmit={onSubmit} text="Edit" categories={categories} />
+        <ItemForm form={form} onSubmit={onSubmit} text="Save" categories={categories} />
       </DialogContent>
     </Dialog>
   );

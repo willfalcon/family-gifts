@@ -20,6 +20,7 @@ export const getMembers = cache(async (id: Family['id']): Promise<GetMembersResu
       members: [],
     };
   }
+
   const family = await prisma.family.findUnique({
     where: {
       id,
@@ -41,7 +42,7 @@ export const getMembers = cache(async (id: Family['id']): Promise<GetMembersResu
     };
   }
 
-  if (family?.members.find((member) => member.userId === session.user.id || family.managerId === session.user.id)) {
+  if (family?.members.find((member) => member.userId === session.user!.id || family.managerId === session.user!.id)) {
     return {
       success: true,
       members: family.members,
@@ -61,7 +62,7 @@ type FamilyMemberListsResult = {
   message: string;
   lists: FamilyMemberWithRefs[];
 };
-export const getFamilyMemberLists = cache(async (): Promise<FamilyMemberListsResult> => {
+export const getFamilyMembers = cache(async (): Promise<FamilyMemberListsResult> => {
   const session = await auth();
   if (!session?.user) {
     return {
@@ -149,13 +150,16 @@ export const getFamilyMemberLists = cache(async (): Promise<FamilyMemberListsRes
   }
 });
 
+/**
+ * Returns the active family member
+ */
 export const getFamilyMember = cache(async () => {
   const session = await auth();
   if (!session?.user) {
     return {
       error: 'Not logged in',
       message: 'You must be logged in to do this.',
-      families: [],
+      member: null,
     };
   }
 
@@ -183,11 +187,13 @@ export const getFamilyMember = cache(async () => {
       return {
         success: true,
         member,
+        message: '',
       };
     } else {
       return {
         success: false,
         message: `Couldn't find family member.`,
+        member: null,
       };
     }
   } catch (err) {
@@ -195,6 +201,7 @@ export const getFamilyMember = cache(async () => {
     return {
       success: false,
       message: 'Something went wrong.',
+      member: null,
     };
   }
 });
@@ -205,7 +212,7 @@ export const getFamilyMemberById = cache(async (id: FamilyMember['id']) => {
     return {
       error: 'Not logged in',
       message: 'You must be logged in to do this.',
-      families: [],
+      member: null,
     };
   }
 
@@ -214,17 +221,22 @@ export const getFamilyMemberById = cache(async (id: FamilyMember['id']) => {
       where: {
         id,
       },
+      include: {
+        user: true,
+      },
     });
 
     if (member) {
       return {
         success: true,
         member,
+        message: '',
       };
     } else {
       return {
         success: false,
         message: `Couldn't find family member.`,
+        member: null,
       };
     }
   } catch (err) {
@@ -232,8 +244,21 @@ export const getFamilyMemberById = cache(async (id: FamilyMember['id']) => {
     return {
       success: false,
       message: 'Something went wrong.',
+      member: null,
     };
   }
+});
+
+export const getMemberUser = cache(async (member: FamilyMember) => {
+  if (!member.userId) {
+    return null;
+  }
+  const user = await prisma.user.findUnique({
+    where: {
+      id: member.userId,
+    },
+  });
+  return user;
 });
 
 export const getFamilyMemberCount = cache(async () => {
@@ -280,6 +305,9 @@ export const getFamilyMemberCount = cache(async () => {
 
 export const getActiveMember = cache(async () => {
   const session = await auth();
+  if (!session?.user?.id) {
+    return null;
+  }
 
   const activeFamilyId = await getActiveFamilyId();
   const me = await prisma.familyMember.findFirst({
@@ -295,6 +323,40 @@ export const getActiveMember = cache(async () => {
               id: session?.user.id,
             },
           },
+        },
+      },
+    },
+  });
+  return me;
+});
+
+export const getMemberAssignment = cache(async () => {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return null;
+  }
+
+  const activeFamilyId = await getActiveFamilyId();
+  const me = await prisma.familyMember.findFirst({
+    where: {
+      user: {
+        id: session?.user.id,
+      },
+      family: {
+        id: activeFamilyId,
+        members: {
+          some: {
+            user: {
+              id: session?.user.id,
+            },
+          },
+        },
+      },
+    },
+    include: {
+      giving: {
+        include: {
+          receiver: true,
         },
       },
     },

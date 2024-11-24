@@ -31,6 +31,7 @@ export default function ItemDelete({ id }: { id: Item['id'] }) {
         toast.warning(res.message);
       }
       setOpen(false);
+      setPending(false);
     } catch {
       toast.warning('Something went wrong.');
       setOpen(false);

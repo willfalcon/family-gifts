@@ -4,6 +4,7 @@ import { PrismaAdapter } from '@auth/prisma-adapter';
 import { prisma } from './prisma';
 import authConfig from './auth.config';
 import { Adapter } from 'next-auth/adapters';
+import { getActiveFamilyId } from './lib/rscUtils';
 
 // declare module 'next-auth' {
 //   // interface User {
@@ -31,6 +32,37 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
       }
       return session;
+    },
+  },
+  events: {
+    async signIn({ user }) {
+      const existing = await prisma.user.findUnique({
+        where: { id: user.id },
+        select: {
+          lists: true,
+        },
+      });
+      if (!existing) {
+        const familyId = await getActiveFamilyId();
+        await prisma.user.update({
+          where: {
+            id: user.id,
+          },
+          data: {
+            lists: {
+              create: {
+                name: 'Default List',
+                visibleTo: {
+                  connect: {
+                    id: familyId,
+                  },
+                },
+                default: true,
+              },
+            },
+          },
+        });
+      }
     },
   },
   ...authConfig,

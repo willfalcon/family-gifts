@@ -12,7 +12,7 @@ import {
 } from './ui/dropdown-menu';
 import SignOut from './SignOut';
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from './ui/sidebar';
-import { ChevronsUpDown, UserPlus } from 'lucide-react';
+import { ChevronsUpDown, UserCog, UserPlus } from 'lucide-react';
 import { Session } from 'next-auth';
 import Link from 'next/link';
 
@@ -30,15 +30,15 @@ export default function UserButton({ session }: { session: Session }) {
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage
                   src={
-                    session.user.image ?? `https://api.dicebear.com/9.x/thumbs/svg?seed=${Math.floor(Math.random() * 100000) + 1}&randomizeIds=true`
+                    session.user?.image ?? `https://api.dicebear.com/9.x/thumbs/svg?seed=${Math.floor(Math.random() * 100000) + 1}&randomizeIds=true`
                   }
-                  alt={session.user.name ?? ''}
+                  alt={session.user?.name ?? ''}
                   // alt={''}
                 />
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">{session.user.name}</span>
-                <span className="truncate text-xs">{session.user.email}</span>
+                <span className="truncate font-semibold">{session.user?.name}</span>
+                <span className="truncate text-xs">{session.user?.email}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -54,15 +54,16 @@ export default function UserButton({ session }: { session: Session }) {
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarImage
                     src={
-                      session.user.image ?? `https://api.dicebear.com/9.x/thumbs/svg?seed=${Math.floor(Math.random() * 100000) + 1}&randomizeIds=true`
+                      session.user?.image ??
+                      `https://api.dicebear.com/9.x/thumbs/svg?seed=${Math.floor(Math.random() * 100000) + 1}&randomizeIds=true`
                     }
-                    alt={session.user.name ?? ''}
+                    alt={session.user?.name ?? ''}
                     // alt={''}
                   />
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">{session.user.name}</span>
-                  <span className="truncate text-xs">{session.user.email}</span>
+                  <span className="truncate font-semibold">{session.user?.name}</span>
+                  <span className="truncate text-xs">{session.user?.email}</span>
                 </div>
               </div>
             </DropdownMenuLabel>
@@ -71,6 +72,11 @@ export default function UserButton({ session }: { session: Session }) {
               <DropdownMenuItem>
                 <Link href="/dashboard/manage-family" className="flex">
                   <UserPlus className="mr-2 h-4 w-4" /> <span>Manage Family</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Link href="/dashboard/profile" className="flex">
+                  <UserCog className="mr-2 h-4 w-4" /> <span>Profile</span>
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>

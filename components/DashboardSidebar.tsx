@@ -18,7 +18,6 @@ import {
 import FamilySelect from './FamilySelect';
 import UserButton from './UserButton';
 import { redirect } from 'next/navigation';
-import { getFamilies } from '@/lib/queries/families';
 
 export default async function DashboardSidebar() {
   const session = await auth();
@@ -27,10 +26,8 @@ export default async function DashboardSidebar() {
     redirect('/sign-in');
   }
 
-  const { families } = await getFamilies();
-
   const nav = [
-    { text: 'My Wish List', href: '/dashboard/wish-list', icon: Gift },
+    { text: 'Wish Lists', href: '/dashboard/wish-lists', icon: Gift },
     { text: 'Family', href: '/dashboard/family', icon: Users },
     { text: 'Events', href: '/dashboard/events', icon: List },
     ...(session?.user ? [{ text: 'Manage Family', href: '/dashboard/manage-family', icon: UserPlus }] : []),
@@ -42,7 +39,7 @@ export default async function DashboardSidebar() {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <FamilySelect families={families} sidebar />
+            <FamilySelect sidebar />
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>

@@ -6,13 +6,14 @@ import { prisma } from '@/prisma';
 import { FamilySchema, FamilySchemaType } from './familySchema';
 import { revalidatePath } from 'next/cache';
 import { Family, FamilyMember } from '@prisma/client';
-import InviteEmailTemplate from '@/components/email/invite';
+import InviteEmailTemplate from '@/emails/invite';
 import { Resend } from 'resend';
 import { randomBytes } from 'crypto';
+import { FamilyMemberWithFamily } from '@/prisma/types';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-async function sendInviteEmail(member: FamilyMember) {
+async function sendInviteEmail(member: FamilyMemberWithFamily) {
   try {
     const { data, error } = await resend.emails.send({
       from: `Invite <${process.env.FROM_EMAIL_ADDRESS}>`,
@@ -61,6 +62,9 @@ export async function createFamilyMember(data: FamilyMemberSchemaType & { family
           },
         },
         inviteToken: token,
+      },
+      include: {
+        family: true,
       },
     });
     if (member) {

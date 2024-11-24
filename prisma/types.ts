@@ -10,6 +10,11 @@ export type FamilyMemberWithRefs = Prisma.FamilyMemberGetPayload<{
     id: true;
   };
 }>;
+export type FamilyMemberWithFamily = Prisma.FamilyMemberGetPayload<{
+  include: {
+    family: true;
+  };
+}>;
 
 export type FamilyMemberWithUser = Prisma.FamilyMemberGetPayload<{
   include: {
@@ -19,7 +24,25 @@ export type FamilyMemberWithUser = Prisma.FamilyMemberGetPayload<{
 
 export type EventWithAssignments = Prisma.EventGetPayload<{
   include: {
-    assignments: true;
+    assignments: {
+      include: {
+        giver: {
+          include: {
+            user: true;
+          };
+        };
+        receiver: {
+          include: {
+            user: true;
+          };
+        };
+      };
+    };
+  };
+}>;
+export type EventWithFamily = Prisma.EventGetPayload<{
+  include: {
+    family: true;
   };
 }>;
 
@@ -47,5 +70,17 @@ export type ItemWithRefs = Prisma.ItemGetPayload<{
   include: {
     member: true;
     boughtBy?: true;
+  };
+}>;
+
+export type ListWithItems = Prisma.ListGetPayload<{
+  include: {
+    visibleTo: true;
+    items: {
+      include: {
+        member: true;
+        boughtBy?: true;
+      };
+    };
   };
 }>;

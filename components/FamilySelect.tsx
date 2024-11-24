@@ -1,5 +1,5 @@
 'use client';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Loader2 } from 'lucide-react';
 import { Button } from './ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { Family } from '@prisma/client';
@@ -7,17 +7,31 @@ import { setActiveFamilyId } from '@/lib/utils';
 import { useActiveFamilyContext } from '@/app/dashboard/Providers';
 import { SidebarMenuButton } from './ui/sidebar';
 import CreateFamily from './CreateFamily';
+import { useQuery } from '@tanstack/react-query';
+import { Skeleton } from './ui/skeleton';
 
 type Props = {
-  families: Family[];
   sidebar?: boolean;
 };
 
-export default function FamilySelect({ families, sidebar = false }: Props) {
+export default function FamilySelect({ sidebar = false }: Props) {
   const [activeFamilyState, setActiveFamilyState] = useActiveFamilyContext();
 
-  const activeFamily = activeFamilyState ? families.find((family) => family.id === activeFamilyState) : families[0];
+  const { data, isLoading } = useQuery({
+    queryKey: ['families'],
+    queryFn: async () => fetch('/api/getFamilies').then((res) => res.json()),
+  });
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center space-x-2">
+        <Skeleton className="h-8 w-8 rounded-lg" />
+        <Skeleton className="flex-1 h-6" />
+      </div>
+    );
+  }
+
+  const activeFamily = activeFamilyState ? data?.families.find((family: Family) => family.id === activeFamilyState) : data.families[0];
   return activeFamily ? (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -37,7 +51,8 @@ export default function FamilySelect({ families, sidebar = false }: Props) {
         )}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-[200px]">
-        {families.map((family) => (
+        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+        {data?.families.map((family: Family) => (
           <DropdownMenuItem
             key={family.id}
             onSelect={() => {

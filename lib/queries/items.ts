@@ -3,7 +3,7 @@ import { cache } from 'react';
 import { getActiveFamilyId } from '../rscUtils';
 import { prisma } from '@/prisma';
 import { getActiveMember } from './family-members';
-import { FamilyMember } from '@prisma/client';
+import { FamilyMember, List } from '@prisma/client';
 
 export const getItems = cache(async (limit?: number) => {
   const session = await auth();
@@ -45,6 +45,105 @@ export const getItems = cache(async (limit?: number) => {
     message: '',
     items,
   };
+});
+
+export const getDefaultList = cache(async () => {
+  const session = await auth();
+  if (!session?.user) {
+    return {
+      success: false,
+      message: 'You must be logged in to do this.',
+      list: undefined,
+    };
+  }
+
+  try {
+    const list = await prisma.list.findFirst({
+      where: {
+        user: {
+          id: session.user.id,
+        },
+        default: true,
+      },
+      include: {
+        visibleTo: true,
+        items: {
+          include: {
+            member: true,
+            boughtBy: true,
+          },
+        },
+      },
+    });
+
+    return {
+      success: true,
+      message: '',
+      list,
+    };
+  } catch (err) {
+    console.error(err);
+    return {
+      success: false,
+      message: 'Something went wrong.',
+      list: undefined,
+    };
+  }
+});
+export const getListById = cache(async (id: List['id']) => {
+  const session = await auth();
+  if (!session?.user) {
+    return {
+      success: false,
+      message: 'You must be logged in to do this.',
+      list: undefined,
+    };
+  }
+
+  try {
+    const activeFamilyId = await getActiveFamilyId();
+    const list = await prisma.list.findFirst({
+      where: {
+        id,
+        OR: [
+          {
+            user: {
+              id: session.user.id,
+            },
+          },
+          {
+            visibleTo: {
+              some: {
+                id: activeFamilyId,
+              },
+            },
+          },
+        ],
+      },
+      include: {
+        visibleTo: true,
+        items: {
+          include: {
+            member: true,
+            boughtBy: true,
+          },
+        },
+      },
+    });
+
+    return {
+      success: true,
+      message: '',
+      list,
+    };
+  } catch (err) {
+    console.error(err);
+    return {
+      success: false,
+      message: 'Something went wrong.',
+      list: undefined,
+    };
+  }
 });
 
 export const boughtCount = cache(async () => {
@@ -101,6 +200,7 @@ export const getList = cache(async (id: FamilyMember['id']) => {
     return {
       success: false,
       message: 'You must be logged in to do this.',
+      list: null,
     };
   }
 
@@ -113,6 +213,7 @@ export const getList = cache(async (id: FamilyMember['id']) => {
     return {
       success: false,
       message: `Couldn't find family member.`,
+      list: null,
     };
   }
   const activeFamilyId = await getActiveFamilyId();
@@ -137,7 +238,8 @@ export const getList = cache(async (id: FamilyMember['id']) => {
   if (!me) {
     return {
       success: false,
-      message: `You must be in a family with this person! Make sure you've got the right family selected.`,
+      message: `This list isn't visible to you! Make sure you've got the right family selected.`,
+      list: null,
     };
   }
 
@@ -145,11 +247,13 @@ export const getList = cache(async (id: FamilyMember['id']) => {
     return {
       success: false,
       message: `You can't look at your own list this way!`,
+      list: null,
     };
   }
 
   return {
     success: true,
     list: member.items,
+    message: '',
   };
 });

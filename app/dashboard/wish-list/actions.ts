@@ -7,6 +7,7 @@ import { revalidatePath } from 'next/cache';
 import { Item } from '@prisma/client';
 import { getASIN } from '@/lib/utils';
 import { getFamilyMember } from '@/lib/queries/family-members';
+import { getDefaultListId } from '@/lib/queries/lists';
 
 export type CreateItemReturn = {
   item?: Item;
@@ -15,49 +16,66 @@ export type CreateItemReturn = {
   error?: string;
 };
 
-export async function createItem(data: ItemSchemaType) {
+export async function createItem(data: ItemSchemaType & { listId: string | undefined }) {
   const session = await auth();
   if (!session?.user) {
     return {
       success: false,
       message: 'You must be logged in to do this.',
+      item: null,
     };
   }
 
   const validatedData = ItemSchema.parse(data);
 
   try {
-    const { member } = await getFamilyMember();
-
-    if (member) {
+    const listId = data.listId ? data.listId : await getDefaultListId(session.user.id!).then((res) => res.listId);
+    const me = await getFamilyMember();
+    if (!me.success || !me.member) {
+      return {
+        success: false,
+        message: `Make sure you're logged in and in a family`,
+        item: null,
+      };
+    }
+    if (listId) {
       const item = await prisma.item.create({
         data: {
           ...validatedData,
+          list: {
+            connect: {
+              id: listId,
+            },
+          },
           member: {
             connect: {
-              id: member?.id,
+              id: me.member.id,
             },
           },
         },
       });
 
+      revalidatePath('/wish-list/[id]', 'page');
       revalidatePath('/wish-list');
 
       return {
         success: true,
         item,
+        message: '',
       };
     } else {
       return {
         success: false,
         message: `Couldn't find family member.`,
+        item: null,
       };
     }
   } catch (err) {
     console.error('Error creating item: ', err);
     return {
       success: false,
-      error: 'Something went wrong!',
+      message: 'Something went wrong!',
+      item: null,
     };
   }
 }
@@ -114,6 +132,7 @@ export async function editItem(id: Item['id'], data: ItemSchemaType) {
     return {
       success: false,
       message: 'You must be logged in to do this.',
+      item: null,
     };
   }
 
@@ -148,10 +167,12 @@ export async function editItem(id: Item['id'], data: ItemSchemaType) {
       return {
         success: true,
         item,
+        message: '',
       };
     } else {
       return {
         success: false,
+        item: null,
         message,
       };
     }
@@ -159,7 +180,8 @@ export async function editItem(id: Item['id'], data: ItemSchemaType) {
     console.error('Error updating item: ', err);
     return {
       success: false,
-      error: 'Something went wrong!',
+      message: 'Something went wrong!',
+      item: null,
     };
   }
 }

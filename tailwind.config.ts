@@ -64,6 +64,9 @@ const config: Config = {
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
       },
+      width: {
+        content: '1000px',
+      },
     },
   },
   plugins: [animate, typography],

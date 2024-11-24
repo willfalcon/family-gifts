@@ -21,6 +21,9 @@ export const getFamilies = cache(async () => {
         },
       },
     },
+    include: {
+      managers: true,
+    },
   });
   return {
     success: true,

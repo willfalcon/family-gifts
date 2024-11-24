@@ -7,6 +7,7 @@ interface EditorProps {
   content: object;
   placeholder?: string;
   onChange: (value: object) => void;
+  className?: string;
 }
 
 const Editor = ({ content, placeholder, onChange }: EditorProps) => {
@@ -16,6 +17,11 @@ const Editor = ({ content, placeholder, onChange }: EditorProps) => {
     onUpdate: ({ editor }) => {
       onChange(editor.getJSON());
     },
+    editorProps: {
+      attributes: {
+        class: 'outline-none min-h-[200px] prose-p:my-2',
+      },
+    },
   });
 
   if (!editor) return <></>;
@@ -24,7 +30,7 @@ const Editor = ({ content, placeholder, onChange }: EditorProps) => {
     <div className="prose max-w-none w-full border border-input bg-background dark:prose-invert">
       <EditorToolbar editor={editor} />
       <div className="editor">
-        <EditorContent editor={editor} placeholder={placeholder} />
+        <EditorContent editor={editor} placeholder={placeholder} className="px-4 min-h-[200px] " />
       </div>
     </div>
   );
