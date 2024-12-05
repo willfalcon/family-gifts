@@ -1,10 +1,9 @@
 import { auth } from '@/auth';
 import { prisma } from '@/prisma';
-import { Channel, Event } from '@prisma/client';
+import { Channel, Event, Prisma } from '@prisma/client';
 import { cache } from 'react';
 import { getActiveFamilyId } from '../rscUtils';
 import { addMinutes } from 'date-fns';
-import { ChannelWithMessages } from '@/prisma/types';
 
 export const getChannels = cache(async () => {
   const session = await auth();
@@ -93,12 +92,23 @@ export const getChannels = cache(async () => {
   }
 });
 
-export type GetChannelReturn = {
-  success: boolean;
-  message: string;
-  channel?: ChannelWithMessages;
-};
-export const getChannel = cache(async (id: Channel['id']): Promise<GetChannelReturn> => {
+export type GetChannelReturnType = Prisma.ChannelGetPayload<{
+  include: {
+    messages: {
+      include: {
+        sender: {
+          include: {
+            user: true;
+            managing: true;
+          };
+        };
+        readBy: true;
+      };
+    };
+  };
+}>;
+
+export const getChannel = cache(async (id: Channel['id']) => {
   const session = await auth();
   if (!session?.user) {
     return {
@@ -344,8 +354,10 @@ export const getEventChannel = cache(async (id: Event['id']) => {
             sender: {
               include: {
                 user: true,
+                managing: true,
               },
             },
+            readBy: true,
           },
         },
       },

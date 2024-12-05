@@ -2,7 +2,6 @@
 
 import ChatWindow, { userCanDelete } from '@/components/Messages/ChatWindow';
 
-import { ChannelWithMessages, FamilyMemberWithUser, FamilyMemberWithUserManaging, MessageWithSender, OptimisticSend } from '@/prisma/types';
 import { toast } from 'sonner';
 // import { postMessage } from './actions';
 // import { useEffect } from 'react';
@@ -10,13 +9,14 @@ import { toast } from 'sonner';
 import { createId } from '@paralleldrive/cuid2';
 import { ActionTypes, useMessages } from '@/hooks/use-messages';
 import { useChannel } from 'ably/react';
+import { GetChannelReturnType } from '@/lib/queries/chat';
+import { FamilyMemberWithUserAssignments } from '@/prisma/types';
 
-interface ChatProps {
-  channel: ChannelWithMessages;
-  me: FamilyMemberWithUserManaging;
+type ChatProps = {
+  channel: GetChannelReturnType;
+  me: FamilyMemberWithUserAssignments;
   sidebar?: boolean;
-}
-
+};
 export default function Chat({ channel, me, sidebar = false }: ChatProps) {
   const [messages, dispatch] = useMessages(channel);
 
@@ -36,7 +36,7 @@ export default function Chat({ channel, me, sidebar = false }: ChatProps) {
       // send message
 
       try {
-        const optimisticSend: OptimisticSend = {
+        const newMessage = {
           id: createId(),
           sender: me,
           channel,
@@ -45,7 +45,7 @@ export default function Chat({ channel, me, sidebar = false }: ChatProps) {
         };
         publish({
           name: ActionTypes.ADD,
-          data: optimisticSend,
+          data: newMessage,
         });
 
         form.reset();
@@ -66,7 +66,7 @@ export default function Chat({ channel, me, sidebar = false }: ChatProps) {
     }
   };
 
-  const deleteMessage = (message: OptimisticSend) => {
+  const deleteMessage = (message: GetChannelReturnType['messages'][0]) => {
     publish({
       name: ActionTypes.DELETE,
       data: { ...message, canDelete: userCanDelete(channel, message.sender, me) },

@@ -8,7 +8,7 @@ import { QueryClient, QueryClientProvider, useQuery, UseQueryResult } from '@tan
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { BreadcrumbsProvider } from '@/components/HeaderBreadcrumbs';
 
-import { FamilyMember } from '@prisma/client';
+import { FamilyMemberWithUserManaging } from '@/prisma/types';
 
 const queryClient = new QueryClient();
 
@@ -35,12 +35,12 @@ export const useActiveFamilyContext = () => useContext(ActiveFamilyContext);
 const MeProvider = ({ children }: PropsWithChildren) => {
   const queryRes = useQuery({
     queryKey: ['me'],
-    queryFn: async () => fetch('/api/getActiveMember').then((res) => res.json()),
+    queryFn: async () => fetch('/api/getActiveMemberUser').then((res) => res.json()),
   });
 
   return <MeContext.Provider value={queryRes}>{children}</MeContext.Provider>;
 };
 
-const MeContext = createContext<UseQueryResult<FamilyMember, Error>>({} as UseQueryResult<FamilyMember, Error>);
+const MeContext = createContext<UseQueryResult<FamilyMemberWithUserManaging, Error>>({} as UseQueryResult<FamilyMemberWithUserManaging, Error>);
 
 export const useMe = () => useContext(MeContext);

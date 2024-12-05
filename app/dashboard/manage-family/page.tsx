@@ -11,6 +11,8 @@ import DeleteFamily from './DeleteFamily';
 import { getActiveFamilyId } from '@/lib/rscUtils';
 import { getFamilies } from '@/lib/queries/families';
 import SetBreadcrumbs from '@/components/SetBreadcrumbs';
+import { getActiveMemberUser } from '@/lib/queries/family-members';
+import { ErrorMessage } from '@/components/ErrorMessage';
 
 export default async function ManageFamily() {
   const session = await auth();
@@ -23,8 +25,11 @@ export default async function ManageFamily() {
 
   const activeFamilyId = await getActiveFamilyId();
   const family = activeFamilyId ? families.find((family) => family.id === activeFamilyId) : families[0];
-
-  const isManager = family?.managerId === session.user.id;
+  const me = await getActiveMemberUser();
+  if (!me) {
+    return <ErrorMessage title="Couldn't find active member." />;
+  }
+  const isManager = family?.managers.some((manager) => manager.id === me.id) || false;
 
   return (
     <div className="space-y-4 p-8 pt-6">

@@ -1,4 +1,4 @@
-import { Channel, FamilyMember, Message, Prisma, User } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 
 export type FamilyMemberWithRefs = Prisma.FamilyMemberGetPayload<{
   include: {
@@ -22,13 +22,24 @@ export type FamilyMemberWithFamily = Prisma.FamilyMemberGetPayload<{
 //   };
 // }>;
 
-export type FamilyMemberWithUser = FamilyMember & {
-  user: User;
-};
-export type FamilyMemberWithUserManaging = Prisma.FamilyMemberGetPayload<{
+// export type FamilyMemberWithUser = FamilyMember & {
+//   user: User;
+// };
+export type FamilyMemberWithUser = Prisma.FamilyMemberGetPayload<{
+  include: {
+    user: true;
+  };
+}>;
+
+export type FamilyMemberWithUserAssignments = Prisma.FamilyMemberGetPayload<{
   include: {
     user: true;
     managing: true;
+    giving: {
+      include: {
+        receiver: true;
+      };
+    };
   };
 }>;
 
@@ -104,9 +115,9 @@ export type ListWithItems = Prisma.ListGetPayload<{
   };
 }>;
 
-export type ChannelWithMessages = Channel & {
-  messages: MessageType[];
-};
+// export type ChannelWithMessages = Channel & {
+//   messages: MessageType[];
+// };
 export type ChannelWithMessagesReadyBy = Prisma.ChannelGetPayload<{
   include: {
     messages: {
@@ -153,15 +164,15 @@ export type MessageWithSender = Prisma.MessageGetPayload<{
   };
 }>;
 
-export type MessageType =
-  | {
-      id: string;
-      sender: FamilyMemberWithUserManaging;
-      channel: ChannelWithMessages;
-      text: string;
-      createdAt: Date;
-    }
-  | (Message & {
-      sender: FamilyMemberWithUserManaging;
-      channel: ChannelWithMessages;
-    });
+// export type MessageType =
+//   | {
+//       id: string;
+//       sender: FamilyMemberWithUserManaging;
+//       channel: ChannelWithMessages;
+//       text: string;
+//       createdAt: Date;
+//     }
+//   | (Message & {
+//       sender: FamilyMemberWithUserManaging;
+//       channel: ChannelWithMessages;
+//     });

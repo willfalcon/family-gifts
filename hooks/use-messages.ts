@@ -1,4 +1,4 @@
-import { ChannelWithMessages, MessageWithSender, OptimisticSend } from '@/prisma/types';
+import { GetChannelReturnType } from '@/lib/queries/chat';
 import { useReducer } from 'react';
 import { toast } from 'sonner';
 
@@ -8,13 +8,15 @@ export enum ActionTypes {
   EDIT = 'EDIT',
 }
 
-type BasePayload = MessageWithSender | OptimisticSend;
-interface Action {
-  type: ActionTypes;
-  payload: BasePayload & { canDelete?: boolean };
-}
-
-export function messagesReducer(state: (MessageWithSender | OptimisticSend)[], action: Action) {
+export function messagesReducer(
+  state: GetChannelReturnType['messages'],
+  action: {
+    type: ActionTypes;
+    payload: GetChannelReturnType['messages'][0] & {
+      canDelete: boolean;
+    };
+  },
+) {
   switch (action.type) {
     case ActionTypes.ADD:
       return [...state, action.payload];
@@ -31,6 +33,6 @@ export function messagesReducer(state: (MessageWithSender | OptimisticSend)[], a
   }
 }
 
-export function useMessages(channel: ChannelWithMessages | null) {
+export function useMessages(channel: GetChannelReturnType) {
   return useReducer(messagesReducer, channel?.messages || []);
 }

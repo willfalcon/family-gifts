@@ -5,24 +5,39 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
-import { ChannelWithMessages, FamilyMemberWithManaging, OptimisticSend } from '@/prisma/types';
 import { format, isSameDay } from 'date-fns';
 import { EllipsisVertical, Send } from 'lucide-react';
-import { FormEvent, Fragment } from 'react';
+import { Fragment } from 'react';
 import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarTrigger } from '../ui/menubar';
 import { useMe } from '@/app/dashboard/Providers';
-import { FamilyMember } from '@prisma/client';
 
-type ChatWindowProps = {
-  channel: ChannelWithMessages;
-  handleSendMessage: (e: FormEvent<HTMLFormElement>) => void;
-  onDelete: (message: OptimisticSend) => void;
-  messages: OptimisticSend[];
-  sidebar: boolean;
+import { GetChannelReturnType } from '@/lib/queries/chat';
+import { FamilyMemberWithUserAssignments } from '@/prisma/types';
+
+export const userCanDelete = (
+  channel: GetChannelReturnType,
+  sender: GetChannelReturnType['messages'][0]['sender'],
+  user: FamilyMemberWithUserAssignments,
+) => {
+  if (sender.id === user.id) {
+    return true;
+  }
+  switch (channel.type) {
+    case 'family':
+      return user.managing.some((family) => family.id === channel.familyId);
+    case 'event':
+      return user.managing.some((event) => event.id === channel.eventId);
+    case 'individual':
+      return true;
+  }
 };
 
-export const userCanDelete = (channel: ChannelWithMessages, sender: FamilyMemberWithManaging, user: FamilyMember) => {
-  return sender.id === user.id || sender.managing.some((c) => c.id === channel.id);
+type ChatWindowProps = {
+  channel: GetChannelReturnType;
+  messages: GetChannelReturnType['messages'];
+  handleSendMessage: (e: React.FormEvent<HTMLFormElement>) => void;
+  onDelete: (message: GetChannelReturnType['messages'][0]) => void;
+  sidebar: boolean;
 };
 
 export default function ChatWindow({ channel, handleSendMessage, messages, sidebar, onDelete }: ChatWindowProps) {
@@ -49,7 +64,13 @@ export default function ChatWindow({ channel, handleSendMessage, messages, sideb
                 {messages.map((message, index) => {
                   const { id, sender, text, createdAt } = message;
                   const lastMessageDate = messages[index - 1]?.createdAt || new Date();
-
+                  console.log(index);
+                  console.log(
+                    sender.managing.some((c) => {
+                      console.log(c.id, channel.id);
+                      return c.id === channel.id;
+                    }),
+                  );
                   return (
                     <Fragment key={id}>
                       {!isSameDay(lastMessageDate, createdAt) && (

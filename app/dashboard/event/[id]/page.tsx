@@ -13,7 +13,7 @@ import { getEvent } from '@/lib/queries/events';
 import { getFamilies } from '@/lib/queries/families';
 // import Assignments from './SecretSanta/Assignments';
 import SecretSanta from './SecretSanta/SecretSanta';
-import { getMemberAssignment } from '@/lib/queries/family-members';
+import { getActiveMemberUserAssignments } from '@/lib/queries/family-members';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import FloatingMessages from '@/components/Messages/FloatingMessages';
@@ -39,7 +39,7 @@ export default async function EventPage({ params }: PageProps) {
   const activeFamilyId = await getActiveFamilyId();
   const { families } = await getFamilies();
   const family = families.find((family) => family.id === activeFamilyId);
-  const me = await getMemberAssignment();
+  const me = await getActiveMemberUserAssignments();
   if (!family || !me) {
     return <ErrorMessage title="We can't figure out who you are." />;
   }

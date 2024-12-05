@@ -45,7 +45,7 @@ export const getMembers = cache(async (id: Family['id']): Promise<GetMembersResu
   if (family?.members.find((member) => member.userId === session.user!.id || family.managerId === session.user!.id)) {
     return {
       success: true,
-      members: family.members,
+      members: family.members || [],
       message: '',
     };
   } else {
@@ -362,6 +362,44 @@ export const getActiveMemberUser = cache(async () => {
     include: {
       user: true,
       managing: true,
+    },
+  });
+  return me;
+});
+/**
+ * Get currently logged in member (with user) for the active family
+ */
+export const getActiveMemberUserAssignments = cache(async () => {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return null;
+  }
+
+  const activeFamilyId = await getActiveFamilyId();
+  const me = await prisma.familyMember.findFirst({
+    where: {
+      user: {
+        id: session?.user.id,
+      },
+      family: {
+        id: activeFamilyId,
+        members: {
+          some: {
+            user: {
+              id: session?.user.id,
+            },
+          },
+        },
+      },
+    },
+    include: {
+      user: true,
+      managing: true,
+      giving: {
+        include: {
+          receiver: true,
+        },
+      },
     },
   });
   return me;
