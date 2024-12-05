@@ -151,7 +151,7 @@ export const getFamilyMembers = cache(async (): Promise<FamilyMemberListsResult>
 });
 
 /**
- * Returns the active family member
+ * Returns the active logged-in family member
  */
 export const getFamilyMember = cache(async () => {
   const session = await auth();
@@ -303,6 +303,9 @@ export const getFamilyMemberCount = cache(async () => {
   }
 });
 
+/**
+ * Get currently logged in member for the active family
+ */
 export const getActiveMember = cache(async () => {
   const session = await auth();
   if (!session?.user?.id) {
@@ -325,6 +328,40 @@ export const getActiveMember = cache(async () => {
           },
         },
       },
+    },
+  });
+  return me;
+});
+
+/**
+ * Get currently logged in member (with user) for the active family
+ */
+export const getActiveMemberUser = cache(async () => {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return null;
+  }
+
+  const activeFamilyId = await getActiveFamilyId();
+  const me = await prisma.familyMember.findFirst({
+    where: {
+      user: {
+        id: session?.user.id,
+      },
+      family: {
+        id: activeFamilyId,
+        members: {
+          some: {
+            user: {
+              id: session?.user.id,
+            },
+          },
+        },
+      },
+    },
+    include: {
+      user: true,
+      managing: true,
     },
   });
   return me;
@@ -359,6 +396,7 @@ export const getMemberAssignment = cache(async () => {
           receiver: true,
         },
       },
+      user: true,
     },
   });
   return me;

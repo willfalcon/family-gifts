@@ -43,9 +43,6 @@ export const getEvents = cache(async (limit?: number) => {
       },
     });
     if (events.length) {
-      events.forEach((event) => {
-        console.log(new Date(event.date || ''));
-      });
       return {
         success: true,
         message: '',

@@ -4,6 +4,7 @@ import { getActiveFamilyId } from '../rscUtils';
 import { prisma } from '@/prisma';
 import { getActiveMember } from './family-members';
 import { FamilyMember, List } from '@prisma/client';
+import { ItemWithRefs, ListWithItems } from '@/prisma/types';
 
 export const getItems = cache(async (limit?: number) => {
   const session = await auth();
@@ -142,6 +143,76 @@ export const getListById = cache(async (id: List['id']) => {
       success: false,
       message: 'Something went wrong.',
       list: undefined,
+    };
+  }
+});
+
+export const getListAll = cache(async (memberId: FamilyMember['id']) => {
+  const session = await auth();
+  if (!session?.user) {
+    return {
+      success: false,
+      message: 'You must be logged in to do this.',
+      items: undefined,
+    };
+  }
+
+  try {
+    const activeFamilyId = await getActiveFamilyId();
+    const user = await prisma.user.findFirst({
+      where: {
+        familyMemberships: {
+          some: {
+            id: memberId,
+          },
+        },
+      },
+    });
+    if (!user) {
+      return {
+        success: false,
+        message: `Can't find this person/`,
+        items: undefined,
+      };
+    }
+    const lists = await prisma.list.findMany({
+      where: {
+        user: {
+          id: user.id,
+        },
+        visibleTo: {
+          some: {
+            id: activeFamilyId,
+          },
+        },
+      },
+      include: {
+        visibleTo: true,
+        items: {
+          include: {
+            member: true,
+            boughtBy: true,
+            list: true,
+          },
+        },
+      },
+    });
+
+    const items = lists.reduce((acc: ItemWithRefs[], list: ListWithItems) => {
+      return [...acc, ...list.items];
+    }, []);
+
+    return {
+      success: true,
+      message: '',
+      items,
+    };
+  } catch (err) {
+    console.error(err);
+    return {
+      success: false,
+      message: 'Something went wrong.',
+      items: undefined,
     };
   }
 });

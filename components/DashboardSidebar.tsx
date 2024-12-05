@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Gift, List, Settings, UserPlus, Users } from 'lucide-react';
+import { Gift, List, MessagesSquare, Settings, UserPlus, Users } from 'lucide-react';
 import { auth } from '@/auth';
 import { buttonVariants } from './ui/button';
 import {
@@ -30,6 +30,7 @@ export default async function DashboardSidebar() {
     { text: 'Wish Lists', href: '/dashboard/wish-lists', icon: Gift },
     { text: 'Family', href: '/dashboard/family', icon: Users },
     { text: 'Events', href: '/dashboard/events', icon: List },
+    { text: 'Messages', href: '/dashboard/messages', icon: MessagesSquare },
     ...(session?.user ? [{ text: 'Manage Family', href: '/dashboard/manage-family', icon: UserPlus }] : []),
     { text: 'Settings', href: '/dashboard/settings', icon: Settings },
   ];

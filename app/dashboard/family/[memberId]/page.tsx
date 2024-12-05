@@ -38,6 +38,7 @@ export default async function FamilyMemberPage({ params }: { params: { memberId:
 
   const { lists, message: listMessage, success: listSuccess } = await getLists(memberUser?.id);
 
+  const allItemsCount = lists.reduce((total, list) => total + list._count.items, 0);
   return (
     <div className="space-y-4 p-8 pt-6">
       <SetBreadcrumbs
@@ -63,24 +64,36 @@ export default async function FamilyMemberPage({ params }: { params: { memberId:
 
       <Viewer content={member.info as JSONContent} style="prose" immediatelyRender={false} />
 
-      {/* Add list page for all items. Maybe at /family/[memberId]/list/all */}
-      {listSuccess ? (
-        lists.map((list) => (
-          <Link key={list.id} href={`/dashboard/family/${member.id}/list/${list.id}`}>
-            <Card>
-              <CardHeader>
-                <CardTitle>{list.name}</CardTitle>
-                <CardDescription>{list._count.items} items</CardDescription>
-              </CardHeader>
-              <CardFooter className="justify-between">
-                <Button variant="outline">View List</Button>
-              </CardFooter>
-            </Card>
-          </Link>
-        ))
-      ) : (
-        <ErrorMessage title={listMessage} />
-      )}
+      <div className="grid grid-cols-3 gap-4">
+        <Link href={`/dashboard/family/${member.id}/list/all`}>
+          <Card>
+            <CardHeader>
+              <CardTitle>All Items</CardTitle>
+              <CardDescription>{allItemsCount} items</CardDescription>
+            </CardHeader>
+            <CardFooter className="justify-between">
+              <Button variant="outline">View All Items</Button>
+            </CardFooter>
+          </Card>
+        </Link>
+        {listSuccess ? (
+          lists.map((list) => (
+            <Link key={list.id} href={`/dashboard/family/${member.id}/list/${list.id}`}>
+              <Card>
+                <CardHeader>
+                  <CardTitle>{list.name}</CardTitle>
+                  <CardDescription>{list._count.items} items</CardDescription>
+                </CardHeader>
+                <CardFooter className="justify-between">
+                  <Button variant="outline">View List</Button>
+                </CardFooter>
+              </Card>
+            </Link>
+          ))
+        ) : (
+          <ErrorMessage title={listMessage} />
+        )}
+      </div>
     </div>
   );
 }

@@ -4,9 +4,11 @@
 // import { getCookie } from 'cookies-next';
 import { createContext, Dispatch, PropsWithChildren, SetStateAction, useContext, useState } from 'react';
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider, useQuery, UseQueryResult } from '@tanstack/react-query';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { BreadcrumbsProvider } from '@/components/HeaderBreadcrumbs';
+
+import { FamilyMember } from '@prisma/client';
 
 const queryClient = new QueryClient();
 
@@ -17,9 +19,11 @@ export default function Providers({ children, activeFamilyId }: PropsWithChildre
   return (
     <QueryClientProvider client={queryClient}>
       <ActiveFamilyContext.Provider value={activeFamilyState}>
-        <BreadcrumbsProvider>
-          <SidebarProvider defaultOpen={true}>{children}</SidebarProvider>
-        </BreadcrumbsProvider>
+        <MeProvider>
+          <BreadcrumbsProvider>
+            <SidebarProvider defaultOpen={true}>{children}</SidebarProvider>
+          </BreadcrumbsProvider>
+        </MeProvider>
       </ActiveFamilyContext.Provider>
     </QueryClientProvider>
   );
@@ -27,3 +31,16 @@ export default function Providers({ children, activeFamilyId }: PropsWithChildre
 const ActiveFamilyContext = createContext<[string | undefined, Dispatch<SetStateAction<string | undefined>>]>(['', () => {}]);
 
 export const useActiveFamilyContext = () => useContext(ActiveFamilyContext);
+
+const MeProvider = ({ children }: PropsWithChildren) => {
+  const queryRes = useQuery({
+    queryKey: ['me'],
+    queryFn: async () => fetch('/api/getActiveMember').then((res) => res.json()),
+  });
+
+  return <MeContext.Provider value={queryRes}>{children}</MeContext.Provider>;
+};
+
+const MeContext = createContext<UseQueryResult<FamilyMember, Error>>({} as UseQueryResult<FamilyMember, Error>);
+
+export const useMe = () => useContext(MeContext);

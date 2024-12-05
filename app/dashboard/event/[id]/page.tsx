@@ -15,6 +15,10 @@ import { getFamilies } from '@/lib/queries/families';
 import SecretSanta from './SecretSanta/SecretSanta';
 import { getMemberAssignment } from '@/lib/queries/family-members';
 import { ErrorMessage } from '@/components/ErrorMessage';
+import { SidebarProvider } from '@/components/ui/sidebar';
+import FloatingMessages from '@/components/Messages/FloatingMessages';
+import MessagesSidebar from '@/components/Messages/MessagesSidebar';
+import { getEventChannel } from '@/lib/queries/chat';
 
 type PageProps = {
   params: {
@@ -44,38 +48,29 @@ export default async function EventPage({ params }: PageProps) {
 
   const assignment = me.giving.find((assignment) => assignment.eventId === event.id)?.receiver;
 
+  const { channel, success: channelSuccess, message: channelMessage } = await getEventChannel(event.id);
+
+  if (!channelSuccess || !channel) {
+    return <ErrorMessage title={channelMessage} />;
+  }
+
   return (
-    <div className="space-y-4 p-8 pt-6 w-content max-w-full">
-      <SetBreadcrumbs
-        items={[
-          { name: 'Dashboard', href: '/dashboard' },
-          { name: 'Events', href: '/dashboard/events' },
-          { name: event.name, href: `/dashboard/event/${event.id}` },
-        ]}
-      />
-      <Title>{event.name}</Title>
-      {event.date && <p className="text-sm text-muted-foreground">{format(event.date, 'MMMM dd, yyyy')}</p>}
-      {event.info && <Viewer content={event.info as JSONContent} style="prose" immediatelyRender={false} />}
-      <SecretSanta isManager={isManager} family={family!} event={event} assignment={assignment} />
-      {/* TODO: Show user their secret santa assignment */}
-      {/* {isManager && family && !!event.assignments.length && (
-        <Assignments assignmentsList={}
-        // <Manager familyId={family.id} eventId={event.id} assignments={event.assignments} />
-      )}
-      {isManager && family && !event.assignments.length && (
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button>Set Up Secret Santa</Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Secret Santa Setup</DialogTitle>
-              <DialogDescription>{`Set who's participating and other settings.`}</DialogDescription>
-            </DialogHeader>
-            <Manager familyId={family.id} eventId={event.id} />
-          </DialogContent>
-        </Dialog>
-      )} */}
-    </div>
+    <SidebarProvider defaultOpen={false}>
+      <div className="space-y-4 p-8 pt-6 relative w-full">
+        <SetBreadcrumbs
+          items={[
+            { name: 'Dashboard', href: '/dashboard' },
+            { name: 'Events', href: '/dashboard/events' },
+            { name: event.name, href: `/dashboard/event/${event.id}` },
+          ]}
+        />
+        <Title>{event.name}</Title>
+        {event.date && <p className="text-sm text-muted-foreground">{format(event.date, 'MMMM dd, yyyy')}</p>}
+        {event.info && <Viewer content={event.info as JSONContent} style="prose" immediatelyRender={false} />}
+        <SecretSanta isManager={isManager} family={family!} event={event} assignment={assignment} />
+        <FloatingMessages />
+      </div>
+      <MessagesSidebar channel={channel} me={me!} />
+    </SidebarProvider>
   );
 }

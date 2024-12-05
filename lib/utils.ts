@@ -26,7 +26,7 @@ export async function getASIN(url: string) {
     try {
       const response = await fetch(url, { method: 'GET', redirect: 'follow' });
       const finalUrl = response.url;
-      console.log('url: ', finalUrl);
+
       const matchAgain = finalUrl.match(asinRegex);
       if (matchAgain && matchAgain[1]) {
         return matchAgain[1];

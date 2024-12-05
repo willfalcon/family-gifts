@@ -145,6 +145,13 @@ export async function editItem(id: Item['id'], data: ItemSchemaType) {
       const originalItem = await prisma.item.findUnique({
         where: { id },
       });
+      if (originalItem?.memberId !== member.id) {
+        return {
+          success: false,
+          item: null,
+          message: 'You do not have permission to edit this item.',
+        };
+      }
       const item = await prisma.item.update({
         where: {
           id,
@@ -186,55 +193,6 @@ export async function editItem(id: Item['id'], data: ItemSchemaType) {
   }
 }
 
-export async function markItemAsBought(id: Item['id']) {
-  const session = await auth();
-  if (!session?.user) {
-    return {
-      success: false,
-      message: 'You must be logged in to do this.',
-    };
-  }
-
-  try {
-    const { member, message } = await getFamilyMember();
-
-    if (member) {
-      const item = await prisma.item.update({
-        where: {
-          id,
-          member: {
-            familyId: member.familyId,
-          },
-        },
-        data: {
-          boughtBy: {
-            connect: {
-              id: member.id,
-            },
-          },
-        },
-      });
-      revalidatePath('/wish-list');
-
-      return {
-        success: true,
-        item,
-      };
-    } else {
-      return {
-        success: false,
-        message,
-      };
-    }
-  } catch (err) {
-    console.error('Error updating item: ', err);
-    return {
-      success: false,
-      error: 'Something went wrong!',
-    };
-  }
-}
-
 export async function deleteItem(id: Item['id']) {
   const session = await auth();
   if (!session?.user) {
@@ -248,6 +206,17 @@ export async function deleteItem(id: Item['id']) {
     const { member, message } = await getFamilyMember();
 
     if (member) {
+      const originalItem = await prisma.item.findUnique({
+        where: { id },
+      });
+
+      if (originalItem?.memberId !== member.id) {
+        return {
+          success: false,
+          message: 'You do not have permission to delete this item.',
+        };
+      }
+
       const item = await prisma.item.delete({
         where: {
           member: {
@@ -262,6 +231,7 @@ export async function deleteItem(id: Item['id']) {
         revalidatePath('/wish-list');
         return {
           success: true,
+          message: 'Item deleted.',
         };
       } else {
         return {

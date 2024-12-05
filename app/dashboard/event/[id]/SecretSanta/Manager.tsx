@@ -39,6 +39,8 @@ export default function Manager({ familyId, eventId }: Props) {
 
   const { members, success, message } = data;
 
+  // TODO: ability to manually set assignments.
+
   return (
     <Dialog>
       <DialogTrigger asChild>

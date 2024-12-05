@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useState } from 'react';
 import ItemForm from './ItemForm';
 import { editItem } from './actions';
+import { Edit } from 'lucide-react';
 
 export default function ItemEdit(props: Item & { categories: string[] }) {
   const { categories, ...item } = props;
@@ -40,7 +41,10 @@ export default function ItemEdit(props: Item & { categories: string[] }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>Edit Item</Button>
+        <Button>
+          <Edit />
+          Edit Item
+        </Button>
       </DialogTrigger>
       <DialogContent aria-describedby={undefined}>
         <DialogHeader>

@@ -2,17 +2,19 @@
 
 import { useSearchParams } from 'next/navigation';
 import CategoriesFilter from './CategoriesFilter';
-import { ListWithItems } from '@/prisma/types';
 import ListItem from './ListItem';
+import { ListWithItems } from '@/prisma/types';
 
-type Props = ListWithItems & {
+type Props = {
   categories: string[];
+  items: ListWithItems['items'];
+  all?: boolean;
 };
-export default function WishList(props: Props) {
-  const { categories, ...list } = props;
+
+export default function WishList({ categories, items, all = false }: Props) {
   const searchParams = useSearchParams();
   const activeCategories = searchParams.get('category')?.split(',') || [];
-  const filteredItems = activeCategories.length ? list.items.filter((item) => activeCategories.includes(item.category!)) : list.items;
+  const filteredItems = activeCategories.length ? items.filter((item) => activeCategories.includes(item.category!)) : items;
 
   return (
     <div className="flex gap-6 max-w-[1000px]">
@@ -21,7 +23,7 @@ export default function WishList(props: Props) {
         <p className="mb-2 text-sm text-muted-foreground">{activeCategories.length ? activeCategories.join(', ') : 'All'}</p>
         <ul className="space-y-4">
           {filteredItems.map((item) => (
-            <ListItem key={item.id} {...item} categories={categories} />
+            <ListItem key={item.id} {...item} categories={categories} all={all} />
           ))}
         </ul>
       </div>
