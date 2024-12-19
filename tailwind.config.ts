@@ -66,6 +66,7 @@ const config: Config = {
       },
       width: {
         content: '1000px',
+        restrict: '800px',
       },
     },
   },

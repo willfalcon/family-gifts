@@ -12,6 +12,8 @@ type EventFormProps = {
   submitText: string;
 };
 
+// TODO: Add location map features
+
 export default function EventForm({ form, onSubmit, submitText }: EventFormProps) {
   return (
     <Form {...form}>
@@ -32,6 +34,38 @@ export default function EventForm({ form, onSubmit, submitText }: EventFormProps
           }}
         />
         <DateField />
+        <FormField
+          control={form.control}
+          name="time"
+          render={({ field }) => {
+            const timeString = field.value ? (typeof field.value === 'string' ? field.value : field.value.toLocaleTimeString()) : '';
+
+            return (
+              <FormItem>
+                <FormLabel>Time</FormLabel>
+                <FormControl>
+                  <Input {...field} type="time" value={timeString} onChange={(e) => field.onChange(new Date(e.target.value))} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            );
+          }}
+        />
+        <FormField
+          control={form.control}
+          name="location"
+          render={({ field }) => {
+            return (
+              <FormItem>
+                <FormLabel>Location</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            );
+          }}
+        />
         <InfoField />
         <Button type="submit">{submitText}</Button>
       </form>

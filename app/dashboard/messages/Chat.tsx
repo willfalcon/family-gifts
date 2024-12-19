@@ -10,11 +10,11 @@ import { createId } from '@paralleldrive/cuid2';
 import { ActionTypes, useMessages } from '@/hooks/use-messages';
 import { useChannel } from 'ably/react';
 import { GetChannelReturnType } from '@/lib/queries/chat';
-import { FamilyMemberWithUserAssignments } from '@/prisma/types';
+import { FamilyMemberWithAll } from '@/prisma/types';
 
 type ChatProps = {
   channel: GetChannelReturnType;
-  me: FamilyMemberWithUserAssignments;
+  me: FamilyMemberWithAll;
   sidebar?: boolean;
 };
 export default function Chat({ channel, me, sidebar = false }: ChatProps) {

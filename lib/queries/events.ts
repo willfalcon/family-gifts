@@ -156,6 +156,7 @@ export const getEvent = cache(async (id: Event['id']) => {
             },
           },
         },
+        managers: true,
       },
     });
     if (!event) {

@@ -17,7 +17,7 @@
     "@blocknote/react": "^0.17.1",
     "@hookform/resolvers": "^3.9.0",
     "@paralleldrive/cuid2": "^2.2.2",
-    "@prisma/client": "^5.22.0",
+    "@prisma/client": "^6.0.1",
     "@radix-ui/react-alert-dialog": "^1.1.2",
     "@radix-ui/react-aspect-ratio": "^1.1.0",
     "@radix-ui/react-avatar": "^1.1.1",
@@ -81,7 +81,7 @@
     "postcss": "^8",
     "prettier": "^3.3.3",
     "prettier-eslint": "^16.3.0",
-    "prisma": "^5.22.0",
+    "prisma": "^6.0.1",
     "react-email": "^3.0.2",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"

@@ -16,7 +16,7 @@ export default function DateField() {
       render={({ field }) => {
         return (
           <FormItem>
-            <FormLabel>Date</FormLabel>
+            <FormLabel className="block">Date</FormLabel>
             <Popover>
               <PopoverTrigger asChild>
                 <FormControl>

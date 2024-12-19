@@ -12,23 +12,21 @@ import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarTrigger } fro
 import { useMe } from '@/app/dashboard/Providers';
 
 import { GetChannelReturnType } from '@/lib/queries/chat';
-import { FamilyMemberWithUserAssignments } from '@/prisma/types';
+import { FamilyMemberWithAll } from '@/prisma/types';
 
 export const userCanDelete = (
   channel: GetChannelReturnType,
   sender: GetChannelReturnType['messages'][0]['sender'],
-  user: FamilyMemberWithUserAssignments,
+  familyMember: FamilyMemberWithAll,
 ) => {
-  if (sender.id === user.id) {
+  if (sender.id === familyMember.id) {
     return true;
   }
   switch (channel.type) {
     case 'family':
-      return user.managing.some((family) => family.id === channel.familyId);
+      return familyMember.managing.some((family) => family.id === channel.familyId);
     case 'event':
-      return user.managing.some((event) => event.id === channel.eventId);
-    case 'individual':
-      return true;
+      return familyMember.eventsManaged.some((event) => event.id === channel.eventId);
   }
 };
 
@@ -64,13 +62,7 @@ export default function ChatWindow({ channel, handleSendMessage, messages, sideb
                 {messages.map((message, index) => {
                   const { id, sender, text, createdAt } = message;
                   const lastMessageDate = messages[index - 1]?.createdAt || new Date();
-                  console.log(index);
-                  console.log(
-                    sender.managing.some((c) => {
-                      console.log(c.id, channel.id);
-                      return c.id === channel.id;
-                    }),
-                  );
+
                   return (
                     <Fragment key={id}>
                       {!isSameDay(lastMessageDate, createdAt) && (
@@ -85,7 +77,7 @@ export default function ChatWindow({ channel, handleSendMessage, messages, sideb
                             <AvatarImage src={sender.user?.image || undefined} alt={sender.name} />
                             <AvatarFallback>{sender.name[0]}</AvatarFallback>
                           </Avatar>
-                          <div>
+                          <div className="flex-1">
                             <h3 className="inline font-semibold h-5">{sender.name}</h3>
                             <p className="inline text-muted-foreground h-5 text-xs ml-1">{format(createdAt, 'h:mm a').toLowerCase()}</p>
                             <div className="text-sm">{text}</div>

@@ -6,7 +6,7 @@ import { getChannel, getChannels } from '@/lib/queries/chat';
 import { redirect } from 'next/navigation';
 import ChannelsList from '../ChannelsList';
 import Chat from '../Chat';
-import { getActiveMemberUserAssignments } from '@/lib/queries/family-members';
+import { getActiveMemberAll } from '@/lib/queries/family-members';
 import ChatProviders from '../ChatProviders';
 
 export default async function ChannelPage({ params }: { params: { channelId: string } }) {
@@ -27,7 +27,7 @@ export default async function ChannelPage({ params }: { params: { channelId: str
     return <ErrorMessage title={channelMessage} />;
   }
 
-  const me = await getActiveMemberUserAssignments();
+  const me = await getActiveMemberAll();
   if (!me) {
     <ErrorMessage title="Couldn't find active member." />;
   }

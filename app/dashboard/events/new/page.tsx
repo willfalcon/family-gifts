@@ -22,7 +22,11 @@ export default function NewEventPage() {
   async function onSubmit(values: EventSchemaType) {
     console.log(values);
     try {
-      const { event, success, message } = await createEvent({ ...values, info: JSON.parse(JSON.stringify(values.info || {})) });
+      const { event, success, message } = await createEvent({
+        ...values,
+        info: JSON.parse(JSON.stringify(values.info || {})),
+        time: typeof values.time === 'string' ? new Date(values.time) : values.time,
+      });
       if (success && event) {
         toast.success(`Created ${event.name}`);
         router.push(`/dashboard/event/${event.id}`);

@@ -13,12 +13,13 @@ import { getEvent } from '@/lib/queries/events';
 import { getFamilies } from '@/lib/queries/families';
 // import Assignments from './SecretSanta/Assignments';
 import SecretSanta from './SecretSanta/SecretSanta';
-import { getActiveMemberUserAssignments } from '@/lib/queries/family-members';
+import { getActiveMemberAll } from '@/lib/queries/family-members';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import FloatingMessages from '@/components/Messages/FloatingMessages';
 import MessagesSidebar from '@/components/Messages/MessagesSidebar';
 import { getEventChannel } from '@/lib/queries/chat';
+import EditEvent from './EditEvent';
 
 type PageProps = {
   params: {
@@ -39,7 +40,7 @@ export default async function EventPage({ params }: PageProps) {
   const activeFamilyId = await getActiveFamilyId();
   const { families } = await getFamilies();
   const family = families.find((family) => family.id === activeFamilyId);
-  const me = await getActiveMemberUserAssignments();
+  const me = await getActiveMemberAll();
   if (!family || !me) {
     return <ErrorMessage title="We can't figure out who you are." />;
   }
@@ -48,11 +49,11 @@ export default async function EventPage({ params }: PageProps) {
 
   const assignment = me.giving.find((assignment) => assignment.eventId === event.id)?.receiver;
 
-  const { channel, success: channelSuccess, message: channelMessage } = await getEventChannel(event.id);
-
-  if (!channelSuccess || !channel) {
-    return <ErrorMessage title={channelMessage} />;
-  }
+  const {
+    channel,
+    success: channelSuccess,
+    // message: channelMessage
+  } = await getEventChannel(event.id);
 
   return (
     <SidebarProvider defaultOpen={false}>
@@ -67,10 +68,11 @@ export default async function EventPage({ params }: PageProps) {
         <Title>{event.name}</Title>
         {event.date && <p className="text-sm text-muted-foreground">{format(event.date, 'MMMM dd, yyyy')}</p>}
         {event.info && <Viewer content={event.info as JSONContent} style="prose" immediatelyRender={false} />}
+        {isManager && <EditEvent {...event} />}
         <SecretSanta isManager={isManager} family={family!} event={event} assignment={assignment} />
         <FloatingMessages />
       </div>
-      <MessagesSidebar channel={channel} me={me!} />
+      {channel && channelSuccess && <MessagesSidebar channel={channel} me={me!} />}
     </SidebarProvider>
   );
 }

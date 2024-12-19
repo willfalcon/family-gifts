@@ -20,7 +20,7 @@ export default function SecretSanta({ isManager, family, event, assignment }: Se
     <SecretSantaStoreProvider event={event}>
       {assignment && <MemberAssignment assignment={assignment} />}
       {isManager && family && !!event.assignments.length && <Assignments eventId={event.id} isManager={isManager} />}
-      <Manager familyId={family.id} eventId={event.id} />
+      {isManager && <Manager familyId={family.id} eventId={event.id} />}
     </SecretSantaStoreProvider>
   );
 }

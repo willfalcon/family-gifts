@@ -6,6 +6,8 @@ import { getActiveFamilyId } from '@/lib/rscUtils';
 import { prisma } from '@/prisma';
 import { revalidatePath } from 'next/cache';
 import { JSONContent } from '@tiptap/react';
+import { Event } from '@prisma/client';
+import { getActiveMember } from '@/lib/queries/family-members';
 
 export async function createEvent(event: EventSchemaType) {
   const session = await auth();
@@ -51,6 +53,76 @@ export async function createEvent(event: EventSchemaType) {
       return {
         success: false,
         message: `Couldn't create event.`,
+        event: null,
+      };
+    }
+  } catch (err) {
+    console.error(err);
+    return {
+      success: false,
+      message: 'Something went wrong.',
+      event: null,
+    };
+  }
+}
+
+export async function updateEvent(id: Event['id'], event: EventSchemaType) {
+  const session = await auth();
+  if (!session?.user) {
+    return {
+      success: false,
+      message: 'You must be logged in to do this.',
+      event: null,
+    };
+  }
+
+  const validatedData = EventSchema.parse(event);
+
+  const activeFamilyId = await getActiveFamilyId();
+  if (!activeFamilyId) {
+    return {
+      success: false,
+      message: 'Create a family first!',
+      event: null,
+    };
+  }
+  const me = await getActiveMember();
+  if (!me) {
+    return {
+      success: false,
+      message: `Can't figure out who you are for some reason.`,
+      event: null,
+    };
+  }
+  try {
+    const updatedEvent = await prisma.event.update({
+      where: {
+        id,
+        family: {
+          id: activeFamilyId,
+          managers: {
+            some: {
+              id: me.id,
+            },
+          },
+        },
+      },
+      data: {
+        ...validatedData,
+        info: validatedData.info as JSONContent,
+      },
+    });
+    if (updatedEvent) {
+      revalidatePath(`/dashboard/event/${updatedEvent.id}`);
+      return {
+        success: true,
+        message: '',
+        event: updatedEvent,
+      };
+    } else {
+      return {
+        success: false,
+        message: `Couldn't update event.`,
         event: null,
       };
     }

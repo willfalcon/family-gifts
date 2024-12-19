@@ -366,6 +366,46 @@ export const getActiveMemberUser = cache(async () => {
   });
   return me;
 });
+
+/**
+ * Get currently logged in member (with all relations) for the active family
+ */
+export const getActiveMemberAll = cache(async () => {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return null;
+  }
+
+  const activeFamilyId = await getActiveFamilyId();
+  const me = await prisma.familyMember.findFirst({
+    where: {
+      user: {
+        id: session?.user.id,
+      },
+      family: {
+        id: activeFamilyId,
+        members: {
+          some: {
+            user: {
+              id: session?.user.id,
+            },
+          },
+        },
+      },
+    },
+    include: {
+      user: true,
+      managing: true,
+      giving: {
+        include: {
+          receiver: true,
+        },
+      },
+      eventsManaged: true,
+    },
+  });
+  return me;
+});
 /**
  * Get currently logged in member (with user) for the active family
  */

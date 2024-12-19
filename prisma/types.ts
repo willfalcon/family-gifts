@@ -31,10 +31,11 @@ export type FamilyMemberWithUser = Prisma.FamilyMemberGetPayload<{
   };
 }>;
 
-export type FamilyMemberWithUserAssignments = Prisma.FamilyMemberGetPayload<{
+export type FamilyMemberWithAll = Prisma.FamilyMemberGetPayload<{
   include: {
     user: true;
     managing: true;
+    eventsManaged: true;
     giving: {
       include: {
         receiver: true;
