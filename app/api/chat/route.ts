@@ -38,6 +38,7 @@ async function createToken(clientId: string, apiKey: string, capability: Capabil
 
 const generateCapability = (channels: ChannelWithType[], me: FamilyMember) => {
   // TODO: Add more specific capabilities depending on type of channel and family manager or not
+  console.log(channels, me);
   const caps = Object.fromEntries(
     channels.map((channel) => {
       switch (channel.type) {
@@ -87,7 +88,17 @@ export async function GET() {
   }
 
   const capabilities = generateCapability(channels, me);
+  try {
+    const token = await createToken(session.user.id!, process.env.ABLY_API_KEY!, capabilities);
+    return Response.json(token);
+  } catch (error: unknown) {
+    console.error(error);
 
-  const token = await createToken(session.user.id!, process.env.ABLY_API_KEY!, capabilities);
-  return Response.json(token);
+    let errorMessage = 'An unknown error occurred';
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+
+    return new Response(JSON.stringify({ error: errorMessage }), { status: 500 });
+  }
 }

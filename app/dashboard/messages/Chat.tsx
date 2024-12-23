@@ -46,6 +46,9 @@ export default function Chat({ channel, me, sidebar = false }: ChatProps) {
         publish({
           name: ActionTypes.ADD,
           data: newMessage,
+        }).catch((error) => {
+          console.error(error);
+          toast.error(`Couldn't send message.`);
         });
 
         form.reset();
