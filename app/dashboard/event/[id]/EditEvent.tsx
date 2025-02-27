@@ -26,7 +26,6 @@ export default function EditEvent(event: Event) {
     },
   });
   async function onSubmit(values: EventSchemaType) {
-    console.log(values);
     try {
       const {
         event: updatedEvent,

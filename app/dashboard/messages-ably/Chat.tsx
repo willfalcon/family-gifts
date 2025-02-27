@@ -38,7 +38,7 @@ export default function Chat(props: { channel: Channel }) {
     const formData = new FormData(form);
     // const input = form.elements.namedItem('message') as HTMLInputElement;
     const message = formData.get('message') as string;
-    console.log(message);
+
     if (message.trim()) {
       publish({
         name: 'ADD',

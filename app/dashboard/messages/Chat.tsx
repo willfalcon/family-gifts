@@ -52,16 +52,6 @@ export default function Chat({ channel, me, sidebar = false }: ChatProps) {
         });
 
         form.reset();
-        // const { success, message: info, sent } = await postMessage(channel.id, message);
-        // if (success && sent) {
-        //   console.log(sent);
-        // } else {
-        //   toast.error(info);
-        //   dispatch({
-        //     type: ActionTypes.DELETE,
-        //     payload: optimisticSend,
-        //   });
-        // }
       } catch (err) {
         console.error(err);
         toast.error(`Couldn't send message.`);

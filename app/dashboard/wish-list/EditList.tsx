@@ -17,7 +17,6 @@ export default function EditList(list: ListWithItems) {
     defaultValues: { ...list, visibleTo: list.visibleTo.map((user) => user.id) },
   });
   async function onSubmit(values: ListSchemaType) {
-    console.log(values);
     try {
       const newList = await updateList(list.id, { ...values });
       if (newList.success) {

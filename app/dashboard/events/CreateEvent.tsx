@@ -20,7 +20,6 @@ export default function CreateEvent() {
   });
 
   async function onSubmit(values: EventSchemaType) {
-    console.log(values);
     try {
       const { event, success, message } = await createEvent(values);
       if (success && event) {

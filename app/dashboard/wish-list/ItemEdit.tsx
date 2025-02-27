@@ -23,7 +23,6 @@ export default function ItemEdit(props: Item & { categories: string[] }) {
   });
 
   async function onSubmit(values: ItemSchemaType) {
-    console.log(values);
     try {
       const res = await editItem(item.id, values);
       if (res.success) {

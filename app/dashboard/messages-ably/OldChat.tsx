@@ -23,7 +23,6 @@ interface MessageEvent {
 }
 
 const reducer = (state: MessageEvent[], action: MessageEvent) => {
-  console.log(event);
   switch (event.name) {
     case ADD:
       return [...prev, event];
@@ -36,8 +35,6 @@ function initMessages(messages) {
 export default function Chat(props: { channel: Channel }) {
   const [messages, dispatch] = useReducer(reducer, channel.messages || [], initMessages);
 
-  console.log(messages);
-
   const { channel, publish } = useChannel(props.channel.id, dispatch);
   const { data: me, isLoading } = useMe();
 
@@ -47,7 +44,6 @@ export default function Chat(props: { channel: Channel }) {
     const formData = new FormData(form);
     // const input = form.elements.namedItem('message') as HTMLInputElement;
     const message = formData.get('message') as string;
-    console.log(message);
     if (message.trim()) {
       publish({
         name: ADD,

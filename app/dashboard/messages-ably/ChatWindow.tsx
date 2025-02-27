@@ -35,7 +35,6 @@ export default function ChatWindow({ channel, messages, handleSendMessage }: Cha
             <CardContent className="flex-1 overflow-auto p-4">
               <ScrollArea className="h-full">
                 {messages.map((message) => {
-                  console.log(message);
                   const {
                     data: { sender, text, timestamp },
                     id,

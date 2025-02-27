@@ -38,7 +38,7 @@ async function createToken(clientId: string, apiKey: string, capability: Capabil
 
 const generateCapability = (channels: ChannelWithType[], me: FamilyMember) => {
   // TODO: Add more specific capabilities depending on type of channel and family manager or not
-  console.log(channels, me);
+
   const caps = Object.fromEntries(
     channels.map((channel) => {
       switch (channel.type) {

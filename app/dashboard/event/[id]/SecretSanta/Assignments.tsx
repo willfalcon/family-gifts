@@ -61,7 +61,6 @@ export default function Assignments({ eventId, isManager = false }: { eventId: s
                 onClick={async () => {
                   try {
                     const event = await saveAssignments(eventId, assignmentsList);
-                    console.log(event);
                     if (event.success) {
                       toast.success('Assignments saved');
                       setSaved(true);

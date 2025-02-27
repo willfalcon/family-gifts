@@ -22,7 +22,6 @@ export default function ProfileForm({ profile }: ProfileFormProps) {
     defaultValues: { name: profile.name, email: profile.email },
   });
   async function onSubmit(values: ProfileSchemaType) {
-    console.log(values);
     try {
       const profile = await updateProfile(values);
       if (profile.success) {
