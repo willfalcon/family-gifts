@@ -9,6 +9,7 @@ import { SidebarMenuButton } from './ui/sidebar';
 import CreateFamily from './CreateFamily';
 import { useQuery } from '@tanstack/react-query';
 import { Skeleton } from './ui/skeleton';
+import { useRouter } from 'next/navigation';
 
 type Props = {
   sidebar?: boolean;
@@ -16,7 +17,7 @@ type Props = {
 
 export default function FamilySelect({ sidebar = false }: Props) {
   const [activeFamilyState, setActiveFamilyState] = useActiveFamilyContext();
-
+  const router = useRouter();
   const { data, isLoading } = useQuery({
     queryKey: ['families'],
     queryFn: async () => fetch('/api/getFamilies').then((res) => res.json()),
@@ -58,6 +59,7 @@ export default function FamilySelect({ sidebar = false }: Props) {
             onSelect={() => {
               setActiveFamilyId(family.id);
               setActiveFamilyState(family.id);
+              router.refresh();
             }}
           >
             {family.name}
