@@ -19,15 +19,9 @@ export default async function Family() {
 
   const initialData = await getFamilyMembers();
 
-  const { channel, success, message } = await getFamilyChannel();
-
-  if (!success || !channel) {
-    return <ErrorMessage title={message} />;
-  }
-
   const me = await getActiveMemberUser();
   if (!me) {
-    <ErrorMessage title="Couldn't find active member." />;
+    return <ErrorMessage title="Couldn't find active member." />;
   }
 
   return (
@@ -37,7 +31,7 @@ export default async function Family() {
         {initialData.success && initialData.lists && <FamilyMembers {...initialData} />}
         <FloatingMessages />
       </div>
-      <MessagesSidebar channel={channel} me={me!} />
+      <MessagesSidebar familyId={me.familyId} session={session} />
     </SidebarProvider>
   );
 }

@@ -1,17 +1,29 @@
+'use client';
+
 import Chat from '@/app/dashboard/messages/Chat';
 import { Sidebar, SidebarContent, SidebarGroup } from '../ui/sidebar';
-import { FamilyMemberWithAll } from '@/prisma/types';
-import { GetChannelReturnType } from '@/lib/queries/chat';
-import ChatProviders from '@/app/dashboard/messages/ChatProviders';
+import { Session } from 'next-auth';
+import { useQuery } from 'convex/react';
+import { api } from '@/convex/_generated/api';
+import { ReceiptEuroIcon } from 'lucide-react';
 
-export default function MessagesSidebar({ channel, me }: { channel: GetChannelReturnType; me: FamilyMemberWithAll }) {
+type Props = {
+  eventId?: string;
+  familyId?: string;
+  session: Session;
+};
+
+export default function MessageSidebar({ eventId, familyId, session }: Props) {
+  const channels = useQuery(api.channels.getChannels, { userId: session.user!.id! });
+  if (!session) return;
+  if (!channels) return <p>todo: Chat skeleton</p>;
+  const channel = eventId || familyId ? channels.find((channel) => channel.event === eventId || channel.family === familyId) : null;
+  if (!channel) return;
   return (
     <Sidebar side="right" collapsible="offcanvas">
       <SidebarContent>
         <SidebarGroup>
-          <ChatProviders defaultChannel={channel}>
-            <Chat channel={channel} me={me!} sidebar />
-          </ChatProviders>
+          <Chat channel={channel} user={session.user!.id!} sidebar />
         </SidebarGroup>
       </SidebarContent>
     </Sidebar>

@@ -55,17 +55,7 @@ export const getChannels = cache(async () => {
       },
       include: {
         event: true,
-        messages: {
-          include: {
-            readBy: {
-              where: {
-                user: {
-                  id: session.user.id,
-                },
-              },
-            },
-          },
-        },
+        messages: true,
         family: true,
         groupMembers: true,
       },

@@ -6,6 +6,9 @@ import { prisma } from '@/prisma';
 import { addMonths } from 'date-fns';
 import { Event } from '@prisma/client';
 
+/**
+ * Gets all events for the current member of the current active family
+ */
 export const getEvents = cache(async (limit?: number) => {
   const session = await auth();
   if (!session?.user) {
@@ -65,6 +68,60 @@ export const getEvents = cache(async (limit?: number) => {
   }
 });
 
+/**
+ * Get all events for the current user regardless of family
+ */
+export const getAllEvents = cache(async () => {
+  const session = await auth();
+  if (!session?.user) {
+    return {
+      success: false,
+      message: 'You must be logged in to do this.',
+      events: [],
+    };
+  }
+  try {
+    const events = await prisma.event.findMany({
+      where: {
+        family: {
+          members: {
+            some: {
+              user: {
+                id: session.user.id,
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        date: 'asc',
+      },
+    });
+    if (events.length) {
+      return {
+        success: true,
+        message: '',
+        events: events.toSorted((a, b) => ((a.date?.getUTCDate() || '') > (b.date?.getUTCDate() || '') ? 1 : -1)),
+      };
+    } else {
+      return {
+        success: true,
+        message: 'No events yet.',
+        events: [],
+      };
+    }
+  } catch (err) {
+    console.error(err);
+    return {
+      success: false,
+      message: 'Something went wrong.',
+      events: [],
+    };
+  }
+});
+/**
+ * Get number of events for the current member over the next 6 months
+ */
 export const getEventsCount = cache(async () => {
   const session = await auth();
   if (!session?.user) {
@@ -112,6 +169,9 @@ export const getEventsCount = cache(async () => {
   }
 });
 
+/**
+ * Get an event by its id, if the user is logged in is in the family for the event and has the family active.
+ */
 export const getEvent = cache(async (id: Event['id']) => {
   const session = await auth();
   if (!session?.user) {

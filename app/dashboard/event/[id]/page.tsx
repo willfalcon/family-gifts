@@ -49,12 +49,6 @@ export default async function EventPage({ params }: PageProps) {
 
   const assignment = me.giving.find((assignment) => assignment.eventId === event.id)?.receiver;
 
-  const {
-    channel,
-    success: channelSuccess,
-    // message: channelMessage
-  } = await getEventChannel(event.id);
-
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="space-y-4 p-8 pt-6 relative w-full">
@@ -72,7 +66,7 @@ export default async function EventPage({ params }: PageProps) {
         <SecretSanta isManager={isManager} family={family!} event={event} assignment={assignment} />
         <FloatingMessages />
       </div>
-      {channel && channelSuccess && <MessagesSidebar channel={channel} me={me!} />}
+      <MessagesSidebar eventId={params.id} session={session} />
     </SidebarProvider>
   );
 }

@@ -62,6 +62,10 @@ type FamilyMemberListsResult = {
   message: string;
   lists: FamilyMemberWithRefs[];
 };
+
+/**
+ * Retrieves a list of family members and their lists for the active family, excluding the current user.
+ */
 export const getFamilyMembers = cache(async (): Promise<FamilyMemberListsResult> => {
   const session = await auth();
   if (!session?.user) {
@@ -101,31 +105,6 @@ export const getFamilyMembers = cache(async (): Promise<FamilyMemberListsResult>
         user: true,
       },
     });
-    // const lists = await prisma.family.findFirst({
-    //   where: {
-    //     id: activeFamilyId,
-    //   },
-    //   select: {
-    //     members: {
-    //       select: {
-    //         name: true,
-    //         id: true,
-    //         items: {
-    //           where: {
-    //             member: {
-    //               user: {
-    //                 id: {
-    //                   not: session.user.id,
-    //                 },
-    //               },
-    //             },
-    //           },
-    //         },
-    //         user: true,
-    //       },
-    //     },
-    //   },
-    // });
 
     if (members) {
       return {
@@ -206,6 +185,9 @@ export const getFamilyMember = cache(async () => {
   }
 });
 
+/**
+ * Retrieves the family member along with their user
+ */
 export const getFamilyMemberById = cache(async (id: FamilyMember['id']) => {
   const session = await auth();
   if (!session?.user) {
@@ -249,6 +231,9 @@ export const getFamilyMemberById = cache(async (id: FamilyMember['id']) => {
   }
 });
 
+/**
+ * Returns the user for a family member
+ */
 export const getMemberUser = cache(async (member: FamilyMember) => {
   if (!member.userId) {
     return null;
@@ -261,6 +246,9 @@ export const getMemberUser = cache(async (member: FamilyMember) => {
   return user;
 });
 
+/**
+ * returns the number of members in the user's current active family
+ */
 export const getFamilyMemberCount = cache(async () => {
   const session = await auth();
   if (!session?.user) {

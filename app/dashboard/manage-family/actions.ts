@@ -10,6 +10,8 @@ import InviteEmailTemplate from '@/emails/invite';
 import { Resend } from 'resend';
 import { randomBytes } from 'crypto';
 import { FamilyMemberWithFamily } from '@/prisma/types';
+import { ConvexHttpClient } from 'convex/browser';
+import { api } from '@/convex/_generated/api';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -133,6 +135,15 @@ export async function createFamily(data: FamilySchemaType) {
     revalidatePath('/manage-family');
 
     if (family) {
+      // Create family channel in convex
+      const client = new ConvexHttpClient(process.env.CONVEX_URL!);
+      await client.mutation(api.channels.createChannel, {
+        name: family.name,
+        users: [session.user.id!],
+        type: 'family',
+        messages: [],
+        family: family.id,
+      });
       return {
         success: true,
         family,
@@ -185,6 +196,9 @@ export async function deleteFamily(family: Family) {
     });
     revalidatePath('/manage-family');
     if (oldFamily) {
+      const client = new ConvexHttpClient(process.env.CONVEX_URL!);
+      await client.mutation(api.channels.deleteChannel, { family: oldFamily.id });
+
       return {
         success: true,
         oldFamily,

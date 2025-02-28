@@ -121,11 +121,7 @@ export type ListWithItems = Prisma.ListGetPayload<{
 // };
 export type ChannelWithMessagesReadyBy = Prisma.ChannelGetPayload<{
   include: {
-    messages: {
-      include: {
-        readBy: true;
-      };
-    };
+    messages: true;
   };
 }>;
 

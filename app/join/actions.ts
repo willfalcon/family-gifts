@@ -1,7 +1,9 @@
 'use server';
 
-import { auth } from "@/auth";
-import { prisma } from "@/prisma";
+import { auth } from '@/auth';
+import { api } from '@/convex/_generated/api';
+import { prisma } from '@/prisma';
+import { ConvexHttpClient } from 'convex/browser';
 
 export async function joinFamily(token: string) {
   const session = await auth();
@@ -15,40 +17,46 @@ export async function joinFamily(token: string) {
   const familyMember = await prisma.familyMember.findFirst({
     where: {
       inviteToken: token,
-    }
+    },
   });
 
   if (familyMember) {
-
     try {
       const updatedMember = await prisma.familyMember.update({
         where: {
-          id: familyMember.id
+          id: familyMember.id,
         },
         data: {
           user: {
             connect: {
-              id: session.user.id
-            }
+              id: session.user.id,
+            },
           },
-          joined: true
-        }
+          joined: true,
+        },
       });
-      return {
-        success: true,
-        updatedMember
+      if (updatedMember) {
+        const client = new ConvexHttpClient(process.env.CONVEX_URL!);
+
+        await client.mutation(api.channels.addChannelUser, {
+          family: updatedMember.familyId,
+          user: updatedMember.userId!,
+        });
+        return {
+          success: true,
+          updatedMember,
+        };
       }
-    } catch(err) {
+      // Update the family channel in Convex
+    } catch (err) {
       console.error(err);
       return {
-        success: false
-      }
+        success: false,
+      };
     }
-
   } else {
     return {
-      success: false
-    }
+      success: false,
+    };
   }
-    
 }

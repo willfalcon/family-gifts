@@ -7,7 +7,9 @@ import { prisma } from '@/prisma';
 import { revalidatePath } from 'next/cache';
 import { JSONContent } from '@tiptap/react';
 import { Event } from '@prisma/client';
-import { getActiveMember } from '@/lib/queries/family-members';
+import { getActiveMember, getFamilyMembers } from '@/lib/queries/family-members';
+import { api } from '@/convex/_generated/api';
+import { ConvexHttpClient } from 'convex/browser';
 
 export async function createEvent(event: EventSchemaType) {
   const session = await auth();
@@ -43,6 +45,16 @@ export async function createEvent(event: EventSchemaType) {
       },
     });
     if (newEvent) {
+      // Create a new messages channel for the event in Convex
+      const client = new ConvexHttpClient(process.env.CONVEX_URL!);
+      const familyMembers = await getFamilyMembers();
+      await client.mutation(api.channels.createChannel, {
+        name: validatedData.name,
+        type: 'event',
+        event: newEvent.id,
+        users: familyMembers.lists.map((member) => member.userId!),
+        messages: [],
+      });
       revalidatePath('/dashboard/events');
       return {
         success: true,
