@@ -36,7 +36,7 @@ export async function joinFamily(token: string) {
         },
       });
       if (updatedMember) {
-        const client = new ConvexHttpClient(process.env.CONVEX_URL!);
+        const client = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
         await client.mutation(api.channels.addChannelUser, {
           family: updatedMember.familyId,

@@ -136,7 +136,7 @@ export async function createFamily(data: FamilySchemaType) {
 
     if (family) {
       // Create family channel in convex
-      const client = new ConvexHttpClient(process.env.CONVEX_URL!);
+      const client = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
       await client.mutation(api.channels.createChannel, {
         name: family.name,
         users: [session.user.id!],
@@ -196,7 +196,7 @@ export async function deleteFamily(family: Family) {
     });
     revalidatePath('/manage-family');
     if (oldFamily) {
-      const client = new ConvexHttpClient(process.env.CONVEX_URL!);
+      const client = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
       await client.mutation(api.channels.deleteChannel, { family: oldFamily.id });
 
       return {

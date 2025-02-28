@@ -150,6 +150,7 @@ export const getEventsCount = cache(async () => {
         },
         date: {
           lte: addMonths(new Date(), 6),
+          gte: new Date()
         },
       },
     });

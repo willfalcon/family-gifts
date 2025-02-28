@@ -1,5 +1,4 @@
 import { Body, Button, Container, Head, Heading, Html, Link, Preview, Section, Text, Tailwind } from '@react-email/components';
-import { FamilyMember } from '@prisma/client';
 import { FamilyMemberWithFamily } from '@/prisma/types';
 
 export default function InviteEmailTemplate(member: FamilyMemberWithFamily) {
@@ -18,7 +17,7 @@ export default function InviteEmailTemplate(member: FamilyMemberWithFamily) {
               </Heading>
               <Text className="text-black text-[14px] leading-[24px]">Hello {member.name},</Text>
               <Text className="text-black text-[14px] leading-[24px]">
-                You've been invited to join <strong>{member.family.name}</strong> on <strong>Family Gifts</strong>.
+                You&apos;ve been invited to join <strong>{member.family.name}</strong> on <strong>Family Gifts</strong>.
               </Text>
             </Section>
             <Button className="bg-[#000000] rounded text-white text-[12px] font-semibold no-underline text-center px-5 py-3" href={inviteLink}>

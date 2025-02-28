@@ -46,7 +46,7 @@ export async function createEvent(event: EventSchemaType) {
     });
     if (newEvent) {
       // Create a new messages channel for the event in Convex
-      const client = new ConvexHttpClient(process.env.CONVEX_URL!);
+      const client = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
       const familyMembers = await getFamilyMembers();
       await client.mutation(api.channels.createChannel, {
         name: validatedData.name,

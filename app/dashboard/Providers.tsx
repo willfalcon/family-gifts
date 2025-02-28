@@ -55,7 +55,9 @@ export default function Providers({ children, activeFamilyId }: PropsWithChildre
         <ActiveFamilyContext.Provider value={activeFamilyState}>
           <MeProvider>
             <BreadcrumbsProvider>
-              <SidebarProvider defaultOpen={true}>{children}</SidebarProvider>
+              <SidebarProvider defaultOpen={true}>
+                {children}
+              </SidebarProvider>
             </BreadcrumbsProvider>
           </MeProvider>
         </ActiveFamilyContext.Provider>
