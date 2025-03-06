@@ -10,7 +10,7 @@ import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarTrigger } fro
 import { EllipsisVertical } from 'lucide-react';
 import { useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
-import { Button } from '@/components/ui/button';
+
 import { MessageSkeleton } from '@/components/Messages/ChatSkeleton';
 
 type Props = {
@@ -34,7 +34,7 @@ function userCanDelete(channel: Doc<'channels'>, me: FamilyMemberWithAll, sender
 export default function Message({ message, channel }: Props) {
   const { data: sender, isLoading } = useQuery({ queryKey: ['user', message.sender], queryFn: () => getSender(message.sender) });
   const { data: me, isLoading: meLoading } = useMe();
-  console.log({ sender, me });
+  
   const deleteMessage = useMutation(api.messages.deleteMessage);
 
   if (isLoading || meLoading || !me) {

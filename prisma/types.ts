@@ -51,6 +51,12 @@ export type FamilyMemberWithManaging = Prisma.FamilyMemberGetPayload<{
   };
 }>;
 
+export type FamilyWithManagers = Prisma.FamilyGetPayload<{
+  include: {
+    managers: true
+  }
+}>
+
 export type EventWithAssignments = Prisma.EventGetPayload<{
   include: {
     assignments: {

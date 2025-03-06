@@ -3,6 +3,10 @@ import SignIn from '@/components/SignIn';
 import { redirect } from 'next/navigation';
 import JoinButton from './JoinButton';
 import { getInvitedMember } from '@/lib/queries/onboarding';
+import { ErrorMessage } from '@/components/ErrorMessage';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Check, Gift, Users } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 type PageProps = {
   params: { slug: string };
@@ -29,5 +33,108 @@ export default async function JoinPage({ searchParams }: PageProps) {
 
   const { familyMember, success, message } = await getInvitedMember(token);
 
-  return <div>{!success ? <p>{message}</p> : <JoinButton name={familyMember?.family.name || ''} token={token} />}</div>;
+  // TODO: style this page
+  if (!success || !familyMember) {
+    return <ErrorMessage title={message} />;
+  } 
+
+  return (
+      <div className="container flex flex-col items-center justify-center min-h-screen py-12">
+        <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[550px]">
+          <Card className="w-full">
+            <CardHeader className="text-center">
+              <CardTitle className="text-2xl">Family Invitation</CardTitle>
+              <CardDescription>You&apos;ve been invited to join a family group</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="flex flex-col items-center justify-center space-y-4 border-b pb-6">
+                <div className="flex items-center justify-center h-20 w-20 rounded-full bg-primary/10">
+                  <Users className="h-10 w-10 text-primary" />
+                </div>
+                <div className="text-center">
+                  <h2 className="text-xl font-bold">{familyMember.family.name}</h2>
+                  {familyMember.createdAt && (
+                    <p className="text-sm text-muted-foreground">
+                      Invitation sent {new Date(familyMember.createdAt).toLocaleDateString()}
+                    </p>
+                  )}
+                </div>
+              </div>
+              <div className="space-y-4">
+                <div className="flex items-center space-x-4">
+                  <Avatar>
+                    {familyMember?.family?.managers[0]?.user?.image ? (
+                      <AvatarImage src={familyMember.family.managers[0].user.image} alt={familyMember.family.managers[0].name} /> 
+                    ) : (
+                    <AvatarFallback>
+                      {familyMember.family.managers[0].user?.name?.split(' ').map((n) => n[0]).join('')}
+                    </AvatarFallback>
+                    )}
+                  </Avatar>
+                  <div>
+                    <p className="text-sm font-medium">{familyMember.family.managers[0].name} invited you</p>
+                    <p className="text-sm text-muted-foreground">{familyMember.family.managers[0].email}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4 py-4">
+                <div className="flex flex-col items-center justify-center space-y-1 rounded-lg border p-4">
+                  <Users className="h-5 w-5 text-muted-foreground mb-1" />
+                  <span className="text-xl font-bold">{familyMember?.family?._count.members}</span>
+                  <span className="text-xs text-muted-foreground">Members</span>
+                </div>
+                <div className="flex flex-col items-center justify-center space-y-1 rounded-lg border p-4">
+                  <Gift className="h-5 w-5 text-muted-foreground mb-1" />
+                  <span className="text-xl font-bold">{familyMember?.family?._count.listsVisible}</span>
+                  <span className="text-xs text-muted-foreground">Wish Lists</span>
+                </div>
+                <div className="flex flex-col items-center justify-center space-y-1 rounded-lg border p-4">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="h-5 w-5 text-muted-foreground mb-1"
+                  >
+                    <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+                    <line x1="16" x2="16" y1="2" y2="6" />
+                    <line x1="8" x2="8" y1="2" y2="6" />
+                    <line x1="3" x2="21" y1="10" y2="10" />
+                  </svg>
+                  <span className="text-xl font-bold">{familyMember?.family?._count.events}</span>
+                  <span className="text-xs text-muted-foreground">Events</span>
+                </div>
+              </div>
+
+               <div className="rounded-lg bg-muted p-4">
+                <p className="text-sm">By joining this family, you&apos;ll be able to:</p>
+                <ul className="mt-2 space-y-1 text-sm">
+                  <li className="flex items-center">
+                    <Check className="mr-2 h-4 w-4 text-primary" />
+                    View and create wish lists
+                  </li>
+                  <li className="flex items-center">
+                    <Check className="mr-2 h-4 w-4 text-primary" />
+                    Participate in family gift-giving events
+                  </li>
+                  <li className="flex items-center">
+                    <Check className="mr-2 h-4 w-4 text-primary" />
+                    Coordinate gift purchases with other family members
+                  </li>
+                </ul>
+              </div>
+              
+            </CardContent>
+            <CardFooter className="flex flex-col sm:flex-row gap-3">
+              <JoinButton name={familyMember?.family.name || ''} token={token} />
+            </CardFooter>
+          </Card>
+        </div>
+      </div>
+  )
+  
 }

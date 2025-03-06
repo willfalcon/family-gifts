@@ -18,12 +18,12 @@ export default function JoinButton({name, token}: Props) {
   return (
     <Button onClick={async () => {
       try {
-        const {success, updatedMember} = await joinFamily(token)
+        const {success, updatedMember, message} = await joinFamily(token);
         if (success) {
           toast.success(`Welcome, ${updatedMember?.name}`);
           router.push('/dashboard/manage-family');
         } else {
-          toast.success('Something went wrong.')
+          toast.warning(message)
         }
       } catch(err) {
         console.log(err);

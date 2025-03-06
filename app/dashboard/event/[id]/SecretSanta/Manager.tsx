@@ -48,7 +48,7 @@ export default function Manager({ familyId, eventId }: Props) {
       </DialogTrigger>
       <DialogContent className="w-[700px] max-w-full pr-10">
         <DialogHeader>
-          <DialogTitle>Secret Santa Manager</DialogTitle>
+          <DialogTitle className='text-xl'>Secret Santa Manager</DialogTitle>
           <DialogDescription>Select participants and set exclusions for Secret Santa</DialogDescription>
         </DialogHeader>
         <ScrollArea className="max-h-[80vh] pr-5">
@@ -58,7 +58,7 @@ export default function Manager({ familyId, eventId }: Props) {
                 <>
                   <Participants members={members} />
                   <Exclusions />
-                  <Button onClick={generateAssignments}>{assignments?.length && `Regenerate `}Assignments</Button>
+                  <Button onClick={generateAssignments}>{!!assignments?.length && `Regenerate `}Assignments</Button>
                   <Assignments eventId={eventId} />
                 </>
               ) : (

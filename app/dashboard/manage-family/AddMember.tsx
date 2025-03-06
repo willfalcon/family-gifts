@@ -8,11 +8,15 @@ import { createFamilyMember } from './actions';
 import { Family } from '@prisma/client';
 import { toast } from 'sonner';
 import MemberForm from './MemberForm';
+import { Dispatch, SetStateAction, TransitionStartFunction } from 'react';
+import { FamilyMemberWithUser } from '@/prisma/types';
 
 type Props = {
   family: Family;
+  startTransition: TransitionStartFunction;
+  setMembers: Dispatch<SetStateAction<FamilyMemberWithUser[]>>;
 };
-export default function AddMember({ family }: Props) {
+export default function AddMember({ family, startTransition, setMembers }: Props) {
   const form = useForm<FamilyMemberSchemaType>({
     resolver: zodResolver(FamilyMemberSchema),
     defaultValues: getDefaults(FamilyMemberSchema),
@@ -25,13 +29,18 @@ export default function AddMember({ family }: Props) {
         family,
       };
 
-      const { success, message } = await createFamilyMember(data);
-      if (success) {
-        toast.success('Added member!');
-        form.reset();
-      } else {
-        toast.error(message);
-      }
+      startTransition(async () => {
+        const { success, message, member } = await createFamilyMember(data);
+        if (success && member) {
+          toast.success('Added member!');
+          setMembers((prevMembers) => {
+            return [...prevMembers, member];
+          })
+          form.reset();
+        } else {
+          toast.error(message);
+        }
+      })
     } catch (err) {
       console.error(err);
       toast.error('Something went wrong.');

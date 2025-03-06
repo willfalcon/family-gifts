@@ -18,7 +18,6 @@ import { ErrorMessage } from '@/components/ErrorMessage';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import FloatingMessages from '@/components/Messages/FloatingMessages';
 import MessagesSidebar from '@/components/Messages/MessagesSidebar';
-import { getEventChannel } from '@/lib/queries/chat';
 import EditEvent from './EditEvent';
 
 type PageProps = {
@@ -48,7 +47,7 @@ export default async function EventPage({ params }: PageProps) {
   const isManager = family.managers.some((manager) => manager.id === me.id);
 
   const assignment = me.giving.find((assignment) => assignment.eventId === event.id)?.receiver;
-
+  
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="space-y-4 p-8 pt-6 relative w-full">
@@ -59,10 +58,12 @@ export default async function EventPage({ params }: PageProps) {
             { name: event.name, href: `/dashboard/event/${event.id}` },
           ]}
         />
-        <Title>{event.name}</Title>
+        <div className="flex justify-between items-center">
+          <Title>{event.name}</Title>
+          {isManager && <EditEvent {...event} />}
+        </div>
         {event.date && <p className="text-sm text-muted-foreground">{format(event.date, 'MMMM dd, yyyy')}</p>}
         {event.info && <Viewer content={event.info as JSONContent} style="prose" immediatelyRender={false} />}
-        {isManager && <EditEvent {...event} />}
         <SecretSanta isManager={isManager} family={family!} event={event} assignment={assignment} />
         <FloatingMessages />
       </div>

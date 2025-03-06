@@ -12,7 +12,7 @@ interface SecretSantaProps {
   isManager: boolean;
   family: Family;
   event: EventWithAssignments;
-  assignment?: FamilyMember;
+  assignment?: FamilyMember | null;
 }
 
 export default function SecretSanta({ isManager, family, event, assignment }: SecretSantaProps) {

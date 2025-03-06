@@ -108,7 +108,6 @@ export const getChannel = cache(async (id: Channel['id']) => {
     };
   }
   try {
-    // TODO explicitely type this return so I can trace the conflicts down
     const channel = await prisma.channel.findUnique({
       where: {
         id,

@@ -2,17 +2,17 @@ import { auth } from '@/auth';
 
 import { redirect } from 'next/navigation';
 // import AddMember from "./AddMember";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import NewFamily from './NewFamily';
-import AddMember from './AddMember';
-import MembersList from './MembersList';
 
-import DeleteFamily from './DeleteFamily';
 import { getActiveFamilyId } from '@/lib/rscUtils';
 import { getFamilies } from '@/lib/queries/families';
 import SetBreadcrumbs from '@/components/SetBreadcrumbs';
 import { getActiveMemberUser } from '@/lib/queries/family-members';
 import { ErrorMessage } from '@/components/ErrorMessage';
+import FamilyCards from './FamilyCards';
+
+import { getMembers } from '../event/[id]/actions';
 
 export default async function ManageFamily() {
   const session = await auth();
@@ -29,7 +29,8 @@ export default async function ManageFamily() {
   if (!me) {
     return <ErrorMessage title="Couldn't find active member." />;
   }
-  const isManager = family?.managers.some((manager) => manager.id === me.id) || false;
+  
+  const { success, members, message } = family ? await getMembers(family.id) : { success: false, members: [], message: 'No family found' };
 
   return (
     <div className="space-y-4 p-8 pt-6">
@@ -39,27 +40,8 @@ export default async function ManageFamily() {
           { name: 'Manage Family', href: '/dashboard/manage-family' },
         ]}
       />
-      {family && isManager && (
-        <Card>
-          <CardHeader>
-            <CardTitle>{family.name}</CardTitle>
-            <CardDescription>Add, remove, or update family members and their permissions</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <AddMember family={family} />
-          </CardContent>
-        </Card>
-      )}
       {family && (
-        <>
-          <MembersList family={family} isManager={isManager} />
-          <Card>
-            <CardHeader>
-              <CardTitle>Family Settings</CardTitle>
-            </CardHeader>
-            <CardContent>{isManager && <DeleteFamily family={family} />}</CardContent>
-          </Card>
-        </>
+        <FamilyCards family={family} me={me} success={success} members={members} message={message} />
       )}
       <Card>
         <CardHeader>

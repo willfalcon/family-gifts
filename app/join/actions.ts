@@ -11,6 +11,7 @@ export async function joinFamily(token: string) {
     return {
       success: false,
       message: 'You must be logged in to do this.',
+      updatedMember: null,
     };
   }
 
@@ -21,6 +22,13 @@ export async function joinFamily(token: string) {
   });
 
   if (familyMember) {
+    if (familyMember.inviteTokenExpiry && familyMember.inviteTokenExpiry < new Date()) {
+      return {
+        success: false,
+        message: 'This invite has expired. Ask the family manager to send you a new one.',
+        updatedMember: null,
+      }
+    }
     try {
       const updatedMember = await prisma.familyMember.update({
         where: {
@@ -33,9 +41,12 @@ export async function joinFamily(token: string) {
             },
           },
           joined: true,
+          inviteToken: null,
+          inviteTokenExpiry: null,
         },
       });
       if (updatedMember) {
+        // Add the user to the family channe
         const client = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
         await client.mutation(api.channels.addChannelUser, {
@@ -45,18 +56,28 @@ export async function joinFamily(token: string) {
         return {
           success: true,
           updatedMember,
+          message: ''
         };
       }
-      // Update the family channel in Convex
+
+      return {
+        success: false,
+        updatedMember: null,
+        message: `Couldn't find the family member. How did you get here with logging in our making an account?`
+      };
+      
     } catch (err) {
       console.error(err);
       return {
         success: false,
+        message: 'Something went wrong. 🤷‍♂️',
+        updatedMember: null,
       };
     }
-  } else {
-    return {
-      success: false,
-    };
   }
+  return {
+    success: false,
+    message: 'Invalid token.',
+    updatedMember: null,
+  };
 }

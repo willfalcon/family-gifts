@@ -80,6 +80,7 @@ export default function Assignments({ eventId, isManager = false }: { eventId: s
             {saved && (
               <Button
                 onClick={async () => {
+                  //TODO send emails
                   // await sendEmails();
                 }}
               >

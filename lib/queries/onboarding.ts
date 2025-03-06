@@ -6,9 +6,9 @@ export const getInvitedMember = cache(async (token: string) => {
   const session = await auth();
   if (!session?.user) {
     return {
-      error: 'Not logged in',
+      success: false,
       message: 'You must be logged in to do this.',
-      families: [],
+      familyMember: null,
     };
   }
 
@@ -18,18 +18,35 @@ export const getInvitedMember = cache(async (token: string) => {
         inviteToken: token,
       },
       include: {
-        family: true,
+        family: {
+          include: {
+            managers: {
+              include: {
+                user: true
+              }
+            },
+            _count: {
+              select: {
+                members: true,
+                listsVisible: true,
+                events: true
+              }
+            }
+          }
+        },
       },
     });
     if (familyMember) {
       return {
         success: true,
         familyMember,
+        message: '',
       };
     } else {
       return {
         success: false,
         message: `Couldn't find matching member request for this token.`,
+        familyMember: null,
       };
     }
   } catch (err) {
@@ -37,6 +54,7 @@ export const getInvitedMember = cache(async (token: string) => {
     return {
       success: false,
       message: 'Something went wrong.',
+      familyMember: null,
     };
   }
 });

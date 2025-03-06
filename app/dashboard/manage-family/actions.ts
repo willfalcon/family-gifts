@@ -9,19 +9,19 @@ import { Family, FamilyMember } from '@prisma/client';
 import InviteEmailTemplate from '@/emails/invite';
 import { Resend } from 'resend';
 import { randomBytes } from 'crypto';
-import { FamilyMemberWithFamily } from '@/prisma/types';
+import { FamilyMemberWithUser } from '@/prisma/types';
 import { ConvexHttpClient } from 'convex/browser';
 import { api } from '@/convex/_generated/api';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-async function sendInviteEmail(member: FamilyMemberWithFamily) {
+async function sendInviteEmail(member: FamilyMemberWithUser, family: Family) {
   try {
     const { data, error } = await resend.emails.send({
       from: `Invite <${process.env.FROM_EMAIL_ADDRESS}>`,
       to: [member.email],
       subject: 'Join the family',
-      react: InviteEmailTemplate(member),
+      react: InviteEmailTemplate(member, family),
     });
     if (error) {
       console.error('sendInviteEmail:', error);
@@ -32,6 +32,74 @@ async function sendInviteEmail(member: FamilyMemberWithFamily) {
     console.error('sendInviteEmail:', error);
     return `Something went wrong sending email.`;
   }
+}
+
+export async function resendInviteEmail(member: FamilyMemberWithUser) {
+  const session = await auth();
+  if (!session?.user) {
+    return {
+      success: false,
+      message: 'You must be logged in to do this.',
+    };
+  }
+
+  try {
+
+    const family = await prisma.family.findUnique({
+      where: {
+        id: member.familyId,
+      }
+    });
+    if (!family) {
+      return {
+        success: false,
+        message: `Something weird happened... maybe refresh and make sure this member is still in the family?`,
+      };
+    }
+
+    let updatedMember: FamilyMemberWithUser;
+
+    if (!member.inviteToken) {
+      const token = randomBytes(20).toString('hex');
+      const tokenExpiry = Date.now() + 60 * 60 * 24 * 30 * 1000; // 30 days
+      updatedMember = await prisma.familyMember.update({
+        where: {
+          id: member.id,
+        },
+        data: {
+          inviteToken: token,
+          inviteTokenExpiry: new Date(tokenExpiry),
+        },
+        include: {
+          user: true,
+        }
+      });
+      
+    }
+    
+    const result = await sendInviteEmail(member, family);
+    if (result) {
+      revalidatePath('/manage-family');
+      return {
+        success: true,
+        message: '',
+      };
+    } else {
+      console.error(result);
+      return {
+        success: false,
+        message: `Couldn't send email.`,
+      };
+    }
+
+  } catch (err) {
+    console.error(err);
+    return {
+      success: false,
+      message: 'Something went wrong.',
+    };
+  }
+
 }
 
 export async function createFamilyMember(data: FamilyMemberSchemaType & { family: Family }) {
@@ -45,7 +113,15 @@ export async function createFamilyMember(data: FamilyMemberSchemaType & { family
 
   const validatedData = FamilyMemberSchema.parse(data);
 
-  if (data.family.managerId !== session.user.id) {
+  const familyWithManagers = await prisma.family.findUnique({
+    where: {
+      id: data.family.id,
+    },
+    include: {
+      managers: true,
+    }
+  });
+  if (!familyWithManagers?.managers.find((manager) => manager.userId === session.user?.id)) {
     return {
       success: false,
       message: 'You must be a family manager to do this.',
@@ -54,7 +130,7 @@ export async function createFamilyMember(data: FamilyMemberSchemaType & { family
 
   try {
     const token = randomBytes(20).toString('hex');
-    // const tokenExpiry = Date.now() + 60 * 60 * 24 * 30 * 1000;
+    const tokenExpiry = Date.now() + 60 * 60 * 24 * 30 * 1000; // 30 days
     const member = await prisma.familyMember.create({
       data: {
         ...validatedData,
@@ -64,13 +140,14 @@ export async function createFamilyMember(data: FamilyMemberSchemaType & { family
           },
         },
         inviteToken: token,
+        inviteTokenExpiry: new Date(tokenExpiry),
       },
-      include: {
-        family: true,
+      include: { 
+        user: true,
       },
     });
     if (member) {
-      await sendInviteEmail(member);
+      await sendInviteEmail(member, data.family);
       revalidatePath('/manage-family');
       return {
         success: true,
@@ -174,7 +251,15 @@ export async function deleteFamily(family: Family) {
       family: null,
     };
   }
-  if (family.managerId !== session.user.id) {
+  const familyWithManagers = await prisma.family.findUnique({
+    where: {
+      id: family.id,
+    },
+    include: {
+      managers: true,
+    }
+  });
+  if (!familyWithManagers?.managers.find((manager) => manager.userId === session.user?.id)) {
     return {
       success: false,
       message: 'You must be a family manager to do this.',
@@ -218,36 +303,89 @@ export async function deleteFamily(family: Family) {
   }
 }
 
-export async function deleteMember(member: FamilyMember) {
+export async function deleteMember(member: FamilyMember, deleteAssignments: boolean = false) {
   const session = await auth();
   if (!session?.user) {
     return {
       success: false,
       message: 'You must be logged in to do this.',
-      family: null,
+      events: null,
     };
   }
   const family = await prisma.family.findUnique({
     where: {
       id: member.familyId,
     },
+    include: {
+      managers: true,
+    }
   });
 
   if (!family) {
     return {
       success: false,
       message: `It seems like this person isn't in this family anyway?`,
+      events: null,
     };
   }
 
-  if (family.managerId !== session.user.id) {
+  if (!family.managers.find((manager) => manager.userId === session.user?.id)) {
     return {
       success: false,
       message: 'You must be a family manager to do this.',
+      events: null,
     };
   }
 
+  if (family.managers.length === 1) {
+    return {
+      success: false,
+      message: 'Families must have at least one manager.',
+      members: null,
+    };
+  }
+  
   try {
+    
+    // check if the member is a part of any events with secret santa assignments.
+    const events = await prisma.event.findMany({
+      where: {
+        assignments: {
+          some: {
+            OR: [
+              {
+                giverId: member.id,
+              },
+              {
+                receiverId: member.id,
+              },
+            ]
+          },
+        }
+      },
+    });
+
+    if (!!events.length) {
+    
+      if (deleteAssignments) {
+        // delete all the assignments for the events
+        await prisma.assignment.deleteMany({
+          where: {
+            eventId: {
+              in: events.map((event) => event.id),
+            },
+          }
+        });
+      } else {
+
+        return {
+          success: false,
+          events,
+          message: `This member is part of a secret santa event. If you continue, we'll have to undo all the assignments.`,
+        }
+      }
+    }
+
     const formerMember = await prisma.familyMember.delete({
       where: {
         id: member.id,
@@ -257,12 +395,14 @@ export async function deleteMember(member: FamilyMember) {
       revalidatePath('/manage-family');
       return {
         success: true,
-        formerMember,
+        message: '',
+        events: null,
       };
     } else {
       return {
         success: false,
         message: `Couldn't find member to delete`,
+        events: null,
       };
     }
   } catch (err) {
@@ -270,6 +410,164 @@ export async function deleteMember(member: FamilyMember) {
     return {
       success: false,
       message: 'Something went wrong.',
+      events: null,
+    };
+  }
+}
+
+export async function promoteMember(member: FamilyMember) {
+  const session = await auth();
+  if (!session?.user) {
+    return {
+      success: false,
+      message: 'You must be logged in to do this.',
+      members: null,
+    };
+  }
+  const family = await prisma.family.findUnique({
+    where: {
+      id: member.familyId,
+    },
+    include: {
+      managers: true  
+    }
+  });
+  if (!family) {
+    return {
+      success: false,
+      message: `Couldn't find family or member.`,
+      members: null,
+    };
+  }
+  if (!family.managers.find((manager) => manager.userId === session.user?.id)) {
+    return {
+      success: false,
+      message: 'You must be a family manager to do this.',
+      members: null,
+    };
+  }
+  try {
+    const updatedFamily = await prisma.family.update({
+      where: {
+        id: family.id,
+      },
+      data: {
+        managers: {
+          connect: {
+            id: member.id,
+          },
+        }
+      },
+      include: {
+        members: {
+          include: {
+            user: true,
+          }
+        },
+      }
+    });
+    if (updatedFamily) {
+      revalidatePath('/manage-family');
+      return {
+        success: true,
+        message: '', 
+        members: updatedFamily.members
+      };
+    } else {
+      return {
+        success: false,
+        message: `Couldn't promote member.`,
+        members: null,
+      };
+    }
+  } catch(err) {
+    console.error(err);
+    return {
+      success: false,
+      message: 'Something went wrong.',
+      members: null,
+    };
+  }
+}
+
+export async function demoteMember(member: FamilyMember) {
+  const session = await auth();
+  if (!session?.user) {
+    return {
+      success: false,
+      message: 'You must be logged in to do this.',
+      members: null,
+    };
+  }
+  const family = await prisma.family.findUnique({
+    where: {
+      id: member.familyId,
+    },
+    include: {
+      managers: true
+    }
+  });
+  if (!family) {
+    return {
+      success: false,
+      message: `Couldn't find family or member.`,
+      members: null,
+    };
+  }
+  if (!family.managers.find((manager) => manager.userId === session.user?.id)) {
+    return {
+      success: false,
+      message: 'You must be a family manager to do this.',
+      members: null,
+    };
+  }
+  if (family.managers.length === 1) {
+    return {
+      success: false,
+      message: 'Families must have at least one manager.',
+      members: null,
+    };
+  }
+  try {
+    const updatedFamily = await prisma.family.update({
+      where: {
+        id: family.id,
+      },
+      data: {
+        managers: {
+          disconnect: {
+            id: member.id,
+          },
+        }
+      },
+      include: {
+        members: {
+          include: {
+            user: true,
+          }
+        },
+      }
+    });
+    if (updatedFamily) {
+      revalidatePath('/manage-family');
+      return {
+        success: true,
+        message: '', 
+        members: updatedFamily.members
+      };
+    } else {
+      return {
+        success: false,
+        message: `Couldn't promote member.`,
+        members: null,
+      };
+    }
+  } catch(err) {
+    console.error(err);
+    return {
+      success: false,
+      message: 'Something went wrong.',
+      members: null,
     };
   }
 }
