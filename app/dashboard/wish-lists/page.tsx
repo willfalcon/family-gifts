@@ -1,6 +1,6 @@
 import { auth } from '@/auth';
 import Title from '@/components/Title';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 
 import { getUserLists } from '@/lib/queries/lists';
@@ -30,29 +30,30 @@ export default async function WishLists() {
           { name: 'Wish Lists', href: '/dashboard/wish-lists' },
         ]}
       />
-      <Title>Wish Lists</Title>
+      <div className="flex justify-between">
+        <Title>Wish Lists</Title>
+        <CreateList />
+      </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {lists.map((list) => (
-          <Link key={list.id} href={`/dashboard/wish-list/${list.id}`}>
-            <Card>
-              <CardHeader>
-                <CardTitle>{list.name}</CardTitle>
-                <CardDescription>{list._count.items} items</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  {list.visibleTo.length ? `Shared with: ${list.visibleTo.map((family) => family.name).join()}` : 'Not shared'}
-                </p>
-              </CardContent>
-              <CardFooter className="justify-between">
-                <Button variant="outline">View List</Button>
-              </CardFooter>
-            </Card>
-          </Link>
+          <Card key={list.id}>
+            <CardHeader>
+              <CardTitle>{list.name}</CardTitle>
+              <CardDescription>{list._count.items} items</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                {list.visibleTo.length ? `Shared with: ${list.visibleTo.map((family) => family.name).join()}` : 'Not shared'}
+              </p>
+            </CardContent>
+            <CardFooter className="justify-between">
+              <Link href={`/dashboard/wish-list/${list.id}`} className={buttonVariants({ variant: 'outline' })}>
+                View
+              </Link>
+            </CardFooter>
+          </Card>
         ))}
       </div>
-
-      <CreateList />
     </div>
   );
 }

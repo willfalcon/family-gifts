@@ -2,7 +2,7 @@
 
 import { useSearchParams } from 'next/navigation';
 import CategoriesFilter from './CategoriesFilter';
-import ListItem from './ListItem';
+import ListItem from '../../app/dashboard/wish-list/ListItem';
 import { ListWithItems } from '@/prisma/types';
 
 type Props = {

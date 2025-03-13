@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { Item } from '@prisma/client';
 import { useForm } from 'react-hook-form';
-import { ItemSchema, ItemSchemaType } from './wishListSchema';
+import { ItemSchema, ItemSchemaType } from './itemSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { toast } from 'sonner';
@@ -19,12 +19,16 @@ export default function ItemEdit(props: Item & { categories: string[] }) {
 
   const form = useForm<ItemSchemaType>({
     resolver: zodResolver(ItemSchema),
-    defaultValues: item as ItemSchemaType,
+    defaultValues: { ...item, categories: [] } as ItemSchemaType,
   });
 
   async function onSubmit(values: ItemSchemaType) {
+    console.log('onSubmit');
     try {
-      const res = await editItem(item.id, values);
+      const res = await editItem(item.id, {
+        ...values,
+        notes: JSON.parse(JSON.stringify(values.notes || {})),
+      });
       if (res.success) {
         toast.success('Item edited!');
         setOpen(false);
@@ -45,7 +49,7 @@ export default function ItemEdit(props: Item & { categories: string[] }) {
           Edit Item
         </Button>
       </DialogTrigger>
-      <DialogContent aria-describedby={undefined}>
+      <DialogContent aria-describedby={undefined} className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>Edit {item.name}</DialogTitle>
         </DialogHeader>

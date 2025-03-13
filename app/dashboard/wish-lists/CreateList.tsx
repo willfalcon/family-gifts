@@ -22,6 +22,7 @@ export default function CreateList() {
     try {
       const newList = await createList({
         ...values,
+        description: JSON.parse(JSON.stringify(values.description || {})),
       });
       if (newList.success) {
         toast.success('List Created!');
@@ -40,7 +41,7 @@ export default function CreateList() {
       <DialogTrigger asChild>
         <Button variant="outline">Create New List</Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>Create New List</DialogTitle>
         </DialogHeader>

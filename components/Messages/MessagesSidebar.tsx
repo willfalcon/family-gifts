@@ -6,6 +6,9 @@ import { Session } from 'next-auth';
 import { useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { ReceiptEuroIcon } from 'lucide-react';
+import { Skeleton } from '../ui/skeleton';
+import { Card, CardContent, CardHeader } from '../ui/card';
+import { ChatSkeleton } from './ChatSkeleton';
 
 type Props = {
   eventId?: string;
@@ -13,19 +16,44 @@ type Props = {
   session: Session;
 };
 
-export default function MessageSidebar({ eventId, familyId, session }: Props) {
-  const channels = useQuery(api.channels.getChannels, { userId: session.user!.id! });
+export default function MessagesSidebar({ eventId, familyId, session }: Props) {
   if (!session) return;
-  if (!channels) return <p>todo: Chat skeleton</p>;
-  const channel = eventId || familyId ? channels.find((channel) => channel.event === eventId || channel.family === familyId) : null;
-  if (!channel) return;
+  const channels = useQuery(api.channels.getChannels, { userId: session.user!.id! });
+  const channel = eventId || familyId ? channels?.find((channel) => channel.event === eventId || channel.family === familyId) : null;
+
   return (
-    <Sidebar side="right" collapsible="offcanvas">
+    <Sidebar side="right" collapsible="offcanvas" className="h-auto">
       <SidebarContent>
         <SidebarGroup>
-          <Chat channel={channel} user={session.user!.id!} sidebar />
+          {channel ? <Chat channel={channel} user={session.user!.id!} sidebar /> : <ChatSkeleton />}
+          {/* <ChatSkeleton /> */}
         </SidebarGroup>
       </SidebarContent>
     </Sidebar>
   );
 }
+
+// export function ChatSkeleton() {
+//   return (
+//     <div className="flex-1 flex flex-col">
+//       <Card className="flex-1 flex flex-col">
+//         <CardHeader className="p-4">
+//           <Skeleton className="h-6 w-[100px]" />
+//           <Skeleton className="h-5 w-[125px]" />
+//         </CardHeader>
+//         <CardContent className="flex-1 overflow-auto p-4 pt-0">
+//           <div className="mb-4">
+//             <div className="flex items-start">
+//               <Skeleton className="w-8 h-8 rounded-full mr-2" />
+//               <div className="flex-1">
+//                 <Skeleton className="h-5 w-[50px]" />
+//                 <Skeleton className="h-5 w-[30px]" />
+//                 <Skeleton className="h-5 w-[100px]" />
+//               </div>
+//             </div>
+//           </div>
+//         </CardContent>
+//       </Card>
+//     </div>
+//   );
+// }

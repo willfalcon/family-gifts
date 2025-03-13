@@ -7,9 +7,9 @@ import { addMonths } from 'date-fns';
 import { Event } from '@prisma/client';
 
 /**
- * Gets all events for the current member of the current active family
+ * Gets all or some events for the current member of the current active family
  */
-export const getEvents = cache(async (limit?: number) => {
+export const getEvents = cache(async (limit?: number, skip?: number) => {
   const session = await auth();
   if (!session?.user) {
     return {
@@ -39,8 +39,15 @@ export const getEvents = cache(async (limit?: number) => {
             },
           },
         },
+        date: {
+          gte: new Date(),
+        },
+      },
+      include: {
+        family: true,
       },
       take: limit || undefined,
+      skip: skip ?? 0,
       orderBy: {
         date: 'asc',
       },
@@ -150,7 +157,7 @@ export const getEventsCount = cache(async () => {
         },
         date: {
           lte: addMonths(new Date(), 6),
-          gte: new Date()
+          gte: new Date(),
         },
       },
     });

@@ -1,8 +1,7 @@
-import { UseFormReturn } from 'react-hook-form';
+import { Controller, UseFormReturn } from 'react-hook-form';
 import { ListSchemaType } from './listSchema';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 // import { useState } from 'react';
@@ -10,7 +9,9 @@ import { cn } from '@/lib/utils';
 import { Check, ChevronsUpDown, Loader2 } from 'lucide-react';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Family } from '@prisma/client';
-
+import Editor from '@/components/ui/rich-text/editor';
+import SubmitButton from '@/components/SubmitButton';
+import { Button } from '@/components/ui/button';
 type ListFormProps = {
   form: UseFormReturn<ListSchemaType>;
   onSubmit: (data: ListSchemaType) => Promise<void>;
@@ -19,7 +20,6 @@ type ListFormProps = {
 
 export default function ListForm({ form, onSubmit, submitText }: ListFormProps) {
   const { data, isLoading } = useQuery({ queryKey: ['families'], queryFn: () => fetch('/api/getFamilies').then((res) => res.json()) });
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -37,6 +37,17 @@ export default function ListForm({ form, onSubmit, submitText }: ListFormProps) 
               </FormItem>
             );
           }}
+        />
+        <Controller
+          name="description"
+          control={form.control}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Info</FormLabel>
+              <Editor content={field.value} onChange={field.onChange} />
+              <FormMessage />
+            </FormItem>
+          )}
         />
         <FormField
           control={form.control}
@@ -93,7 +104,7 @@ export default function ListForm({ form, onSubmit, submitText }: ListFormProps) 
             );
           }}
         />
-        <Button type="submit">{submitText}</Button>
+        <SubmitButton>{submitText}</SubmitButton>
       </form>
     </Form>
   );

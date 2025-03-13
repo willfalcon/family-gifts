@@ -27,8 +27,8 @@ export default async function DashboardSidebar() {
   }
 
   const nav = [
+    { text: 'Family', href: '/dashboard', icon: Users },
     { text: 'Wish Lists', href: '/dashboard/wish-lists', icon: Gift },
-    { text: 'Family', href: '/dashboard/family', icon: Users },
     { text: 'Events', href: '/dashboard/events', icon: List },
     { text: 'Messages', href: '/dashboard/messages', icon: MessagesSquare },
     ...(session?.user ? [{ text: 'Manage Family', href: '/dashboard/manage-family', icon: UserPlus }] : []),

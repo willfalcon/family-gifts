@@ -18,7 +18,7 @@ export default function CreateFamily({
           Create a Family
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>Create a Family</DialogTitle>
         </DialogHeader>

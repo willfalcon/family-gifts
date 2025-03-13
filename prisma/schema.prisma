@@ -115,34 +115,43 @@ model FamilyMember {
 }
 
 model List {
-  id        String    @id() @default(cuid())
-  name      String
-  userId    String
-  user      User      @relation(fields: [userId], references: [id])
-  items     Item[]
-  visibleTo Family[]
-  default   Boolean?
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt()
+  id          String    @id() @default(cuid())
+  name        String
+  description Json?
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  items       Item[]
+  visibleTo   Family[]
+  default     Boolean?
+  createdAt   DateTime? @default(now())
+  updatedAt   DateTime? @updatedAt()
+}
+
+enum Priority {
+  low
+  medium
+  high
 }
 
 model Item {
-  id        String         @id() @default(cuid())
-  name      String
-  memberId  String?
-  member    FamilyMember?  @relation("MemberItems", fields: [memberId], references: [id])
-  listId    String?
-  list      List?          @relation(fields: [listId], references: [id])
-  link      String?
-  notes     String?
-  image     String?
-  category  String?
-  parentId  String?
-  parent    Item?          @relation("ChildParentItems", fields: [parentId], references: [id])
-  children  Item[]         @relation("ChildParentItems")
-  boughtBy  FamilyMember[] @relation("ItemBoughtBy")
-  createdAt DateTime?      @default(now())
-  updatedAt DateTime?      @updatedAt()
+  id         String         @id() @default(cuid())
+  name       String
+  memberId   String?
+  member     FamilyMember?  @relation("MemberItems", fields: [memberId], references: [id])
+  listId     String?
+  list       List?          @relation(fields: [listId], references: [id])
+  link       String?
+  notes      Json?
+  priority   Priority?
+  price      Float?
+  image      String?
+  categories String[]
+  parentId   String?
+  parent     Item?          @relation("ChildParentItems", fields: [parentId], references: [id])
+  children   Item[]         @relation("ChildParentItems")
+  boughtBy   FamilyMember[] @relation("ItemBoughtBy")
+  createdAt  DateTime?      @default(now())
+  updatedAt  DateTime?      @updatedAt()
 }
 
 model Event {

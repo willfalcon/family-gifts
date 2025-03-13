@@ -37,7 +37,7 @@ export default function EditEvent(event: Event) {
         time: typeof values.time === 'string' ? new Date(values.time) : values.time,
       });
       if (success && updatedEvent) {
-        toast.success(`Created ${updatedEvent.name}`);
+        toast.success(`Updated ${updatedEvent.name}`);
       } else {
         console.log(updatedEvent);
         toast.error(message);
@@ -53,7 +53,7 @@ export default function EditEvent(event: Event) {
       <DialogTrigger asChild>
         <Button>Edit Event</Button>
       </DialogTrigger>
-      <DialogContent className="w-[700px] max-w-full pr-10">
+      <DialogContent className="max-w-2xl pr-10">
         <DialogHeader>
           <DialogTitle>Edit Event</DialogTitle>
         </DialogHeader>

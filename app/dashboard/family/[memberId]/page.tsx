@@ -8,13 +8,16 @@ import Viewer from '@/components/ui/rich-text/viewer';
 import { getFamilyMemberById, getMemberUser } from '@/lib/queries/family-members';
 import { getActiveFamilyId } from '@/lib/rscUtils';
 import { AvatarImage } from '@radix-ui/react-avatar';
-import { Mail } from 'lucide-react';
+import { Mail, Share2 } from 'lucide-react';
 import { redirect } from 'next/navigation';
 import { JSONContent } from '@tiptap/react';
 import { getLists } from '@/lib/queries/lists';
 import Link from 'next/link';
-import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { formatDistanceToNow } from 'date-fns';
 
 export default async function FamilyMemberPage({ params }: { params: { memberId: string } }) {
   const session = await auth();
@@ -39,8 +42,11 @@ export default async function FamilyMemberPage({ params }: { params: { memberId:
   const { lists, message: listMessage, success: listSuccess } = await getLists(memberUser?.id);
 
   const allItemsCount = lists.reduce((total, list) => total + list._count.items, 0);
+
+  const isAdmin = member.family.managers.some((manager) => manager.id === params.memberId);
+
   return (
-    <div className="space-y-4 p-8 pt-6">
+    <div className="container mx-auto px-4 py-8">
       <SetBreadcrumbs
         items={[
           { name: 'Dashboard', href: '/dashboard' },
@@ -49,46 +55,71 @@ export default async function FamilyMemberPage({ params }: { params: { memberId:
         ]}
       />
 
-      <div className="flex items-center space-x-4">
-        <Avatar className="w-20 h-20">
-          <AvatarImage src={memberUser?.image || undefined} alt={member.name} />
-          <AvatarFallback>{member.name[0]}</AvatarFallback>
-        </Avatar>
-        <Title>{member.name}</Title>
+      {/* Member Profile Header */}
+      <div className="mb-8">
+        <div className="flex flex-col md:flex-row gap-6 items-start">
+          <Avatar className="h-24 w-24">
+            <AvatarImage src={memberUser?.image || undefined} alt={member.name} />
+            <AvatarFallback>
+              {member.name
+                .split(' ')
+                .map((n) => n[0])
+                .join('')}
+            </AvatarFallback>
+          </Avatar>
+          <div className="flex-1">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
+              <div>
+                <Title>{member.name}</Title>
+                <div className="flex items-center gap-2 mt-1">
+                  <Badge variant={isAdmin ? 'default' : 'secondary'}>{isAdmin ? 'Admin' : 'Member'}</Badge>
+                  <span className="text-muted-foreground">{member.email}</span>
+                </div>
+                <p className="text-muted-foreground mt-2">Member of {member.family.name}</p>
+              </div>
+              <div className="flex gap-2">
+                <Button>
+                  <Mail className="mr-2 h-4 w-4" />
+                  Message
+                </Button>
+                <Button variant="outline">
+                  <Share2 className="mr-2 h-4 w-4" />
+                  Share
+                </Button>
+              </div>
+            </div>
+
+            {member.info && (
+              <div className="mt-4">
+                <Viewer content={member.info as JSONContent} immediatelyRender={false} />
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
-      <div className="flex items-center space-x-2">
-        <Mail className="w-4 h-4 text-muted-foreground" />
-        <span>{member.email}</span>
-      </div>
-
-      <Viewer content={member.info as JSONContent} style="prose" immediatelyRender={false} />
-
-      <div className="grid grid-cols-3 gap-4">
-        <Link href={`/dashboard/family/${member.id}/list/all`}>
-          <Card>
-            <CardHeader>
-              <CardTitle>All Items</CardTitle>
-              <CardDescription>{allItemsCount} items</CardDescription>
-            </CardHeader>
-            <CardFooter className="justify-between">
-              <Button variant="outline">View All Items</Button>
-            </CardFooter>
-          </Card>
-        </Link>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {listSuccess ? (
           lists.map((list) => (
-            <Link key={list.id} href={`/dashboard/family/${member.id}/list/${list.id}`}>
-              <Card>
-                <CardHeader>
-                  <CardTitle>{list.name}</CardTitle>
-                  <CardDescription>{list._count.items} items</CardDescription>
-                </CardHeader>
-                <CardFooter className="justify-between">
-                  <Button variant="outline">View List</Button>
-                </CardFooter>
-              </Card>
-            </Link>
+            <Card id={list.id}>
+              <CardHeader>
+                <CardTitle>{list.name}</CardTitle>
+                <div className="text-sm text-muted-foreground">
+                  <Viewer content={list.description as JSONContent} immediatelyRender={false} />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between text-sm">
+                  <span>{list._count.items} items</span>
+                  {list.updatedAt && <span className="text-muted-foreground">Updated {formatDistanceToNow(list.updatedAt)}</span>}
+                </div>
+              </CardContent>
+              <CardFooter>
+                <Link href={`/dashboard/wish-list/${list.id}`} className={buttonVariants({ size: 'sm', className: 'w-full' })}>
+                  View Wish List
+                </Link>
+              </CardFooter>
+            </Card>
           ))
         ) : (
           <ErrorMessage title={listMessage} />

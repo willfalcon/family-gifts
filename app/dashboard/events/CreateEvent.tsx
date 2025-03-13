@@ -40,7 +40,7 @@ export default function CreateEvent() {
       <DialogTrigger asChild>
         <Button>Create New Event</Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>Create Event</DialogTitle>
           <DialogDescription>

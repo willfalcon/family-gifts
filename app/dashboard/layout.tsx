@@ -12,8 +12,10 @@ export default async function DashboardLayout({ children }: PropsWithChildren) {
       {/* <div className="flex h-full min-h-screen w-full flex-col"> */}
       <DashboardSidebar />
       <SidebarInset>
-        <Header />
-        <div className="flex-1 p-6">{children}</div>
+        <div className="flex flex-col">
+          <Header />
+          <div className="flex-1">{children}</div>
+        </div>
       </SidebarInset>
     </Providers>
   );

@@ -1,13 +1,14 @@
 'use server';
 
 import { auth } from '@/auth';
-import { ItemSchema, ItemSchemaType } from './wishListSchema';
+import { ItemSchema, ItemSchemaType } from './itemSchema';
 import { prisma } from '@/prisma';
 import { revalidatePath } from 'next/cache';
 import { Item } from '@prisma/client';
 import { getASIN } from '@/lib/utils';
 import { getFamilyMember } from '@/lib/queries/family-members';
 import { getDefaultListId } from '@/lib/queries/lists';
+import { JSONContent } from '@tiptap/react';
 
 export type CreateItemReturn = {
   item?: Item;
@@ -42,6 +43,7 @@ export async function createItem(data: ItemSchemaType & { listId: string | undef
       const item = await prisma.item.create({
         data: {
           ...validatedData,
+          notes: validatedData.notes as JSONContent,
           list: {
             connect: {
               id: listId,
@@ -163,6 +165,7 @@ export async function editItem(id: Item['id'], data: ItemSchemaType) {
         },
         data: {
           ...validatedData,
+          notes: validatedData.notes as JSONContent,
         },
       });
 
@@ -250,6 +253,104 @@ export async function deleteItem(id: Item['id']) {
     return {
       success: false,
       message: 'Something went wrong.',
+    };
+  }
+}
+
+export async function getItemBoughtBy(itemId: Item['id']) {
+  const session = await auth();
+  if (!session?.user) {
+    return {
+      success: false,
+      message: 'You must be logged in to do this.',
+      item: null,
+    };
+  }
+
+  const item = await prisma.item.findUnique({
+    where: {
+      id: itemId,
+    },
+    include: {
+      boughtBy: true, // FamilyMember[]
+      member: true, // FamilyMember
+    },
+  });
+
+  if (item) {
+    return {
+      success: true,
+      message: '',
+      item,
+    };
+  }
+  return {
+    success: false,
+    message: `Couldn't find the item.`,
+    item: null,
+  };
+}
+
+export async function toggleBoughtBy(itemId: Item['id'], bought: boolean | undefined) {
+  const session = await auth();
+  if (!session?.user) {
+    return {
+      success: false,
+      message: 'You must be logged in to do this.',
+      item: null,
+    };
+  }
+
+  try {
+    const { member: currentMember, success, message } = await getFamilyMember();
+
+    if (!success || !currentMember) {
+      return {
+        success: false,
+        message: `Couldn't find you... are you sure you're in this family?`,
+        item: null,
+      };
+    }
+
+    const item = await prisma.item.update({
+      where: {
+        id: itemId,
+      },
+      data: {
+        boughtBy: {
+          ...(bought
+            ? {
+                connect: {
+                  id: currentMember.id,
+                },
+              }
+            : {
+                disconnect: {
+                  id: currentMember.id,
+                },
+              }),
+        },
+      },
+    });
+
+    if (item) {
+      return {
+        success: true,
+        message: '',
+        item,
+      };
+    }
+    return {
+      success: false,
+      message: `Either couldn't find the item to update or couldn't mark it as bought for you.`,
+      item,
+    };
+  } catch (err) {
+    console.error(err);
+    return {
+      success: false,
+      message: 'Something went wrong.',
+      item: null,
     };
   }
 }

@@ -46,9 +46,9 @@ export default function Manager({ familyId, eventId }: Props) {
       <DialogTrigger asChild>
         <Button>Manage Secret Santa</Button>
       </DialogTrigger>
-      <DialogContent className="w-[700px] max-w-full pr-10">
+      <DialogContent className="max-w-2xl pr-10">
         <DialogHeader>
-          <DialogTitle className='text-xl'>Secret Santa Manager</DialogTitle>
+          <DialogTitle className="text-xl">Secret Santa Manager</DialogTitle>
           <DialogDescription>Select participants and set exclusions for Secret Santa</DialogDescription>
         </DialogHeader>
         <ScrollArea className="max-h-[80vh] pr-5">

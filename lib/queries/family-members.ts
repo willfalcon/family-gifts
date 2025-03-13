@@ -11,7 +11,85 @@ type GetMembersResult = {
   members: FamilyMemberWithUser[];
 };
 
-export const getMembers = cache(async (id: Family['id']): Promise<GetMembersResult> => {
+/**
+ * Get limit or 4 members of currently active family.
+ * @param {number | undefined} limit
+ * @returns {MemberWithUser}
+ */
+
+export const getSomeMembers = cache(async (limit: number | undefined, skip?: number | undefined) => {
+  const session = await auth();
+  if (!session?.user) {
+    return {
+      success: false,
+      message: 'You must be logged in to do this.',
+      members: [],
+      count: 0,
+    };
+  }
+
+  const activeFamilyId = await getActiveFamilyId();
+  try {
+    const members = await prisma.familyMember.findMany({
+      where: {
+        familyId: activeFamilyId,
+      },
+      include: {
+        managing: true,
+        user: {
+          include: {
+            _count: {
+              select: {
+                lists: {
+                  where: {
+                    visibleTo: {
+                      some: {
+                        id: activeFamilyId,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'asc',
+      },
+      ...(limit &&
+        limit >= 0 && {
+          take: limit ?? 4,
+        }),
+      skip: skip ?? 0,
+    });
+    const count = await prisma.familyMember.count({
+      where: {
+        familyId: activeFamilyId,
+      },
+    });
+    if (members) {
+      return {
+        success: true,
+        members,
+        message: '',
+        count,
+      };
+    } else {
+      return { success: false, members: [], message: `Couldn't find any members.`, count: 0 };
+    }
+  } catch (err) {
+    console.error(err);
+    return {
+      success: false,
+      members: [],
+      message: 'Something went wrong.',
+      count: 0,
+    };
+  }
+});
+
+export const getMembers = cache(async (id: Family['id'], limit: number | undefined): Promise<GetMembersResult> => {
   const session = await auth();
   if (!session?.user) {
     return {
@@ -42,6 +120,7 @@ export const getMembers = cache(async (id: Family['id']): Promise<GetMembersResu
     };
   }
 
+  // am i a member or a manager of the family?
   if (family?.members.find((member) => member.userId === session.user!.id || family.managerId === session.user!.id)) {
     return {
       success: true,
@@ -136,7 +215,7 @@ export const getFamilyMember = cache(async () => {
   const session = await auth();
   if (!session?.user) {
     return {
-      error: 'Not logged in',
+      success: false,
       message: 'You must be logged in to do this.',
       member: null,
     };
@@ -205,6 +284,11 @@ export const getFamilyMemberById = cache(async (id: FamilyMember['id']) => {
       },
       include: {
         user: true,
+        family: {
+          include: {
+            managers: true,
+          },
+        },
       },
     });
 

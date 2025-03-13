@@ -4,6 +4,7 @@ import { prisma } from '@/prisma';
 import { ListSchema, ListSchemaType } from './listSchema';
 import { revalidatePath } from 'next/cache';
 import { List } from '@prisma/client';
+import { JSONContent } from '@tiptap/react';
 
 export async function createList(data: ListSchemaType) {
   const session = await auth();
@@ -20,6 +21,7 @@ export async function createList(data: ListSchemaType) {
     const newList = await prisma.list.create({
       data: {
         ...validatedData,
+        description: validatedData.description as JSONContent,
         visibleTo: {
           connect: validatedData.visibleTo.map((id) => ({ id })),
         },
@@ -76,6 +78,7 @@ export async function updateList(id: List['id'], data: ListSchemaType) {
       },
       data: {
         ...validatedData,
+        description: validatedData.description as JSONContent,
         visibleTo: {
           connect: validatedData.visibleTo.map((id) => ({ id })),
           disconnect: previousVisibleTo?.visibleTo.filter(({ id }) => !validatedData.visibleTo.includes(id)).map(({ id }) => ({ id })),
@@ -96,7 +99,7 @@ export async function updateList(id: List['id'], data: ListSchemaType) {
       };
     }
 
-    revalidatePath('/wish-lists');
+    revalidatePath('/wish-list/[id]', 'page');
 
     return {
       success: true,

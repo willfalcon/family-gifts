@@ -51,11 +51,25 @@ export type FamilyMemberWithManaging = Prisma.FamilyMemberGetPayload<{
   };
 }>;
 
+export type MemberForDashboard = Prisma.FamilyMemberGetPayload<{
+  include: {
+    managing: true;
+    user: {
+      include: {
+        _count: {
+          select: {
+            lists: true;
+          };
+        };
+      };
+    };
+  };
+}>;
 export type FamilyWithManagers = Prisma.FamilyGetPayload<{
   include: {
-    managers: true
-  }
-}>
+    managers: true;
+  };
+}>;
 
 export type EventWithAssignments = Prisma.EventGetPayload<{
   include: {
@@ -105,7 +119,6 @@ export type ItemWithRefs = Prisma.ItemGetPayload<{
   include: {
     member: true;
     boughtBy?: true;
-    list?: true;
   };
 }>;
 
@@ -117,6 +130,23 @@ export type ListWithItems = Prisma.ListGetPayload<{
         member: true;
         boughtBy?: true;
         list?: true;
+      };
+    };
+  };
+}>;
+
+export type ListForWishListPage = Prisma.ListGetPayload<{
+  include: {
+    visibleTo: true;
+    items: {
+      include: {
+        member: true;
+        boughtBy: true;
+      };
+    };
+    user: {
+      include: {
+        familyMemberships: true;
       };
     };
   };

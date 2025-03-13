@@ -129,6 +129,11 @@ export const getListById = cache(async (id: List['id']) => {
             boughtBy: true,
           },
         },
+        user: {
+          include: {
+            familyMemberships: true,
+          },
+        },
       },
     });
 

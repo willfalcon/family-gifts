@@ -19,5 +19,5 @@ export default async function page({ params }: PageProps) {
     return <p>{message}</p>;
   }
 
-  return <WishListPage {...list} />;
+  return <WishListPage list={list} me={session.user} />;
 }

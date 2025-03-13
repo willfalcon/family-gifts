@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
-import { FormControl, FormItem, FormLabel } from '@/components/ui/form';
+import { FormControl, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { CaretSortIcon } from '@radix-ui/react-icons';
@@ -10,13 +10,26 @@ import { useFormContext } from 'react-hook-form';
 
 type Props = {
   categories: string[];
-  value: string;
+  value: string[];
 };
 
-export default function CategoryField({ categories, value }: Props) {
+function formatList(items: string[]): string {
+  if (!items.length) return 'Select Categories';
+  if (items.length === 1) return items[0];
+
+  const displayItems = items.slice(0, 3);
+  const remaining = items.length - displayItems.length;
+
+  const displayText = displayItems.join(', ');
+  return remaining > 0 ? `${displayText} and ${remaining} more` : displayItems.slice(0, -1).join(', ') + ' and ' + displayItems.slice(-1);
+}
+
+export default function CategoryField({ categories: initialCategories, value }: Props) {
   const form = useFormContext();
   const [inputValue, setInputValue] = useState('');
   const [open, setOpen] = useState(false);
+  const [categories, setCategories] = useState(initialCategories);
+  const displayList = formatList(value);
   return (
     <FormItem className="flex flex-col">
       <FormLabel>Category</FormLabel>
@@ -24,7 +37,7 @@ export default function CategoryField({ categories, value }: Props) {
         <PopoverTrigger asChild>
           <FormControl>
             <Button variant="outline" role="combobox" className={cn('w-[200px] justify-between', !value && 'text-muted-foreground')}>
-              {value ? value : 'Select Category'}
+              {displayList}
               <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </FormControl>
@@ -44,7 +57,9 @@ export default function CategoryField({ categories, value }: Props) {
                 {inputValue.length > 0 && (
                   <Button
                     onClick={() => {
-                      form.setValue('category', inputValue);
+                      setCategories([...categories, inputValue]);
+                      form.setValue('categories', [...value, inputValue]);
+                      setInputValue('');
                       setOpen(false);
                     }}
                   >
@@ -58,11 +73,18 @@ export default function CategoryField({ categories, value }: Props) {
                     value={category}
                     key={category}
                     onSelect={() => {
-                      form.setValue('category', category);
+                      if (value.includes(category)) {
+                        form.setValue(
+                          'categories',
+                          value.filter((c) => c !== category),
+                        );
+                      } else {
+                        form.setValue('categories', [...value, category]);
+                      }
                     }}
                   >
                     {category}
-                    <CheckIcon className={cn('ml-auto h-4 w-4', category === value ? 'opacity-100' : 'opacity-50')} />
+                    <CheckIcon className={cn('ml-auto h-4 w-4', value.includes(category) ? 'opacity-100' : 'opacity-0')} />
                   </CommandItem>
                 ))}
               </CommandGroup>
@@ -70,6 +92,7 @@ export default function CategoryField({ categories, value }: Props) {
           </Command>
         </PopoverContent>
       </Popover>
+      <FormMessage />
     </FormItem>
   );
 }
