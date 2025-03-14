@@ -89,7 +89,7 @@ export const getSomeMembers = cache(async (limit: number | undefined, skip?: num
   }
 });
 
-export const getMembers = cache(async (id: Family['id'], limit: number | undefined): Promise<GetMembersResult> => {
+export const getMembers = cache(async (id: Family['id'], limit?: number | undefined): Promise<GetMembersResult> => {
   const session = await auth();
   if (!session?.user) {
     return {
@@ -108,6 +108,9 @@ export const getMembers = cache(async (id: Family['id'], limit: number | undefin
         include: {
           user: true,
         },
+        ...(limit && {
+          take: limit,
+        }),
       },
     },
   });
