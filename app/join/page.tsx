@@ -22,11 +22,9 @@ export default async function JoinPage({ searchParams }: PageProps) {
 
   const session = await auth();
 
-  const { familyMember, success, message } = await getInvitedMember(token);
+  // TODO: Update this to also handle event invites
 
-  if (!success || !familyMember) {
-    throw new Error(message);
-  }
+  const invite = await getInvitedMember(token);
 
   return (
     <div className="container flex flex-col items-center justify-center min-h-screen py-12">
@@ -42,20 +40,21 @@ export default async function JoinPage({ searchParams }: PageProps) {
                 <Users className="h-10 w-10 text-primary" />
               </div>
               <div className="text-center">
-                <h2 className="text-xl font-bold">{familyMember.family.name}</h2>
-                {familyMember.createdAt && (
-                  <p className="text-sm text-muted-foreground">Invitation sent {new Date(familyMember.createdAt).toLocaleDateString()}</p>
+                <h2 className="text-xl font-bold">{invite.family?.name}</h2>
+                {invite.createdAt && (
+                  <p className="text-sm text-muted-foreground">Invitation sent {new Date(invite.createdAt).toLocaleDateString()}</p>
                 )}
               </div>
             </div>
             <div className="space-y-4">
               <div className="flex items-center space-x-4">
                 <Avatar>
-                  {familyMember?.family?.managers[0]?.user?.image ? (
-                    <AvatarImage src={familyMember.family.managers[0].user.image} alt={familyMember.family.managers[0].name} />
+                  {/* TODO: add actual invite sender to invite model */}
+                  {session?.user?.image ? (
+                    <AvatarImage src={invite.family?.managers[0].image || undefined} alt={invite.family?.managers[0].name || ''} />
                   ) : (
                     <AvatarFallback>
-                      {familyMember.family.managers[0].user?.name
+                      {invite.family?.managers[0].name
                         ?.split(' ')
                         .map((n) => n[0])
                         .join('')}
@@ -63,8 +62,8 @@ export default async function JoinPage({ searchParams }: PageProps) {
                   )}
                 </Avatar>
                 <div>
-                  <p className="text-sm font-medium">{familyMember.family.managers[0].name} invited you</p>
-                  <p className="text-sm text-muted-foreground">{familyMember.family.managers[0].email}</p>
+                  <p className="text-sm font-medium">{invite.family?.managers[0].name} invited you</p>
+                  <p className="text-sm text-muted-foreground">{invite.family?.managers[0].email}</p>
                 </div>
               </div>
             </div>
@@ -72,12 +71,12 @@ export default async function JoinPage({ searchParams }: PageProps) {
             <div className="grid grid-cols-3 gap-4 py-4">
               <div className="flex flex-col items-center justify-center space-y-1 rounded-lg border p-4">
                 <Users className="h-5 w-5 text-muted-foreground mb-1" />
-                <span className="text-xl font-bold">{familyMember?.family?._count.members}</span>
+                <span className="text-xl font-bold">{invite.family?._count.members}</span>
                 <span className="text-xs text-muted-foreground">Members</span>
               </div>
               <div className="flex flex-col items-center justify-center space-y-1 rounded-lg border p-4">
                 <Gift className="h-5 w-5 text-muted-foreground mb-1" />
-                <span className="text-xl font-bold">{familyMember?.family?._count.listsVisible}</span>
+                <span className="text-xl font-bold">{invite.family?._count.listsVisible}</span>
                 <span className="text-xs text-muted-foreground">Wish Lists</span>
               </div>
               <div className="flex flex-col items-center justify-center space-y-1 rounded-lg border p-4">
@@ -96,7 +95,7 @@ export default async function JoinPage({ searchParams }: PageProps) {
                   <line x1="8" x2="8" y1="2" y2="6" />
                   <line x1="3" x2="21" y1="10" y2="10" />
                 </svg>
-                <span className="text-xl font-bold">{familyMember?.family?._count.events}</span>
+                <span className="text-xl font-bold">{invite.family?._count.events}</span>
                 <span className="text-xs text-muted-foreground">Events</span>
               </div>
             </div>
@@ -126,7 +125,7 @@ export default async function JoinPage({ searchParams }: PageProps) {
                 <SignIn />
               </>
             ) : (
-              <JoinButton name={familyMember?.family.name || ''} token={token} />
+              <JoinButton name={invite.family?.name || ''} token={token} />
             )}
           </CardFooter>
         </Card>

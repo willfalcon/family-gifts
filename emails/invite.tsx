@@ -1,10 +1,9 @@
 import { Body, Button, Container, Head, Heading, Html, Link, Preview, Section, Text, Tailwind } from '@react-email/components';
-import { FamilyMemberWithUser } from '@/prisma/types';
-import { Family } from '@prisma/client';
+import { Family, Invite } from '@prisma/client';
 
-export default function InviteEmailTemplate(member: FamilyMemberWithUser, family: Family) {
+export default function InviteEmailTemplate(member: Invite, family: Family) {
   const previewText = `Someone invited you to join the family on Family Gifts.`;
-  const inviteLink = `https://${process.env.FRONTEND_URL}/join?token=${member.inviteToken}`;
+  const inviteLink = `https://${process.env.FRONTEND_URL}/join?token=${member.token}`;
   return (
     <Html>
       <Head />
@@ -16,7 +15,7 @@ export default function InviteEmailTemplate(member: FamilyMemberWithUser, family
               <Heading className="text-black text-[24px] font-normal text-center p-0 my-[30px] mx-0">
                 Join <strong>{family.name}</strong> on <strong>Family Gifts</strong>
               </Heading>
-              <Text className="text-black text-[14px] leading-[24px]">Hello {member.name},</Text>
+              <Text className="text-black text-[14px] leading-[24px]">Hello,</Text>
               <Text className="text-black text-[14px] leading-[24px]">
                 You&apos;ve been invited to join <strong>{family.name}</strong> on <strong>Family Gifts</strong>.
               </Text>
@@ -38,9 +37,8 @@ export default function InviteEmailTemplate(member: FamilyMemberWithUser, family
 }
 
 InviteEmailTemplate.PreviewProps = {
-  inviteToken: 'sampleInviteToken',
+  token: 'sampleInviteToken',
   family: {
     name: 'Sample Family',
   },
-  name: 'John Doe',
 };

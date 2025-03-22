@@ -15,69 +15,54 @@ export async function joinFamily(token: string) {
     };
   }
 
-  const familyMember = await prisma.familyMember.findFirst({
+  const invite = await prisma.invite.findUnique({
     where: {
-      inviteToken: token,
+      token,
     },
   });
 
-  if (familyMember) {
-    if (familyMember.inviteTokenExpiry && familyMember.inviteTokenExpiry < new Date()) {
-      return {
-        success: false,
-        message: 'This invite has expired. Ask the family manager to send you a new one.',
-        updatedMember: null,
-      }
-    }
-    try {
-      const updatedMember = await prisma.familyMember.update({
-        where: {
-          id: familyMember.id,
-        },
-        data: {
-          user: {
-            connect: {
-              id: session.user.id,
-            },
-          },
-          joined: true,
-          inviteToken: null,
-          inviteTokenExpiry: null,
-        },
-      });
-      if (updatedMember) {
-        // Add the user to the family channe
-        const client = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
-
-        await client.mutation(api.channels.addChannelUser, {
-          family: updatedMember.familyId,
-          user: updatedMember.userId!,
-        });
-        return {
-          success: true,
-          updatedMember,
-          message: ''
-        };
-      }
-
-      return {
-        success: false,
-        updatedMember: null,
-        message: `Couldn't find the family member. How did you get here with logging in our making an account?`
-      };
-      
-    } catch (err) {
-      console.error(err);
-      return {
-        success: false,
-        message: 'Something went wrong. 🤷‍♂️',
-        updatedMember: null,
-      };
-    }
+  if (!invite) {
+    throw new Error(`Couldn't find your invite.`);
   }
-  return {
-    success: false,
-    message: 'Invalid token.',
-    updatedMember: null,
-  };
+
+  if (invite.tokenExpiry && invite.tokenExpiry < new Date()) {
+    throw new Error('This invite has expired. Ask the family manager to send you a new one.');
+  }
+  if (!invite.familyId) {
+    throw new Error(`FamilyId not attached to invite.`);
+  }
+
+  try {
+    const updatedUser = await prisma.user.update({
+      where: {
+        id: session.user.id,
+      },
+      data: {
+        families: {
+          connect: {
+            id: invite.familyId,
+          },
+        },
+      },
+    });
+    if (updatedUser) {
+      // Add the user to the family channe
+      const client = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
+
+      await client.mutation(api.channels.addChannelUser, {
+        family: invite.familyId,
+        user: updatedUser.id!,
+      });
+      return { familyId: invite.familyId, userName: updatedUser.name };
+    }
+
+    throw new Error(`User not updated.`);
+  } catch (err) {
+    console.error(err);
+    return {
+      success: false,
+      message: 'Something went wrong. 🤷‍♂️',
+      updatedMember: null,
+    };
+  }
 }

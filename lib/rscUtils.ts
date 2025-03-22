@@ -30,7 +30,7 @@ export async function getActiveFamilyId() {
 
   // In all other cases, just return the first family they're in and run with that until they set a different one.
 
-  const { families } = await getFamilies();
+  const families = await getFamilies();
   if (families.length > 0) {
     return families[0].id;
   }

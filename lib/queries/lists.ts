@@ -1,6 +1,6 @@
 import { auth } from '@/auth';
 import { prisma } from '@/prisma';
-import { User } from '@prisma/client';
+import { Event, User } from '@prisma/client';
 import { cache } from 'react';
 import { getActiveFamilyId } from '../rscUtils';
 

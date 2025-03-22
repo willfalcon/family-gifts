@@ -13,7 +13,7 @@ export default function InfoField() {
       render={({ field }) => (
         <FormItem>
           <FormLabel>Info</FormLabel>
-          <Editor content={field.value} onChange={field.onChange} />
+          <Editor content={field.value} onChange={field.onChange} immediatelyRender={false} />
           <FormMessage />
         </FormItem>
       )} 

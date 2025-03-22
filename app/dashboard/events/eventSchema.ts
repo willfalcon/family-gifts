@@ -6,6 +6,8 @@ export const EventSchema = z.object({
   time: z.date().optional(),
   location: z.string().optional().default(''),
   info: z.any().optional(),
+  attendees: z.array(z.string()).default([]),
+  externalInvites: z.array(z.string()).default([]),
 });
 
 export type EventSchemaType = z.infer<typeof EventSchema>;

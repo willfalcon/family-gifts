@@ -9,20 +9,27 @@ generator client {
 }
 
 model User {
-  id                String          @id() @default(cuid())
-  name              String?
-  email             String          @unique()
-  emailVerified     DateTime?
-  image             String?
-  accounts          Account[]
-  sessions          Session[]
-  Authenticator     Authenticator[]
-  role              String          @default("MEMBER")
-  managedFamilies   Family[]        @relation("FamilyManager")
-  familyMemberships FamilyMember[]  @relation("FamilyMembers")
-  lists             List[]
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @updatedAt()
+  id              String          @id() @default(cuid())
+  name            String?
+  email           String          @unique()
+  emailVerified   DateTime?
+  image           String?
+  accounts        Account[]
+  sessions        Session[]
+  Authenticator   Authenticator[]
+  // familyMemberships FamilyMember[]  @relation("FamilyMembers")
+  families        Family[]        @relation("FamilyUser")
+  createdFamilies Family[]        @relation("FamilyCreator")
+  managing        Family[]        @relation("FamilyManager")
+  lists           List[]
+  events          Event[]
+  receiving       Assignment[]    @relation("Recipient")
+  giving          Assignment[]    @relation("Giver")
+  eventInvite     Invite[]        @relation("EventInviteUser")
+  channels        Channel[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
 }
 
 model Account {
@@ -75,56 +82,78 @@ model Authenticator {
   @@id([userId, credentialID])
 }
 
-model Family {
-  id           String         @id() @default(cuid())
-  name         String
-  managerId    String
-  manager      User           @relation("FamilyManager", fields: [managerId], references: [id])
-  managers     FamilyMember[] @relation("FamilyManagerMember")
-  members      FamilyMember[]
-  events       Event[]
-  listsVisible List[]
-  channels     Channel[]
-  createdAt    DateTime?      @default(now())
-  updatedAt    DateTime?      @updatedAt()
+enum EventResponse {
+  declined
+  maybe
+  accepted
 }
 
-model FamilyMember {
-  id                String       @id() @default(cuid())
-  name              String
-  email             String
-  userId            String?
-  user              User?        @relation("FamilyMembers", fields: [userId], references: [id])
-  familyId          String
-  family            Family       @relation(fields: [familyId], references: [id])
-  inviteToken       String?
-  inviteTokenExpiry DateTime?
-  joined            Boolean      @default(false)
-  giving            Assignment[] @relation("Giver")
-  receiving         Assignment[] @relation("Receiver")
-  items             Item[]       @relation("MemberItems")
-  bought            Item[]       @relation("ItemBoughtBy")
-  managing          Family[]     @relation("FamilyManagerMember")
-  eventsManaged     Event[]
-  info              Json?
-  messages          Message[]
-  channels          Channel[]
-  readMessages      Message[]    @relation("ReadyMessages")
-  createdAt         DateTime?    @default(now())
-  updatedAt         DateTime?    @updatedAt()
+model Invite {
+  id            String         @id() @default(cuid())
+  email         String
+  token         String         @unique()
+  tokenExpiry   DateTime
+  family        Family?        @relation("FamilyInvite", fields: [familyId], references: [id])
+  familyId      String?
+  event         Event?         @relation("EventInvite", fields: [eventId], references: [id])
+  eventId       String?
+  eventResponse EventResponse?
+  user          User?          @relation("EventInviteUser", fields: [userId], references: [id])
+  userId        String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt()
 }
+
+model Family {
+  id            String    @id() @default(cuid())
+  name          String
+  description   Json?
+  managers      User[]    @relation("FamilyManager")
+  creatorId     String
+  creator       User      @relation("FamilyCreator", fields: [creatorId], references: [id])
+  members       User[]    @relation("FamilyUser")
+  invites       Invite[]  @relation("FamilyInvite")
+  events        Event[]
+  listsVisible  List[]
+  channels      Channel[] // TODO: remove
+  familyChannel String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt()
+}
+
+// model FamilyMember {
+//   id                String       @id() @default(cuid())
+//   name              String
+//   email             String
+//   userId            String?
+//   user              User?        @relation("FamilyMembers", fields: [userId], references: [id])
+//   inviteToken       String?
+//   inviteTokenExpiry DateTime?
+//   joined            Boolean      @default(false)
+//   giving            Assignment[] @relation("Giver")
+//   receiving         Assignment[] @relation("Receiver")
+//   items             Item[]       @relation("MemberItems")
+//   bought            Item[]       @relation("ItemBoughtBy")
+//   eventsManaged     Event[]
+//   info              Json?
+//   messages          Message[]
+//   channels          Channel[]
+//   readMessages      Message[]    @relation("ReadyMessages")
+//   createdAt         DateTime?    @default(now())
+//   updatedAt         DateTime?    @updatedAt()
+// }
 
 model List {
-  id          String    @id() @default(cuid())
+  id          String   @id() @default(cuid())
   name        String
   description Json?
   userId      String
-  user        User      @relation(fields: [userId], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
   items       Item[]
   visibleTo   Family[]
   default     Boolean?
-  createdAt   DateTime? @default(now())
-  updatedAt   DateTime? @updatedAt()
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt()
 }
 
 enum Priority {
@@ -134,12 +163,10 @@ enum Priority {
 }
 
 model Item {
-  id         String         @id() @default(cuid())
+  id         String    @id() @default(cuid())
   name       String
-  memberId   String?
-  member     FamilyMember?  @relation("MemberItems", fields: [memberId], references: [id])
   listId     String?
-  list       List?          @relation(fields: [listId], references: [id])
+  list       List?     @relation(fields: [listId], references: [id])
   link       String?
   notes      Json?
   priority   Priority?
@@ -147,42 +174,48 @@ model Item {
   image      String?
   categories String[]
   parentId   String?
-  parent     Item?          @relation("ChildParentItems", fields: [parentId], references: [id])
-  children   Item[]         @relation("ChildParentItems")
-  boughtBy   FamilyMember[] @relation("ItemBoughtBy")
-  createdAt  DateTime?      @default(now())
-  updatedAt  DateTime?      @updatedAt()
+  parent     Item?     @relation("ChildParentItems", fields: [parentId], references: [id])
+  children   Item[]    @relation("ChildParentItems")
+  // boughtBy   FamilyMember[] @relation("ItemBoughtBy")
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt()
 }
 
 model Event {
-  id          String         @id() @default(cuid())
-  name        String
-  date        DateTime?
-  time        DateTime?
-  info        Json?
-  type        String?
-  location    String?
-  familyId    String
-  family      Family         @relation(fields: [familyId], references: [id])
-  assignments Assignment[]
-  channels    Channel[]
-  managers    FamilyMember[]
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt()
+  id                String       @id() @default(cuid())
+  name              String
+  date              DateTime?
+  time              DateTime?
+  info              Json?
+  type              String?
+  location          String?
+  familyId          String? // TODO: remove family relation
+  family            Family?      @relation(fields: [familyId], references: [id])
+  assignments       Assignment[]
+  secretSantaBudget Float?
+  channels          Channel[] // TODO: remove
+  eventChannel      String?
+  attendees         User[]
+  // managers          FamilyMember[]
+  invites           Invite[]     @relation("EventInvite")
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt()
 }
 
 model Assignment {
-  id         String        @id() @default(cuid())
-  eventId    String
-  event      Event         @relation(fields: [eventId], references: [id])
-  giverId    String?
-  giver      FamilyMember? @relation("Giver", fields: [giverId], references: [id])
-  receiverId String?
-  receiver   FamilyMember? @relation("Receiver", fields: [receiverId], references: [id])
-  createdAt  DateTime      @default(now())
-  updatedAt  DateTime      @updatedAt()
+  id          String   @id() @default(cuid())
+  eventId     String
+  event       Event    @relation(fields: [eventId], references: [id])
+  giverId     String?
+  giver       User?    @relation("Giver", fields: [giverId], references: [id])
+  recipientId String?
+  recipient   User?    @relation("Recipient", fields: [recipientId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt()
 }
 
+
+// TODO: remove all channel stuff
 enum ChannelType {
   family
   event
@@ -190,29 +223,16 @@ enum ChannelType {
 }
 
 model Channel {
-  id           String         @id() @default(cuid())
+  id           String      @id() @default(cuid())
   name         String
   lastMessage  String
-  type         ChannelType    @default(individual)
-  messages     Message[]
+  type         ChannelType @default(individual)
   familyId     String?
-  family       Family?        @relation(fields: [familyId], references: [id])
+  family       Family?     @relation(fields: [familyId], references: [id])
   eventId      String?
-  event        Event?         @relation(fields: [eventId], references: [id])
-  groupMembers FamilyMember[]
+  event        Event?      @relation(fields: [eventId], references: [id])
+  groupMembers User[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt()
-}
-
-model Message {
-  id        String         @id() @default(cuid())
-  channelId String
-  channel   Channel        @relation(fields: [channelId], references: [id])
-  senderId  String
-  sender    FamilyMember   @relation(fields: [senderId], references: [id])
-  text      String
-  readBy    FamilyMember[] @relation("ReadyMessages")
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt()
 }

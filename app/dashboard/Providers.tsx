@@ -2,7 +2,7 @@
 
 // import { getActiveFamilyId } from "@/lib/rscUtils";
 // import { getCookie } from 'cookies-next';
-import { createContext, Dispatch, PropsWithChildren, SetStateAction, useContext, useState } from 'react';
+import { createContext, Dispatch, PropsWithChildren, SetStateAction, useContext } from 'react';
 
 import { QueryClient, QueryClientProvider, useQuery, UseQueryResult } from '@tanstack/react-query';
 import { ConvexProvider, ConvexReactClient } from 'convex/react';
@@ -44,23 +44,19 @@ function getQueryClient() {
 
 const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
-export default function Providers({ children, activeFamilyId }: PropsWithChildren & { activeFamilyId?: string }) {
+export default function Providers({ children }: PropsWithChildren) {
   // const activeFamilyId = getCookie('activeFamilyId');
-  const activeFamilyState = useState(activeFamilyId);
+
   const queryClient = getQueryClient();
 
   return (
     <QueryClientProvider client={queryClient}>
       <ConvexProvider client={convex}>
-        <ActiveFamilyContext.Provider value={activeFamilyState}>
-          <MeProvider>
-            <BreadcrumbsProvider>
-              <SidebarProvider defaultOpen={true}>
-                {children}
-              </SidebarProvider>
-            </BreadcrumbsProvider>
-          </MeProvider>
-        </ActiveFamilyContext.Provider>
+        <MeProvider>
+          <BreadcrumbsProvider>
+            <SidebarProvider defaultOpen={true}>{children}</SidebarProvider>
+          </BreadcrumbsProvider>
+        </MeProvider>
       </ConvexProvider>
     </QueryClientProvider>
   );

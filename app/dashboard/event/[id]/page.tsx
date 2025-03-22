@@ -10,21 +10,69 @@ import Viewer from '@/components/ui/rich-text/viewer';
 import { JSONContent } from '@tiptap/react';
 import SetBreadcrumbs from '@/components/SetBreadcrumbs';
 import { getEvent } from '@/lib/queries/events';
-import { getFamilies } from '@/lib/queries/families';
+import { getFamilies, getFamily } from '@/lib/queries/families';
 // import Assignments from './SecretSanta/Assignments';
-import SecretSanta from './SecretSanta/SecretSanta';
+// import SecretSanta from './SecretSanta/SecretSanta';
 import { getActiveMemberAll } from '@/lib/queries/family-members';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import FloatingMessages from '@/components/Messages/FloatingMessages';
 import MessagesSidebar from '@/components/Messages/MessagesSidebar';
 import EditEvent from './EditEvent';
+import { Prisma } from '@prisma/client';
+import EventHeader from './EventHeader';
+import SecretSantaBanner from './SecretSantaBanner';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import DetailsTab from './DetailsTab';
+import ParticipantsTab from './ParticipantsTab';
+import WishListsTab from './WishLIstsTab';
 
 type PageProps = {
   params: {
     id: string;
   };
 };
+
+export type EventForEventPage = Prisma.EventGetPayload<{
+  include: {
+    assignments: {
+      include: {
+        giver: {
+          include: {
+            user: true;
+          };
+        };
+        receiver: {
+          include: {
+            user: true;
+          };
+        };
+      };
+    };
+    managers: true;
+  };
+}>;
+
+export type SSAssignment = Prisma.AssignmentGetPayload<{
+  include: {
+    giver: {
+      include: {
+        user: true;
+      };
+    };
+    receiver: {
+      include: {
+        user: true;
+      };
+    };
+  };
+}>;
+
+export type SSMember = Prisma.FamilyMemberGetPayload<{
+  include: {
+    user: true;
+  };
+}>;
 
 export default async function EventPage({ params }: PageProps) {
   const session = await auth();
@@ -33,21 +81,23 @@ export default async function EventPage({ params }: PageProps) {
   }
   const { event, success, message } = await getEvent(params.id);
   if (!success || !event) {
-    return <p>{message}</p>;
+    throw new Error(message);
   }
 
-  const activeFamilyId = await getActiveFamilyId();
-  const { families } = await getFamilies();
-  const family = families.find((family) => family.id === activeFamilyId);
+  const { success: familySuccess, message: familyMessage, family } = await getFamily();
   const me = await getActiveMemberAll();
-  if (!family || !me) {
-    return <ErrorMessage title="We can't figure out who you are." />;
+
+  if (!familySuccess || !family) {
+    throw new Error(familyMessage);
+  }
+  if (!me) {
+    throw new Error(`Couldn't find you. Make sure you're logged in, and are a member of this family and actually invited to this event.`);
   }
 
   const isManager = family.managers.some((manager) => manager.id === me.id);
 
-  const assignment = me.giving.find((assignment) => assignment.eventId === event.id)?.receiver;
-  
+  const userAssignment = event.assignments?.find((assignment) => assignment.giverId === me.id);
+
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="space-y-4 p-8 pt-6 relative w-full">
@@ -58,13 +108,22 @@ export default async function EventPage({ params }: PageProps) {
             { name: event.name, href: `/dashboard/event/${event.id}` },
           ]}
         />
-        <div className="flex justify-between items-center">
-          <Title>{event.name}</Title>
-          {isManager && <EditEvent {...event} />}
-        </div>
-        {event.date && <p className="text-sm text-muted-foreground">{format(event.date, 'MMMM dd, yyyy')}</p>}
-        {event.info && <Viewer content={event.info as JSONContent} style="prose" immediatelyRender={false} />}
-        <SecretSanta isManager={isManager} family={family!} event={event} assignment={assignment} />
+
+        <EventHeader event={event} isManager={isManager} />
+        <SecretSantaBanner eventId={event.id} isManager={isManager} budget={event.secretSantaBudget} userRecipient={userAssignment?.receiver} />
+
+        <Tabs defaultValue="details" className="space-y-6">
+          <TabsList>
+            <TabsTrigger value="details">Details</TabsTrigger>
+            <TabsTrigger value="participants">Participants</TabsTrigger>
+            <TabsTrigger value="wishlists">Wish Lists</TabsTrigger>
+            {event.assignments && <TabsTrigger value="secretsanta">Secret Santa</TabsTrigger>}
+          </TabsList>
+          <DetailsTab event={event} />
+          <ParticipantsTab family={family} />
+          {/* <WishListsTab event={event} /> */}
+        </Tabs>
+
         <FloatingMessages />
       </div>
       <MessagesSidebar eventId={params.id} session={session} />
