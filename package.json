@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "convex": "npx convex dev",
+    "dev": "next dev && bunx convex dev",
+    "convex": "bunx convex dev",
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",

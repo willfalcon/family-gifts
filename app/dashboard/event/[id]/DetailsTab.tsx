@@ -1,13 +1,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TabsContent } from '@/components/ui/tabs';
-import { EventForEventPage } from './page';
 import Viewer from '@/components/ui/rich-text/viewer';
 import { JSONContent } from '@tiptap/react';
 import { CalendarDays, Clock, MapPin } from 'lucide-react';
 import { format } from 'date-fns';
+import { EventFromGetEvent } from '@/lib/queries/events';
 
 type Props = {
-  event: EventForEventPage;
+  event: EventFromGetEvent;
 };
 export default function DetailsTab({ event }: Props) {
   return (

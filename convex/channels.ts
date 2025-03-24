@@ -1,6 +1,5 @@
 import { v } from 'convex/values';
 import { mutation, query } from './_generated/server';
-import { getAllEvents } from '@/lib/queries/events';
 import { Doc } from './_generated/dataModel';
 
 export const getChannels = query({
@@ -31,6 +30,7 @@ export const addChannelUser = mutation({
     user: v.string(),
     channel: v.optional(v.id('channels')),
     family: v.optional(v.string()),
+    event: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     async function getChannel({ channel, family, event }: { channel?: Doc<'channels'>['_id']; family?: string; event?: string }) {

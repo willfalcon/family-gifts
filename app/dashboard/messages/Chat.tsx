@@ -21,8 +21,6 @@ type Props = {
   sidebar?: boolean;
 };
 export default function Chat({ channel, user, sidebar = false }: Props) {
-  const { data: me } = useMe();
-
   const messages = useQuery(api.messages.getMessages, { channelId: channel._id });
 
   const sendMessage = useMutation(api.messages.sendMessage);
@@ -44,9 +42,6 @@ export default function Chat({ channel, user, sidebar = false }: Props) {
       });
     }
     form.reset();
-  }
-  if (!me) {
-    return <ChatSkeleton />;
   }
 
   return (

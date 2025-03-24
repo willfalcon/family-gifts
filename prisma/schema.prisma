@@ -22,14 +22,16 @@ model User {
   createdFamilies Family[]        @relation("FamilyCreator")
   managing        Family[]        @relation("FamilyManager")
   lists           List[]
+  visibleLists    List[]          @relation("ListVisibleToUsers")
   events          Event[]
   receiving       Assignment[]    @relation("Recipient")
   giving          Assignment[]    @relation("Giver")
   eventInvite     Invite[]        @relation("EventInviteUser")
   channels        Channel[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt()
+  invitesSent     Invite[]        @relation("inviteSender")
+  createdEvents   Event[]         @relation("EventCreator")
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt()
 }
 
 model Account {
@@ -100,6 +102,8 @@ model Invite {
   eventResponse EventResponse?
   user          User?          @relation("EventInviteUser", fields: [userId], references: [id])
   userId        String?
+  inviter       User?          @relation("inviteSender", fields: [inviterId], references: [id])
+  inviterId     String?
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt()
 }
@@ -114,7 +118,7 @@ model Family {
   members       User[]    @relation("FamilyUser")
   invites       Invite[]  @relation("FamilyInvite")
   events        Event[]
-  listsVisible  List[]
+  visibleLists  List[]    @relation("ListVisibleToFamilies")
   channels      Channel[] // TODO: remove
   familyChannel String?
   createdAt     DateTime  @default(now())
@@ -144,16 +148,18 @@ model Family {
 // }
 
 model List {
-  id          String   @id() @default(cuid())
-  name        String
-  description Json?
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
-  items       Item[]
-  visibleTo   Family[]
-  default     Boolean?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt()
+  id                String   @id() @default(cuid())
+  name              String
+  description       Json?
+  userId            String
+  user              User     @relation(fields: [userId], references: [id])
+  items             Item[]
+  visibleToFamilies Family[] @relation("ListVisibleToFamilies")
+  visibleToEvents   Event[]  @relation("ListVisibleToEvents")
+  visibleToUsers    User[]   @relation("ListVisibleToUsers")
+  default           Boolean?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt()
 }
 
 enum Priority {
@@ -194,10 +200,13 @@ model Event {
   assignments       Assignment[]
   secretSantaBudget Float?
   channels          Channel[] // TODO: remove
+  creatorId         String
+  creator           User         @relation("EventCreator", fields: [creatorId], references: [id])
   eventChannel      String?
   attendees         User[]
   // managers          FamilyMember[]
   invites           Invite[]     @relation("EventInvite")
+  visibleLists      List[]       @relation("ListVisibleToEvents")
   createdAt         DateTime     @default(now())
   updatedAt         DateTime     @updatedAt()
 }
@@ -213,7 +222,6 @@ model Assignment {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt()
 }
-
 
 // TODO: remove all channel stuff
 enum ChannelType {

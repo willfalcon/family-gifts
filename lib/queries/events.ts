@@ -4,7 +4,7 @@ import { getActiveFamilyId } from '../rscUtils';
 import { getActiveMember } from './family-members';
 import { prisma } from '@/prisma';
 import { addMonths } from 'date-fns';
-import { Event } from '@prisma/client';
+import { Event, Prisma } from '@prisma/client';
 
 /**
  * Gets all or some events for the current member of the current active family
@@ -19,29 +19,24 @@ export const getEvents = cache(async (limit?: number, skip?: number) => {
     };
   }
 
-  const activeFamilyId = await getActiveFamilyId();
   try {
-    const me = await getActiveMember();
-    if (!me) {
-      return {
-        success: false,
-        message: `Can't figure out who you are for some reason.`,
-        events: [],
-      };
-    }
     const events = await prisma.event.findMany({
       where: {
-        family: {
-          id: activeFamilyId,
-          members: {
-            some: {
-              id: me.id,
-            },
+        attendees: {
+          some: {
+            id: session.user.id,
           },
         },
-        date: {
-          gte: new Date(),
-        },
+        OR: [
+          {
+            date: {
+              gte: new Date(),
+            },
+          },
+          {
+            date: null,
+          },
+        ],
       },
       include: {
         family: true,
@@ -182,69 +177,47 @@ export const getEventsCount = cache(async () => {
  */
 export const getEvent = cache(async (id: Event['id']) => {
   const session = await auth();
-  if (!session?.user) {
-    return {
-      success: false,
-      message: 'You must be logged in to do this.',
-      events: [],
-    };
+  if (!session?.user?.id) {
+    throw new Error('You must be logged in to do this.');
   }
   try {
-    const me = await getActiveMember();
-    if (!me) {
-      return {
-        success: false,
-        message: `Can't figure out who you are for some reason.`,
-        events: [],
-      };
-    }
     const event = await prisma.event.findUnique({
       where: {
         id,
-        family: {
-          members: {
-            some: {
-              id: me.id,
-            },
+        attendees: {
+          some: {
+            id: session.user.id,
           },
         },
       },
       include: {
+        attendees: true,
         assignments: {
           include: {
-            giver: {
-              include: {
-                user: true,
-              },
-            },
-            receiver: {
-              include: {
-                user: true,
-              },
-            },
+            giver: true,
+            recipient: true,
           },
         },
-        managers: true,
       },
     });
     if (!event) {
-      return {
-        success: false,
-        message: "Event doesn't exist",
-        event: null,
-      };
+      throw new Error('Event not found');
     }
-    return {
-      success: true,
-      message: '',
-      event,
-    };
+    return event;
   } catch (err) {
     console.error(err);
-    return {
-      success: false,
-      message: 'Something went wrong.',
-      event: null,
-    };
+    throw new Error('Something went wrong.');
   }
 });
+
+export type EventFromGetEvent = Prisma.EventGetPayload<{
+  include: {
+    attendees: true;
+    assignments: {
+      include: {
+        giver: true;
+        recipient: true;
+      };
+    };
+  };
+}>;

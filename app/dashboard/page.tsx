@@ -25,7 +25,7 @@ import MessagesSidebar from '@/components/Messages/MessagesSidebar';
 export default async function page() {
   const session = await auth();
 
-  if (!session?.user) {
+  if (!session?.user?.id) {
     redirect('/sign-in');
   }
 

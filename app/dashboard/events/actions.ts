@@ -47,23 +47,37 @@ export async function createEvent(event: EventSchemaType) {
     const tokenExpiry = addDays(new Date(), 30);
     return {
       user: {
+        // Go ahead and connect theses users to the invites
         connect: {
           id: user.id,
         },
       },
+      // If the user is the creator, they are automatically accepted
+      ...(user.id === session.user?.id && { eventResponse: 'accepted' }),
       email: user.email,
       token,
       tokenExpiry,
+      inviter: {
+        connect: {
+          id: session.user.id,
+        },
+      },
     };
   });
 
   const unknownInvites = externalInvites.map((invite) => {
     const token = randomBytes(20).toString('hex');
     const tokenExpiry = addDays(new Date(), 30);
+    // create invites for the unknown users
     return {
       email: invite,
       token,
       tokenExpiry,
+      inviter: {
+        connect: {
+          id: session.user.id,
+        },
+      },
     };
   });
 
@@ -73,6 +87,16 @@ export async function createEvent(event: EventSchemaType) {
       info: validatedData.info as JSONContent,
       invites: {
         create: [...knownInvites, ...unknownInvites],
+      },
+      attendees: {
+        connect: {
+          id: session.user.id,
+        },
+      },
+      creator: {
+        connect: {
+          id: session.user.id,
+        },
       },
     },
     include: {
@@ -101,8 +125,9 @@ export async function createEvent(event: EventSchemaType) {
       },
     });
 
-    // Send invites to all invites
-    await Promise.all(newEvent.invites.map((invite) => sendInviteEmail(invite, newEvent)));
+    // Send invites to all invites (except the creator)
+    const invitesToSend = newEvent.invites.filter((invite) => invite.userId !== session.user?.id);
+    await Promise.all(invitesToSend.map((invite) => sendInviteEmail(invite, newEvent)));
 
     revalidatePath('/dashboard/events');
     return newEvent;

@@ -20,12 +20,24 @@ export const getInvitedMember = cache(async (token: string) => {
           _count: {
             select: {
               members: true,
-              listsVisible: true,
+              visibleLists: true,
               events: true,
             },
           },
         },
       },
+      event: {
+        include: {
+          creator: true,
+          _count: {
+            select: {
+              visibleLists: true,
+              attendees: true,
+            },
+          },
+        },
+      },
+      inviter: true,
     },
   });
   if (invite) {

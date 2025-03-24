@@ -36,31 +36,14 @@ export default function NewEvent() {
     },
     onSuccess(data) {
       console.log(data);
-      // toast.success(`${data.name} created!`);
-      // router.push(`/dashboard/family/${data.id}`);
+      toast.success(`${data.name} created!`);
+      router.push(`/dashboard/event/${data.id}`);
     },
   });
 
   async function onSubmit(values: EventSchemaType) {
-    // console.log(values);
     await mutation.mutate(values);
-    // try {
-    //   const { event, success, message } = await createEvent({
-    //     ...values,
-    //     info: JSON.parse(JSON.stringify(values.info || {})),
-    //     time: typeof values.time === 'string' ? new Date(values.time) : values.time,
-    //   });
-    //   if (success && event) {
-    //     toast.success(`Created ${event.name}`);
-    //     router.push(`/dashboard/event/${event.id}`);
-    //   } else {
-    //     console.log(event);
-    //     toast.error(message);
-    //   }
-    // } catch (err) {
-    //   console.error(err);
-    //   toast.error(`Something went wrong.`);
-    // }
   }
-  return <EventForm form={form} onSubmit={onSubmit} submitText="Create Event" />;
+
+  return <EventForm form={form} onSubmit={onSubmit} submitText="Create Event" pending={mutation.isPending} />;
 }

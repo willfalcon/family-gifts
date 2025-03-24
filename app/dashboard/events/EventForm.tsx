@@ -8,19 +8,22 @@ import InfoField from './InfoField';
 import TimeField from './TimeField';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Attendees from './Attendees';
+import { Loader2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 type EventFormProps = {
   form: UseFormReturn<EventSchemaType>;
   onSubmit: (data: EventSchemaType) => Promise<void>;
   submitText: string;
+  pending?: boolean;
 };
 
 // TODO: Add location map features
 
-export default function EventForm({ form, onSubmit, submitText }: EventFormProps) {
+export default function EventForm({ form, onSubmit, submitText, pending }: EventFormProps) {
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className={cn('space-y-4', pending && 'opacity-60 pointer-events-none')}>
         <Card>
           <CardHeader>
             <CardTitle>Event Details</CardTitle>
@@ -65,7 +68,10 @@ export default function EventForm({ form, onSubmit, submitText }: EventFormProps
           </CardContent>
         </Card>
         <Attendees />
-        <Button type="submit">{submitText}</Button>
+        <Button type="submit" disabled={pending}>
+          {pending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {submitText}
+        </Button>
       </form>
     </Form>
   );
