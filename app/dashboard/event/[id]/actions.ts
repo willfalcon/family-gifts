@@ -2,7 +2,7 @@
 
 import { getActiveMember, getMembers as getMembersQuery } from '@/lib/queries/family-members';
 import { auth } from '@/auth';
-import { FamilyMember, Prisma } from '@prisma/client';
+import { EventResponse, FamilyMember, Prisma } from '@prisma/client';
 import { prisma } from '@/prisma';
 import { revalidatePath } from 'next/cache';
 import { AssignmentsType } from './SecretSanta/secretSantaStore';
@@ -214,4 +214,35 @@ export async function sendSecretSantaEmail(giver: FamilyMember, recipient: Famil
       message: 'Something went wrong sending email.',
     };
   }
+}
+
+export async function getEventAttendance(inviteId: string) {
+  const session = await auth();
+  if (!session?.user) {
+    throw new Error('You must be logged in to do this.');
+  }
+  const invite = await prisma.invite.findUnique({
+    where: {
+      id: inviteId,
+      userId: session.user.id,
+    },
+  });
+  return invite?.eventResponse;
+}
+export async function updateEventAttendance(inviteId: string, response: EventResponse) {
+  const session = await auth();
+  if (!session?.user) {
+    throw new Error('You must be logged in to do this.');
+  }
+  const invite = await prisma.invite.update({
+    where: {
+      id: inviteId,
+      userId: session.user.id,
+    },
+    data: { eventResponse: response },
+  });
+  if (!invite) {
+    throw new Error('Invite not found.');
+  }
+  return invite;
 }

@@ -2,8 +2,8 @@ import { auth } from '@/auth';
 import SignIn from '@/components/SignIn';
 import { redirect } from 'next/navigation';
 import JoinButton from './JoinButton';
-import { getInvitedMember } from '@/lib/queries/onboarding';
-import { ErrorMessage } from '@/components/ErrorMessage';
+import { getInvite } from '@/lib/queries/onboarding';
+
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Check, Gift, Users } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -22,9 +22,7 @@ export default async function JoinPage({ searchParams }: PageProps) {
 
   const session = await auth();
 
-  // TODO: Update this to also handle event invites
-
-  const invite = await getInvitedMember(token);
+  const invite = await getInvite(token);
 
   const inviteType = invite.event ? 'Event' : 'Family';
 
@@ -131,7 +129,7 @@ export default async function JoinPage({ searchParams }: PageProps) {
                 <SignIn />
               </>
             ) : (
-              <JoinButton name={invite.family?.name || invite.event?.name || ''} token={token} inviteType={inviteType} />
+              <JoinButton name={invite.family?.name || invite.event?.name || ''} token={token} invite={invite} inviteType={inviteType} />
             )}
           </CardFooter>
         </Card>

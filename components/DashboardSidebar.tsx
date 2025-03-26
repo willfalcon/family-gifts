@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Gift, List, MessagesSquare, Settings, UserPlus, Users } from 'lucide-react';
+import { Gift, Home, List, MessagesSquare, Settings, UserPlus, Users } from 'lucide-react';
 import { auth } from '@/auth';
 import { buttonVariants } from './ui/button';
 import {
@@ -15,7 +15,6 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from './ui/sidebar';
-import FamilySelect from './FamilySelect';
 import UserButton from './UserButton';
 import { redirect } from 'next/navigation';
 
@@ -27,6 +26,7 @@ export default async function DashboardSidebar() {
   }
 
   const nav = [
+    { text: 'Dashboard', href: '/dashboard', icon: Home },
     { text: 'Families', href: '/dashboard/families', icon: Users },
     { text: 'Wish Lists', href: '/dashboard/wish-lists', icon: Gift },
     { text: 'Events', href: '/dashboard/events', icon: List },

@@ -260,3 +260,114 @@ export const getFamilies = cache(async () => {
   });
   return families;
 });
+
+export type FamilyFromGetFamilies = Prisma.FamilyGetPayload<{
+  include: {
+    managers: true;
+    invites: true;
+    members: {
+      include: {
+        events: {
+          include: {
+            _count: {
+              select: {
+                assignments: true;
+              };
+            };
+            attendees: true;
+          };
+        };
+        lists: {
+          include: {
+            _count: {
+              select: {
+                items: true;
+              };
+            };
+          };
+        };
+        _count: {
+          select: {
+            lists: true;
+          };
+        };
+      };
+    };
+    creator: true;
+    _count: {
+      select: {
+        members: true;
+      };
+    };
+  };
+}>;
+
+/**
+ * Get all families where user is a member plus initial 3 members - for dashboard use.
+ */
+export const dashboardGetFamilies = cache(async () => {
+  const session = await auth();
+  if (!session?.user) {
+    throw new Error('You must be logged in to get families');
+  }
+  const families = await prisma.family.findMany({
+    where: {
+      members: {
+        some: {
+          id: session.user.id,
+        },
+      },
+    },
+    include: {
+      managers: true,
+      invites: true,
+      members: {
+        include: {
+          managing: true,
+          _count: {
+            select: {
+              lists: true,
+            },
+          },
+        },
+        take: 1,
+      },
+      creator: true,
+      _count: {
+        select: {
+          members: true,
+        },
+      },
+    },
+  });
+  return families;
+});
+
+export type FamilyFromDashboardGetFamilies = Prisma.FamilyGetPayload<{
+  include: {
+    managers: true;
+    invites: true;
+    members: {
+      include: {
+        managing: true;
+        _count: {
+          select: {
+            lists: true;
+          };
+        };
+      };
+    };
+    creator: true;
+  };
+}>;
+
+export type MemberFromDashboardGetFamilies = Prisma.UserGetPayload<{
+  include: {
+    managing: true;
+    _count: {
+      select: {
+        lists: true;
+      };
+    };
+  };
+}>;

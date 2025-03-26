@@ -217,7 +217,7 @@ export default function Attendees() {
   );
 }
 
-function TabsSkeleton() {
+export function TabsSkeleton() {
   return (
     <>
       <div className="flex gap-4">

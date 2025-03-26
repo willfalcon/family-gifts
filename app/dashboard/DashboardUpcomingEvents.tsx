@@ -6,7 +6,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { EventWithFamily } from '@/prisma/types';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { CalendarDays, ChevronDown, ChevronRight } from 'lucide-react';
+import { CalendarDays, ChevronDown, ChevronRight, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { dashboardGetEvents } from './actions';
 
@@ -23,7 +23,7 @@ type QueryFnReturn = {
 };
 
 export default function DashboardUpcomingEvents({ success, message, events, total }: Props) {
-  const { data, hasNextPage, fetchNextPage } = useInfiniteQuery({
+  const { data, hasNextPage, fetchNextPage, isFetchingNextPage } = useInfiniteQuery({
     queryKey: ['dashboardGetEvents'],
     queryFn: async ({ pageParam }): Promise<QueryFnReturn> => {
       return await dashboardGetEvents(pageParam);
@@ -60,10 +60,10 @@ export default function DashboardUpcomingEvents({ success, message, events, tota
                 </CardHeader>
                 <CardContent>
                   {event.date && <div className="text-2xl font-bold">{format(event.date, 'MMM, d, yyyy')}</div>}
-                  <p className="text-xs text-muted-foreground">{event.family.name}</p>
+                  <p className="text-xs text-muted-foreground">{event.location}</p>
                 </CardContent>
                 <CardFooter>
-                  <Link href={`/dashboard/events/${event.id}`} className={buttonVariants({ variant: 'outline', size: 'sm', className: 'w-full' })}>
+                  <Link href={`/dashboard/event/${event.id}`} className={buttonVariants({ variant: 'outline', size: 'sm', className: 'w-full' })}>
                     View Details
                   </Link>
                 </CardFooter>
@@ -74,7 +74,8 @@ export default function DashboardUpcomingEvents({ success, message, events, tota
       </div>
       {hasNextPage && (
         <div className="mt-4 flex justify-center">
-          <Button variant="outline" onClick={() => fetchNextPage()} className="w-full max-w-xs">
+          <Button variant="outline" onClick={() => fetchNextPage()} className="w-full max-w-xs" disabled={isFetchingNextPage}>
+            {isFetchingNextPage && <Loader2 className="animate-spin mr-2" />}
             Show More <ChevronDown className="ml-2 h-4 w-4" />
           </Button>
         </div>

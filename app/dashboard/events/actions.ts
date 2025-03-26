@@ -1,7 +1,7 @@
 'use server';
 
 import { auth } from '@/auth';
-import { EventSchema, EventSchemaType } from './eventSchema';
+import { EventSchema, EventSchemaType, EventDetailsSchema, EventDetailsSchemaType, EventAttendeesSchemaType } from './eventSchema';
 import { getActiveFamilyId } from '@/lib/rscUtils';
 import { prisma } from '@/prisma';
 import { revalidatePath } from 'next/cache';
@@ -14,6 +14,8 @@ import { randomBytes } from 'crypto';
 import { addDays } from 'date-fns';
 import { Resend } from 'resend';
 import EventInviteEmailTemplate from '@/emails/eventEnvite';
+import { redirect } from 'next/navigation';
+import { getEvent } from '@/lib/queries/events';
 
 export async function createEvent(event: EventSchemaType) {
   const session = await auth();
@@ -59,7 +61,7 @@ export async function createEvent(event: EventSchemaType) {
       tokenExpiry,
       inviter: {
         connect: {
-          id: session.user.id,
+          id: session.user?.id,
         },
       },
     };
@@ -75,7 +77,7 @@ export async function createEvent(event: EventSchemaType) {
       tokenExpiry,
       inviter: {
         connect: {
-          id: session.user.id,
+          id: session.user?.id,
         },
       },
     };
@@ -90,12 +92,12 @@ export async function createEvent(event: EventSchemaType) {
       },
       attendees: {
         connect: {
-          id: session.user.id,
+          id: session.user?.id,
         },
       },
       creator: {
         connect: {
-          id: session.user.id,
+          id: session.user?.id,
         },
       },
     },
@@ -157,46 +159,25 @@ export async function sendInviteEmail(invite: Invite, event: Event) {
   }
 }
 
-export async function updateEvent(id: Event['id'], event: EventSchemaType) {
+export async function updateEventDetails(id: Event['id'], event: EventDetailsSchemaType) {
   const session = await auth();
   if (!session?.user) {
-    return {
-      success: false,
-      message: 'You must be logged in to do this.',
-      event: null,
-    };
+    throw new Error('You must be logged in to do this!');
+  }
+  const currentEvent = await getEvent(id);
+  if (!currentEvent) {
+    throw new Error('Event not found');
+  }
+  if (currentEvent.creatorId !== session.user.id) {
+    throw new Error('You are not authorized to edit this event');
   }
 
-  const validatedData = EventSchema.parse(event);
+  const validatedData = EventDetailsSchema.parse(event);
 
-  const activeFamilyId = await getActiveFamilyId();
-  if (!activeFamilyId) {
-    return {
-      success: false,
-      message: 'Create a family first!',
-      event: null,
-    };
-  }
-  const me = await getActiveMember();
-  if (!me) {
-    return {
-      success: false,
-      message: `Can't figure out who you are for some reason.`,
-      event: null,
-    };
-  }
   try {
     const updatedEvent = await prisma.event.update({
       where: {
         id,
-        family: {
-          id: activeFamilyId,
-          managers: {
-            some: {
-              id: me.id,
-            },
-          },
-        },
       },
       data: {
         ...validatedData,
@@ -205,24 +186,99 @@ export async function updateEvent(id: Event['id'], event: EventSchemaType) {
     });
     if (updatedEvent) {
       revalidatePath(`/dashboard/event/${updatedEvent.id}`);
-      return {
-        success: true,
-        message: '',
-        event: updatedEvent,
-      };
+      return updatedEvent;
     } else {
-      return {
-        success: false,
-        message: `Couldn't update event.`,
-        event: null,
-      };
+      throw new Error("Couldn't update event.");
     }
   } catch (err) {
     console.error(err);
+    throw new Error('Something went wrong.');
+  }
+}
+
+export async function updateEventAttendees(id: Event['id'], attendees: EventAttendeesSchemaType) {
+  const session = await auth();
+  if (!session?.user) {
+    throw new Error('You must be logged in to do this!');
+  }
+  const currentEvent = await getEvent(id);
+  if (!currentEvent) {
+    throw new Error('Event not found');
+  }
+  if (currentEvent.creatorId !== session.user.id) {
+    throw new Error('You are not authorized to edit this event');
+  }
+
+  // get the users for all in the attendees list that aren't already in the event
+  const knownInvitees = await prisma.user.findMany({
+    where: {
+      id: {
+        in: attendees.attendees.filter((attendee) => !currentEvent.attendees.some((a) => a.id === attendee)),
+      },
+    },
+  });
+
+  // create invites for the known users
+  const newKnownInvites = knownInvitees.map((user) => {
+    const token = randomBytes(20).toString('hex');
+    const tokenExpiry = addDays(new Date(), 30);
     return {
-      success: false,
-      message: 'Something went wrong.',
-      event: null,
+      user: {
+        // Go ahead and connect theses users to the invites
+        connect: {
+          id: user.id,
+        },
+      },
+      // If the user is the creator, they are automatically accepted
+      ...(user.id === session.user?.id && { eventResponse: 'accepted' }),
+      email: user.email,
+      token,
+      tokenExpiry,
+      inviter: {
+        connect: {
+          id: session.user?.id,
+        },
+      },
     };
+  });
+  const newExternalInvites = attendees.externalInvites
+    .filter((invite) => !currentEvent.invites.some((i) => i.email === invite))
+    .map((invite) => {
+      const token = randomBytes(20).toString('hex');
+      const tokenExpiry = addDays(new Date(), 30);
+      // create invites for the unknown users
+      return {
+        email: invite,
+        token,
+        tokenExpiry,
+        inviter: {
+          connect: {
+            id: session.user?.id,
+          },
+        },
+      };
+    });
+
+  const updatedEvent = await prisma.event.update({
+    where: { id },
+    data: {
+      invites: {
+        create: [...newKnownInvites, ...newExternalInvites],
+      },
+    },
+    include: {
+      invites: true,
+    },
+  });
+
+  if (updatedEvent) {
+    // get the invites that weren't already in the invites list. (attendees already accepted were already filtered out of the newKnownInvites)
+    const invitesToSend = updatedEvent.invites.filter((invite) => !currentEvent.invites.some((i) => i.id === invite.id));
+    await Promise.all(invitesToSend.map((invite) => sendInviteEmail(invite, updatedEvent)));
+
+    revalidatePath(`/dashboard/event/${updatedEvent.id}`);
+    return updatedEvent;
+  } else {
+    throw new Error("Couldn't update event.");
   }
 }

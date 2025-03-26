@@ -10,6 +10,7 @@ import SecretSantaBanner from './SecretSantaBanner';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import DetailsTab from './DetailsTab';
 import ParticipantsTab from './ParticipantsTab';
+import EventAttendance from './EventAttendance';
 // import WishListsTab from './WishListsTab';
 
 type PageProps = {
@@ -27,7 +28,10 @@ export default async function EventPage({ params }: PageProps) {
 
   const isCreator = event.creatorId === session.user.id;
   const userAssignment = event.assignments?.find((assignment) => assignment.giverId === session.user?.id);
-  console.log(session);
+  const invite = event.invites?.find((invite) => invite.email === session.user?.email);
+  if (!invite) {
+    redirect('/dashboard/events');
+  }
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="space-y-4 p-8 pt-6 relative w-full">
@@ -40,6 +44,7 @@ export default async function EventPage({ params }: PageProps) {
         />
 
         <EventHeader event={event} isManager={isCreator} />
+        <EventAttendance invite={invite} />
         <SecretSantaBanner eventId={event.id} isManager={isCreator} budget={event.secretSantaBudget} userRecipient={userAssignment?.recipient} />
 
         <Tabs defaultValue="details" className="space-y-6">

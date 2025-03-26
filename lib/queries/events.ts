@@ -191,6 +191,7 @@ export const getEvent = cache(async (id: Event['id']) => {
         },
       },
       include: {
+        managers: true,
         attendees: true,
         assignments: {
           include: {
@@ -198,6 +199,8 @@ export const getEvent = cache(async (id: Event['id']) => {
             recipient: true,
           },
         },
+        creator: true,
+        invites: true,
       },
     });
     if (!event) {
@@ -212,6 +215,7 @@ export const getEvent = cache(async (id: Event['id']) => {
 
 export type EventFromGetEvent = Prisma.EventGetPayload<{
   include: {
+    managers: true;
     attendees: true;
     assignments: {
       include: {
@@ -219,5 +223,7 @@ export type EventFromGetEvent = Prisma.EventGetPayload<{
         recipient: true;
       };
     };
+    creator: true;
+    invites: true;
   };
 }>;

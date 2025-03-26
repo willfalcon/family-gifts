@@ -1,16 +1,17 @@
-import { ArrowLeft, CalendarDays, Clock, Edit, Gift, Link, MapPin, MoreHorizontal, Share2, Users } from 'lucide-react';
+import { ArrowLeft, CalendarDays, Clock, Edit, Gift, MapPin, MoreHorizontal, Share2, Users } from 'lucide-react';
 
-import { EventForEventPage } from './page';
 import Viewer from '@/components/ui/rich-text/viewer';
 import { JSONContent } from '@tiptap/react';
 import { format } from 'date-fns';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import EditEvent from './EditEvent';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import Title from '@/components/Title';
+import { EventFromGetEvent } from '@/lib/queries/events';
+import Link from 'next/link';
 
 type Props = {
-  event: EventForEventPage;
+  event: EventFromGetEvent;
   isManager: boolean;
 };
 
@@ -49,7 +50,13 @@ export default function EventHeader({ event, isManager }: Props) {
             <Share2 className="mr-2 h-4 w-4" />
             Share
           </Button>
-          {isManager && <EditEvent {...event} />}
+
+          {isManager && (
+            <Link href={`/dashboard/event/${event.id}/edit`} className={buttonVariants()}>
+              <Edit className="mr-2 h-4 w-4" />
+              Edit Event
+            </Link>
+          )}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="icon" className="h-9 w-9">

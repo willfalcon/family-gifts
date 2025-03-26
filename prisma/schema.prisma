@@ -30,6 +30,7 @@ model User {
   channels        Channel[]
   invitesSent     Invite[]        @relation("inviteSender")
   createdEvents   Event[]         @relation("EventCreator")
+  managedEvents   Event[]         @relation("EventManager")
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt()
 }
@@ -204,7 +205,7 @@ model Event {
   creator           User         @relation("EventCreator", fields: [creatorId], references: [id])
   eventChannel      String?
   attendees         User[]
-  // managers          FamilyMember[]
+  managers          User[]       @relation("EventManager")
   invites           Invite[]     @relation("EventInvite")
   visibleLists      List[]       @relation("ListVisibleToEvents")
   createdAt         DateTime     @default(now())

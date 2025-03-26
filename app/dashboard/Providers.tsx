@@ -2,15 +2,16 @@
 
 // import { getActiveFamilyId } from "@/lib/rscUtils";
 // import { getCookie } from 'cookies-next';
-import { createContext, Dispatch, PropsWithChildren, SetStateAction, useContext } from 'react';
+import { PropsWithChildren } from 'react';
 
-import { QueryClient, QueryClientProvider, useQuery, UseQueryResult } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
 import { ConvexProvider, ConvexReactClient } from 'convex/react';
 
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { BreadcrumbsProvider } from '@/components/HeaderBreadcrumbs';
 
-import { FamilyMemberWithAll } from '@/prisma/types';
+import { SessionProvider } from 'next-auth/react';
+import { NotificationsProvider } from '@/components/Notifications';
 
 function makeQueryClient() {
   return new QueryClient({
@@ -50,30 +51,16 @@ export default function Providers({ children }: PropsWithChildren) {
   const queryClient = getQueryClient();
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <ConvexProvider client={convex}>
-        <MeProvider>
-          <BreadcrumbsProvider>
-            <SidebarProvider defaultOpen={true}>{children}</SidebarProvider>
-          </BreadcrumbsProvider>
-        </MeProvider>
-      </ConvexProvider>
-    </QueryClientProvider>
+    <SessionProvider>
+      <QueryClientProvider client={queryClient}>
+        <ConvexProvider client={convex}>
+          <NotificationsProvider>
+            <BreadcrumbsProvider>
+              <SidebarProvider defaultOpen={true}>{children}</SidebarProvider>
+            </BreadcrumbsProvider>
+          </NotificationsProvider>
+        </ConvexProvider>
+      </QueryClientProvider>
+    </SessionProvider>
   );
 }
-const ActiveFamilyContext = createContext<[string | undefined, Dispatch<SetStateAction<string | undefined>>]>(['', () => {}]);
-
-export const useActiveFamilyContext = () => useContext(ActiveFamilyContext);
-
-const MeProvider = ({ children }: PropsWithChildren) => {
-  const queryRes = useQuery({
-    queryKey: ['me'],
-    queryFn: async () => fetch('/api/getActiveMemberAll').then((res) => res.json()),
-  });
-
-  return <MeContext.Provider value={queryRes}>{children}</MeContext.Provider>;
-};
-
-const MeContext = createContext<UseQueryResult<FamilyMemberWithAll, Error>>({} as UseQueryResult<FamilyMemberWithAll, Error>);
-
-export const useMe = () => useContext(MeContext);

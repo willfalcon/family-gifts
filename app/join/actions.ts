@@ -4,25 +4,12 @@ import { auth } from '@/auth';
 import { api } from '@/convex/_generated/api';
 import { prisma } from '@/prisma';
 import { ConvexHttpClient } from 'convex/browser';
+import { GetInvite } from '@/lib/queries/onboarding';
 
-export async function joinFamily(token: string) {
+export async function joinFamily(invite: GetInvite) {
   const session = await auth();
-  if (!session?.user) {
-    return {
-      success: false,
-      message: 'You must be logged in to do this.',
-      updatedMember: null,
-    };
-  }
-
-  const invite = await prisma.invite.findUnique({
-    where: {
-      token,
-    },
-  });
-
-  if (!invite) {
-    throw new Error(`Couldn't find your invite.`);
+  if (!session?.user?.id) {
+    throw new Error('You must be logged in to do this.');
   }
 
   if (invite.tokenExpiry && invite.tokenExpiry < new Date()) {
@@ -46,7 +33,7 @@ export async function joinFamily(token: string) {
       },
     });
     if (updatedUser) {
-      // Add the user to the family channe
+      // Add the user to the family channel
       const client = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
       await client.mutation(api.channels.addChannelUser, {
@@ -75,24 +62,10 @@ export async function joinFamily(token: string) {
   }
 }
 
-export async function joinEvent(token: string) {
+export async function joinEvent(invite: GetInvite) {
   const session = await auth();
-  if (!session?.user) {
-    return {
-      success: false,
-      message: 'You must be logged in to do this.',
-      updatedMember: null,
-    };
-  }
-
-  const invite = await prisma.invite.findUnique({
-    where: {
-      token,
-    },
-  });
-
-  if (!invite) {
-    throw new Error(`Couldn't find your invite.`);
+  if (!session?.user?.id) {
+    throw new Error('You must be logged in to do this.');
   }
 
   if (invite.tokenExpiry && invite.tokenExpiry < new Date()) {
@@ -122,6 +95,20 @@ export async function joinEvent(token: string) {
       await client.mutation(api.channels.addChannelUser, {
         event: invite.eventId,
         user: updatedUser.id!,
+      });
+
+      // Update the invite to include the user id
+      await prisma.invite.update({
+        where: {
+          id: invite.id,
+        },
+        data: {
+          user: {
+            connect: {
+              id: updatedUser.id,
+            },
+          },
+        },
       });
       return { eventId: invite.eventId, userName: updatedUser.name };
     }
