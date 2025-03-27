@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { ItemWithRefs } from '@/prisma/types';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '../../../components/ui/dropdown-menu';
 import { CaretDownIcon } from '@radix-ui/react-icons';
-import { useMe } from '@/app/dashboard/Providers';
+import { useMe } from '@/app/dashboard/components/Providers';
 import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';

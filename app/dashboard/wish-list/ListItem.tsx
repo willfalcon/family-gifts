@@ -5,7 +5,7 @@ import ItemDelete from './ItemDelete';
 import ItemEdit from './ItemEdit';
 import { ItemWithRefs, ListForWishListPage } from '@/prisma/types';
 import { usePathname } from 'next/navigation';
-import { useMe } from '@/app/dashboard/Providers';
+import { useMe } from '@/app/dashboard/components/Providers';
 // import { Button } from '../ui/button';
 import MarkAsBought from './MarkAsBought';
 import { Skeleton } from '../../../components/ui/skeleton';

@@ -1,6 +1,6 @@
 import Header from '@/components/Header';
 import { PropsWithChildren } from 'react';
-import Providers from './Providers';
+import Providers from './components/Providers';
 import DashboardSidebar from '@/components/DashboardSidebar';
 import { SidebarInset } from '@/components/ui/sidebar';
 

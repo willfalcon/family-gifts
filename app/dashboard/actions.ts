@@ -1,9 +1,12 @@
 'use server';
 
 import { auth } from '@/auth';
+import { api } from '@/convex/_generated/api';
+import { Doc } from '@/convex/_generated/dataModel';
 import { getEvents, getEventsCount } from '@/lib/queries/events';
 import { getSomeMembers } from '@/lib/queries/family-members';
 import { prisma } from '@/prisma';
+import { ConvexHttpClient } from 'convex/browser';
 import { revalidatePath } from 'next/cache';
 
 export async function reloadDashboard() {
@@ -107,4 +110,19 @@ export async function dashboardGetEvents(getRest = false) {
   } catch (err) {
     throw new Error('Something went wrong.');
   }
+}
+
+const httpClient = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
+
+export async function markNotificationAsRead(notificationId: Doc<'notifications'>['_id']) {
+  console.log('starting server fn');
+  const session = await auth();
+  if (!session?.user) {
+    throw new Error('You must be logged in to do this.');
+  }
+  console.log('got past auth check');
+  await httpClient.mutation(api.notifications.markNotificationAsRead, {
+    notificationId,
+  });
+  console.log('got past mutation');
 }

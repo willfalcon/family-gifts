@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { buttonVariants } from '@/components/ui/button';
 import { Item, User } from '@prisma/client';
 import { useQuery } from '@tanstack/react-query';
-import { useActiveFamilyContext } from '../Providers';
+import { useActiveFamilyContext } from '../components/Providers';
 import Link from 'next/link';
 import { useBreadcrumbs } from '@/components/HeaderBreadcrumbs';
 

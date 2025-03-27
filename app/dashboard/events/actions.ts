@@ -2,19 +2,17 @@
 
 import { auth } from '@/auth';
 import { EventSchema, EventSchemaType, EventDetailsSchema, EventDetailsSchemaType, EventAttendeesSchemaType } from './eventSchema';
-import { getActiveFamilyId } from '@/lib/rscUtils';
 import { prisma } from '@/prisma';
 import { revalidatePath } from 'next/cache';
 import { JSONContent } from '@tiptap/react';
 import { Event, Invite } from '@prisma/client';
-import { getActiveMember, getFamilyMembers } from '@/lib/queries/family-members';
 import { api } from '@/convex/_generated/api';
 import { ConvexHttpClient } from 'convex/browser';
 import { randomBytes } from 'crypto';
 import { addDays } from 'date-fns';
 import { Resend } from 'resend';
 import EventInviteEmailTemplate from '@/emails/eventEnvite';
-import { redirect } from 'next/navigation';
+
 import { getEvent } from '@/lib/queries/events';
 
 export async function createEvent(event: EventSchemaType) {
@@ -100,6 +98,11 @@ export async function createEvent(event: EventSchemaType) {
           id: session.user?.id,
         },
       },
+      managers: {
+        connect: {
+          id: session.user?.id,
+        },
+      },
     },
     include: {
       invites: true,
@@ -129,7 +132,18 @@ export async function createEvent(event: EventSchemaType) {
 
     // Send invites to all invites (except the creator)
     const invitesToSend = newEvent.invites.filter((invite) => invite.userId !== session.user?.id);
-    await Promise.all(invitesToSend.map((invite) => sendInviteEmail(invite, newEvent)));
+    await Promise.all(
+      invitesToSend.map(async (invite) => {
+        await sendInviteEmail(invite, newEvent);
+        await client.mutation(api.notifications.createNotification, {
+          userId: invite.userId!,
+          type: 'info',
+          title: `You've been invited to an event!`,
+          message: `You've been invited to ${newEvent.name}!`,
+          link: `/join?token=${invite.token}`,
+        });
+      }),
+    );
 
     revalidatePath('/dashboard/events');
     return newEvent;

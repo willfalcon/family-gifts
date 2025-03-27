@@ -4,14 +4,15 @@ import { useSession } from 'next-auth/react';
 
 export const useMe = (): UseQueryResult<GetUser> => {
   const { data: session } = useSession();
-  return useQuery({
+  const queryRes = useQuery({
     queryKey: ['user', session?.user?.id],
     queryFn: async () => {
-      if (!session?.user?.id) {
-        return null;
-      }
-      return await getUser(session.user.id);
+      const user = await getUser(session?.user?.id ?? '');
+      console.log(user);
+      return user;
     },
     enabled: !!session?.user?.id,
   });
+
+  return queryRes;
 };

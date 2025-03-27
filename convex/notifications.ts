@@ -1,5 +1,8 @@
+'use server';
+
 import { v } from 'convex/values';
 import { mutation, query } from './_generated/server';
+import { auth } from '@/auth';
 
 export const createNotification = mutation({
   args: {
@@ -16,18 +19,32 @@ export const createNotification = mutation({
       message: args.message,
       type: args.type,
       link: args.link,
-      createdAt: Date.now(),
     });
   },
 });
 
 export const getNotifications = query({
+  args: { userId: v.string() },
+  handler: async (ctx, args) => {
+    if (!args.userId) {
+      return [];
+    }
+    const notifications = await ctx.db
+      .query('notifications')
+      .withIndex('by_user', (q) => q.eq('userId', args.userId))
+      .collect();
+    return notifications;
+  },
+});
+
+export const getUnreadNotifications = query({
+  args: { userId: v.string() },
   handler: async (ctx, args) => {
     const notifications = await ctx.db
       .query('notifications')
-      // .withIndex('by_user', (q) => q.eq('userId', args.userId))
+      .withIndex('by_user', (q) => q.eq('userId', args.userId))
       .collect();
-    return notifications;
+    return notifications.filter((notification) => !notification.readAt);
   },
 });
 

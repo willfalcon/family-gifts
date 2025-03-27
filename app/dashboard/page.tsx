@@ -1,27 +1,14 @@
 import { auth } from '@/auth';
-// import CreateFamily from '@/components/CreateFamily';
-// import GiftsBought from '@/components/Dashboard/GiftsBought';
-// import MyList from '@/components/Dashboard/MyLIst';
-// import QuickActions from '@/components/Dashboard/QuickActions';
-// import TotalMembers from '@/components/Dashboard/TotalMembers';
-// import UpcomingEvents from '@/components/Dashboard/UpcomingEvents';
 import Title from '@/components/Title';
 import { buttonVariants } from '@/components/ui/button';
-// import { getActiveFamilyId } from '@/lib/rscUtils';
 import { Plus } from 'lucide-react';
 import Link from 'next/link';
 
 import { redirect } from 'next/navigation';
-// import DashboardFamilyMembers from './DashboardFamilyMembers';
-import DashboardUpcomingEvents from './DashboardUpcomingEvents';
+import DashboardUpcomingEvents from './components/DashboardUpcomingEvents';
 import { getEvents, getEventsCount } from '@/lib/queries/events';
-// import { getSomeMembers } from '@/lib/queries/family-members';
 import SetBreadcrumbs from '@/components/SetBreadcrumbs';
-// import { getFamilies, getFamily } from '@/lib/queries/families';
-// import FloatingMessages from '@/components/Messages/FloatingMessages';
-// import { SidebarProvider } from '@/components/ui/sidebar';
-// import MessagesSidebar from '@/components/Messages/MessagesSidebar';
-import FamilySection from './FamilySection';
+import FamilySection from './components/FamilySection';
 
 export default async function page() {
   const session = await auth();

@@ -27,7 +27,7 @@ export default async function JoinPage({ searchParams }: PageProps) {
   const inviteType = invite.event ? 'Event' : 'Family';
 
   return (
-    <div className="container flex flex-col items-center justify-center min-h-screen py-12">
+    <div className="flex flex-col items-center justify-center min-h-screen py-12">
       <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[550px]">
         <Card className="w-full">
           <CardHeader className="text-center">
