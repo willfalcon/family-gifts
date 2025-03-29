@@ -126,28 +126,6 @@ model Family {
   updatedAt     DateTime  @updatedAt()
 }
 
-// model FamilyMember {
-//   id                String       @id() @default(cuid())
-//   name              String
-//   email             String
-//   userId            String?
-//   user              User?        @relation("FamilyMembers", fields: [userId], references: [id])
-//   inviteToken       String?
-//   inviteTokenExpiry DateTime?
-//   joined            Boolean      @default(false)
-//   giving            Assignment[] @relation("Giver")
-//   receiving         Assignment[] @relation("Receiver")
-//   items             Item[]       @relation("MemberItems")
-//   bought            Item[]       @relation("ItemBoughtBy")
-//   eventsManaged     Event[]
-//   info              Json?
-//   messages          Message[]
-//   channels          Channel[]
-//   readMessages      Message[]    @relation("ReadyMessages")
-//   createdAt         DateTime?    @default(now())
-//   updatedAt         DateTime?    @updatedAt()
-// }
-
 model List {
   id                String   @id() @default(cuid())
   name              String

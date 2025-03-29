@@ -4,7 +4,7 @@ import { FamilyFromDashboardGetFamilies, MemberFromDashboardGetFamilies } from '
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { ChevronDown, ChevronRight, Gift, Loader2, Mail } from 'lucide-react';
 import { useState } from 'react';
-import { dashboardGetMoreMembers } from './actions';
+import { dashboardGetMoreMembers } from '../actions';
 import { Button, buttonVariants } from '@/components/ui/button';
 import Link from 'next/link';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
@@ -14,14 +14,20 @@ import { Badge } from '@/components/ui/badge';
 export default function FamilySectionFamily({ family }: { family: FamilyFromDashboardGetFamilies }) {
   const [expanded, setExpanded] = useState(true);
 
+  const hasMore = family._count.members > family.members.length;
+
   const infiniteQuery = useInfiniteQuery({
     queryKey: ['familyMembers', family.id],
-    queryFn: async ({ pageParam }): Promise<MemberFromDashboardGetFamilies[]> => {
-      return await dashboardGetMoreMembers(family.id, pageParam);
+    queryFn: async ({ pageParam: getRest }): Promise<MemberFromDashboardGetFamilies[]> => {
+      return await dashboardGetMoreMembers(family.id, getRest);
     },
+    // This starts at false, so the initial query will get the initial page.
     initialPageParam: false,
     getNextPageParam: (lastPage, allPages, lastPageParam) => {
-      if (lastPageParam) return null;
+      // this starts at false, so the first fetchNextPage will skip this and get true, to get the rest.
+      // unless there are no more members, in which case it'll return null and stop.
+      // it'll return true that first time, so the next time lastPageParam is true, it'll return null and stop.
+      if (lastPageParam || !hasMore) return null;
       return true;
     },
     initialData: { pages: [family.members], pageParams: [false] },

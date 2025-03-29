@@ -15,6 +15,8 @@ type Props = {
 
 export default function JoinButton({ name, token, inviteType, invite }: Props) {
   const router = useRouter();
+
+  //TODO: add option to join as a maybe right away
   return (
     <Button
       onClick={async () => {

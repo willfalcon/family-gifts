@@ -5,13 +5,14 @@ import { getEvent } from '@/lib/queries/events';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import FloatingMessages from '@/components/Messages/FloatingMessages';
 import MessagesSidebar from '@/components/Messages/MessagesSidebar';
-import EventHeader from './EventHeader';
-import SecretSantaBanner from './SecretSantaBanner';
+import EventHeader from './components/EventHeader';
+import SecretSantaBanner from './components/SecretSantaBanner';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import DetailsTab from './DetailsTab';
-import ParticipantsTab from './ParticipantsTab';
-import EventAttendance from './EventAttendance';
+import DetailsTab from './components/DetailsTab';
+import ParticipantsTab from './components/ParticipantsTab';
 // import WishListsTab from './WishListsTab';
+import { notFound } from 'next/navigation';
+import EventAttendance from './components/EventAttendance';
 
 type PageProps = {
   params: {
@@ -26,7 +27,11 @@ export default async function EventPage({ params }: PageProps) {
   }
   const event = await getEvent(params.id);
 
-  const isCreator = event.creatorId === session.user.id;
+  if (!event) {
+    notFound();
+  }
+
+  const isManager = event.managers.some((manager) => manager.id === session.user?.id);
   const userAssignment = event.assignments?.find((assignment) => assignment.giverId === session.user?.id);
   const invite = event.invites?.find((invite) => invite.email === session.user?.email);
   if (!invite) {
@@ -43,9 +48,9 @@ export default async function EventPage({ params }: PageProps) {
           ]}
         />
 
-        <EventHeader event={event} isManager={isCreator} />
+        <EventHeader event={event} isManager={isManager} />
         <EventAttendance invite={invite} />
-        <SecretSantaBanner eventId={event.id} isManager={isCreator} budget={event.secretSantaBudget} userRecipient={userAssignment?.recipient} />
+        <SecretSantaBanner eventId={event.id} isManager={isManager} budget={event.secretSantaBudget} userRecipient={userAssignment?.recipient} />
 
         <Tabs defaultValue="details" className="space-y-6">
           <TabsList>

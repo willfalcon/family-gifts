@@ -1,81 +1,97 @@
-import { TabsContent } from '@/components/ui/tabs';
-
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+'use client';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { EventFromGetEvent } from '@/lib/queries/events';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import { Invite } from '@prisma/client';
-import { User } from '@prisma/client';
-import { auth } from '@/auth';
+import { Invite, Prisma } from '@prisma/client';
 import { Button } from '@/components/ui/button';
 import { MoreHorizontal } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import Link from 'next/link';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { addManager, getParticipant, removeManager } from '../actions';
+import { EventFromGetEvent } from '@/lib/queries/events';
+import { getEvent } from '../actions';
 
-type Props = {
-  event: EventFromGetEvent;
-};
+type Participant = Prisma.UserGetPayload<{
+  include: {
+    managedEvents: true;
+  };
+}>;
 
-export default async function ParticipantsTab({ event }: Props) {
-  const session = await auth();
-  const isManager = event.managers.some((manager) => manager.id === session?.user?.id);
-  return (
-    <TabsContent value="participants" className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Participants</CardTitle>
-          <CardDescription>People invited to this event</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {event.attendees.map((attendee) => {
-              const invite = event.invites.find((invite) => invite.email === attendee.email);
-              const attendeeIsManager = event.managers.some((manager) => manager.id === attendee.id);
-              return (
-                <Participant key={attendee.id} attendee={attendee} invite={invite} isManager={isManager} attendeeIsManager={attendeeIsManager} />
-              );
-            })}
-            {event.invites
-              .filter((invite) => !invite.userId)
-              .map((invite) => {
-                return <Participant key={invite.id} invite={invite} isManager={isManager} />;
-              })}
-          </div>
-        </CardContent>
-      </Card>
-    </TabsContent>
-  );
-}
+type GetParticipant = Prisma.InviteGetPayload<{
+  include: {
+    user: {
+      include: {
+        managedEvents: true;
+      };
+    };
+  };
+}>;
 
-function Participant({
-  attendee,
-  invite,
+export default function Participant({
+  participant: initialParticipant,
+  invite: initialInvite,
   isManager,
-  attendeeIsManager,
+  event,
 }: {
-  attendee?: User;
-  invite?: Invite;
+  participant?: Participant;
+  invite: Invite;
   isManager: boolean;
   attendeeIsManager?: boolean;
+  event: EventFromGetEvent;
 }) {
-  if (attendee) {
+  const query = useQuery({
+    queryKey: ['participant', initialInvite.id],
+    queryFn: async (): Promise<GetParticipant> => {
+      const participant = await getParticipant(initialInvite.id);
+      return participant as unknown as GetParticipant;
+    },
+    initialData: {
+      ...initialInvite,
+      user: initialParticipant || null,
+    },
+  });
+
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: async (action: 'addManager' | 'removeManager') => {
+      switch (action) {
+        case 'addManager':
+          await addManager(event.id, initialParticipant?.id);
+          break;
+        case 'removeManager':
+          await removeManager(event.id, initialParticipant?.id);
+          break;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['participant', initialInvite.id] });
+    },
+  });
+
+  if (!query.isLoading && !query.data) {
+    return null;
+  }
+
+  const { user: participant, ...invite } = query.data!;
+  // const attendeeIsManager = event?.managers.some((manager) => manager.id === initialAttendee?.id);
+  const attendeeIsManager = participant?.managedEvents.some((e) => e.id === event.id);
+  if (participant) {
     return (
-      <div className="flex items-center justify-between p-2 hover:bg-muted rounded-md">
-        <div className="flex items-center gap-3">
+      <div className="flex items-center justify-between p-2 hover:bg-muted rounded-md gap-3">
+        <div className="flex items-center gap-3 flex-1">
           <Avatar>
-            <AvatarImage src={attendee.image || undefined} alt={attendee.name || ''} />
+            <AvatarImage src={participant.image || undefined} alt={participant.name || ''} />
             <AvatarFallback>
-              {attendee.name
+              {participant.name
                 ?.split(' ')
                 .map((n) => n[0])
                 .join('')}
             </AvatarFallback>
           </Avatar>
           <div>
-            <p className="font-medium">{attendee.name}</p>
-            <p className="text-sm text-muted-foreground">{attendee.email}</p>
+            <p className="font-medium">{participant.name}</p>
+            <p className="text-sm text-muted-foreground">{participant.email}</p>
           </div>
         </div>
         <Badge
@@ -98,6 +114,12 @@ function Participant({
                 ? 'Declined'
                 : 'Pending'}
         </Badge>
+        <Badge
+          variant={attendeeIsManager ? 'default' : 'outline'}
+          className={cn((query.isFetching || mutation.isPending) && 'animate-pulse opacity-50')}
+        >
+          {attendeeIsManager ? 'Manager' : 'Participant'}
+        </Badge>
         {isManager && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -107,8 +129,8 @@ function Participant({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {attendeeIsManager && <DropdownMenuItem>Remove as Manager</DropdownMenuItem>}
-              {!attendeeIsManager && <DropdownMenuItem>Make Manager</DropdownMenuItem>}
+              {attendeeIsManager && <DropdownMenuItem onClick={() => mutation.mutate('removeManager')}>Remove as Manager</DropdownMenuItem>}
+              {!attendeeIsManager && <DropdownMenuItem onClick={() => mutation.mutate('addManager')}>Make Manager</DropdownMenuItem>}
               <DropdownMenuSeparator />
               <DropdownMenuItem>Remove</DropdownMenuItem>
             </DropdownMenuContent>

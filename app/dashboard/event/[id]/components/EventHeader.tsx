@@ -4,7 +4,7 @@ import Viewer from '@/components/ui/rich-text/viewer';
 import { JSONContent } from '@tiptap/react';
 import { format } from 'date-fns';
 import { Button, buttonVariants } from '@/components/ui/button';
-import EditEvent from './EditEvent';
+import EditEvent from './unused/EditEvent';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import Title from '@/components/Title';
 import { EventFromGetEvent } from '@/lib/queries/events';
@@ -18,7 +18,7 @@ type Props = {
 export default function EventHeader({ event, isManager }: Props) {
   return (
     <div className="mb-8">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-start gap-4">
         <div>
           <Title>{event.name}</Title>
           {event.info && <Viewer className="text-muted-foreground mt-1" content={event.info as JSONContent} immediatelyRender={false} />}

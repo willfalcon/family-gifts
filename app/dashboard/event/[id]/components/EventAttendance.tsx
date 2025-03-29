@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 import { EventResponse, Invite } from '@prisma/client';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Check, HelpCircle, Loader2, X } from 'lucide-react';
-import { getEventAttendance, updateEventAttendance } from './actions';
+import { getEventAttendance, updateEventAttendance } from '../actions';
 
 export default function EventAttendance({ invite }: { invite: Invite }) {
   const { data: response, isFetching } = useQuery({
@@ -25,6 +25,7 @@ export default function EventAttendance({ invite }: { invite: Invite }) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['event-attendance', invite.id] });
+      queryClient.invalidateQueries({ queryKey: ['participant', invite.id] });
     },
   });
   const pending = isFetching || mutation.isPending;

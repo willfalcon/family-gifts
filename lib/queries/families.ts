@@ -330,7 +330,7 @@ export const dashboardGetFamilies = cache(async () => {
             },
           },
         },
-        take: 1,
+        take: 3,
       },
       creator: true,
       _count: {
@@ -358,6 +358,11 @@ export type FamilyFromDashboardGetFamilies = Prisma.FamilyGetPayload<{
       };
     };
     creator: true;
+    _count: {
+      select: {
+        members: true;
+      };
+    };
   };
 }>;
 

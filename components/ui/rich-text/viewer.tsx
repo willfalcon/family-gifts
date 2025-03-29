@@ -11,7 +11,7 @@ interface ViewerProps {
   className?: string;
 }
 
-const Viewer = ({ content, style, immediatelyRender = true, className }: ViewerProps) => {
+const Viewer = ({ content, style = 'prose', immediatelyRender = true, className }: ViewerProps) => {
   const editor = useEditor({
     extensions: [StarterKit],
     content,

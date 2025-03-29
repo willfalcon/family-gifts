@@ -134,7 +134,9 @@ export async function createEvent(event: EventSchemaType) {
     const invitesToSend = newEvent.invites.filter((invite) => invite.userId !== session.user?.id);
     await Promise.all(
       invitesToSend.map(async (invite) => {
+        // send emails
         await sendInviteEmail(invite, newEvent);
+        // create notifications
         await client.mutation(api.notifications.createNotification, {
           userId: invite.userId!,
           type: 'info',
@@ -286,9 +288,28 @@ export async function updateEventAttendees(id: Event['id'], attendees: EventAtte
   });
 
   if (updatedEvent) {
+    const client = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
     // get the invites that weren't already in the invites list. (attendees already accepted were already filtered out of the newKnownInvites)
     const invitesToSend = updatedEvent.invites.filter((invite) => !currentEvent.invites.some((i) => i.id === invite.id));
-    await Promise.all(invitesToSend.map((invite) => sendInviteEmail(invite, updatedEvent)));
+    // update the channel with the new users
+    // TODO: add the new users to the channel
+    const channel = await client.mutation(api.channels.updateChannel, {
+      users: [session.user.id!, ...knownInvitees.map((i) => i.id)],
+    });
+    await Promise.all(
+      invitesToSend.map(async (invite) => {
+        // send emails
+        await sendInviteEmail(invite, updatedEvent);
+        // create notifications
+        await client.mutation(api.notifications.createNotification, {
+          userId: invite.userId!,
+          type: 'info',
+          title: `You've been invited to an event!`,
+          message: `You've been invited to ${updatedEvent.name}!`,
+          link: `/join?token=${invite.token}`,
+        });
+      }),
+    );
 
     revalidatePath(`/dashboard/event/${updatedEvent.id}`);
     return updatedEvent;

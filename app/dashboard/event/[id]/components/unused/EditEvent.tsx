@@ -2,11 +2,11 @@
 
 import { Event } from '@prisma/client';
 import { useForm } from 'react-hook-form';
-import { EventSchema, EventSchemaType } from '../../events/eventSchema';
+import { EventSchema, EventSchemaType } from '../../../../events/eventSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { updateEvent } from '../../events/actions';
+import { updateEvent } from '../events/actions';
 import { toast } from 'sonner';
-import EventForm from '../../events/EventForm';
+import EventForm from '../../../../events/EventForm';
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { DialogTrigger } from '@radix-ui/react-dialog';

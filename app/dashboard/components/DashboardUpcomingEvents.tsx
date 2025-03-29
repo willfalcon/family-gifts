@@ -23,6 +23,8 @@ type QueryFnReturn = {
 };
 
 export default function DashboardUpcomingEvents({ success, message, events, total }: Props) {
+  const hasMore = total && total > events.length;
+
   const { data, hasNextPage, fetchNextPage, isFetchingNextPage } = useInfiniteQuery({
     queryKey: ['dashboardGetEvents'],
     queryFn: async ({ pageParam }): Promise<QueryFnReturn> => {
@@ -30,11 +32,12 @@ export default function DashboardUpcomingEvents({ success, message, events, tota
     },
     initialPageParam: false,
     getNextPageParam: (lastPage, allPages, lastPageParam) => {
-      if (lastPageParam) return null;
+      if (lastPageParam || !hasMore) return null;
       return true;
     },
     initialData: { pages: [{ events, total }], pageParams: [false] },
   });
+
   if (!success) {
     return <ErrorMessage title={message} />;
   }

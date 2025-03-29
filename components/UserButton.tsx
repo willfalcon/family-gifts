@@ -17,9 +17,12 @@ import { Session } from 'next-auth';
 import Link from 'next/link';
 
 import SidebarNotifications from './SidebarNotifications';
+import { useQuery } from 'convex/react';
+import { api } from '@/convex/_generated/api';
+
 export default function UserButton({ session }: { session: Session }) {
   const { isMobile } = useSidebar();
-
+  const unreadNotificationsCount = useQuery(api.notifications.getUnreadNotificationsCount, session.user?.id ? { userId: session.user?.id } : 'skip');
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -39,7 +42,11 @@ export default function UserButton({ session }: { session: Session }) {
                 <span className="truncate font-semibold">{session.user?.name}</span>
                 <span className="truncate text-xs">{session.user?.email}</span>
               </div>
-              <ChevronsUpDown className="ml-auto size-4" />
+              {unreadNotificationsCount && unreadNotificationsCount > 0 ? (
+                <span className="rounded-full bg-red-500 px-1.5 py-0.5 text-xs text-white">{unreadNotificationsCount}</span>
+              ) : (
+                <ChevronsUpDown className="ml-auto size-4" />
+              )}
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent

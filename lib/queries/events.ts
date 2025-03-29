@@ -180,43 +180,44 @@ export const getEvent = cache(async (id: Event['id']) => {
   if (!session?.user?.id) {
     throw new Error('You must be logged in to do this.');
   }
-  try {
-    const event = await prisma.event.findUnique({
-      where: {
-        id,
-        attendees: {
-          some: {
-            id: session.user.id,
-          },
+
+  const event = await prisma.event.findUnique({
+    where: {
+      id,
+      attendees: {
+        some: {
+          id: session.user.id,
         },
       },
-      include: {
-        managers: true,
-        attendees: true,
-        assignments: {
-          include: {
-            giver: true,
-            recipient: true,
-          },
+    },
+    include: {
+      managers: true,
+      attendees: {
+        include: {
+          managedEvents: true,
         },
-        creator: true,
-        invites: true,
       },
-    });
-    if (!event) {
-      throw new Error('Event not found');
-    }
-    return event;
-  } catch (err) {
-    console.error(err);
-    throw new Error('Something went wrong.');
-  }
+      assignments: {
+        include: {
+          giver: true,
+          recipient: true,
+        },
+      },
+      creator: true,
+      invites: true,
+    },
+  });
+  return event;
 });
 
 export type EventFromGetEvent = Prisma.EventGetPayload<{
   include: {
     managers: true;
-    attendees: true;
+    attendees: {
+      include: {
+        managedEvents: true;
+      };
+    };
     assignments: {
       include: {
         giver: true;

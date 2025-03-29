@@ -56,7 +56,7 @@ export async function dashboardGetMoreMembers(familyId: string, getRest: boolean
                 },
               },
             },
-            skip: 1,
+            skip: 3,
           },
         },
       })
@@ -74,7 +74,7 @@ export async function dashboardGetMoreMembers(familyId: string, getRest: boolean
                 },
               },
             },
-            take: 1,
+            take: 3,
           },
         },
       });

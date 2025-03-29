@@ -25,6 +25,19 @@ export const createChannel = mutation({
   },
 });
 
+export const updateChannel = mutation({
+  args: {
+    channel: v.id('channels'),
+    name: v.string(),
+    type: v.union(v.literal('family'), v.literal('event'), v.literal('individual')),
+    family: v.optional(v.string()),
+    event: v.optional(v.string()),
+    users: v.array(v.string()),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.channel, { name: args.name, type: args.type, family: args.family, event: args.event, users: args.users });
+  },
+});
 export const addChannelUser = mutation({
   args: {
     user: v.string(),

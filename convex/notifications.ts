@@ -48,6 +48,17 @@ export const getUnreadNotifications = query({
   },
 });
 
+export const getUnreadNotificationsCount = query({
+  args: { userId: v.string() },
+  handler: async (ctx, args) => {
+    const notifications = await ctx.db
+      .query('notifications')
+      .withIndex('by_user', (q) => q.eq('userId', args.userId))
+      .collect();
+    return notifications.filter((notification) => !notification.readAt).length;
+  },
+});
+
 export const markNotificationAsRead = mutation({
   args: {
     notificationId: v.id('notifications'),
