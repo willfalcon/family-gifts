@@ -7,7 +7,7 @@ import { auth } from '@/auth';
 import Title, { SubTitle } from '@/components/Title';
 import SecretSanta from './SecretSanta';
 import SetBreadcrumbs from '@/components/SetBreadcrumbs';
-import SecretSantaProvider from './Provider';
+
 export default async function SecretSantaPage({ params }: { params: { id: string } }) {
   const session = await auth();
   if (!session?.user) {

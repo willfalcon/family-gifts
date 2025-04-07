@@ -8,7 +8,7 @@ type Props = {
   isManager: boolean;
   eventId: Event['id'];
   userRecipient?: User | null;
-  budget: number | null;
+  budget: string | null;
 };
 
 export default function SecretSantaBanner({ eventId, budget, isManager, userRecipient }: Props) {
