@@ -28,7 +28,7 @@ export default function JoinButton({ name, token, inviteType, invite }: Props) {
           } else {
             const res = await joinEvent(invite);
             toast.success(`Welcome, ${res.userName}`);
-            router.push(`/dashboard/event/${res.eventId}`);
+            router.push(`/dashboard/events/${res.eventId}`);
           }
         } catch (err) {
           console.log(err);

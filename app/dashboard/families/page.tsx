@@ -1,11 +1,15 @@
 import Link from 'next/link';
+import { Plus, Search, Users } from 'lucide-react';
+
+import { redirect } from 'next/navigation';
+
+import { auth } from '@/auth';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Plus, Search, Users } from 'lucide-react';
+
 import { getFamilies } from '@/lib/queries/families';
-import { auth } from '@/auth';
-import { redirect } from 'next/navigation';
+
 import Title, { SubTitle } from '@/components/Title';
 import SetBreadcrumbs from '@/components/SetBreadcrumbs';
 

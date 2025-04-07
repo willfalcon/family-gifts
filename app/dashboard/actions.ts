@@ -87,42 +87,40 @@ export async function dashboardGetMoreMembers(familyId: string, getRest: boolean
 }
 
 export async function dashboardGetEvents(getRest = false) {
-  try {
-    const { count } = await getEventsCount();
-    if (getRest) {
-      const { success, events, message } = await getEvents(-1, 2);
-      if (success) {
-        return {
-          events,
-          total: count,
-        };
-      } else {
-        throw new Error(message);
-      }
-    } else {
-      const { success, events, message } = await getEvents(3);
-      if (success) {
-        return { events, total: count };
-      } else {
-        throw new Error(message);
-      }
-    }
-  } catch (err) {
-    throw new Error('Something went wrong.');
+  const count = await getEventsCount();
+  if (getRest) {
+    const events = await getEvents(-1, 2);
+
+    return {
+      events,
+      total: count,
+    };
+  } else {
+    const events = await getEvents(3);
+    return { events, total: count };
   }
 }
 
 const httpClient = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
 export async function markNotificationAsRead(notificationId: Doc<'notifications'>['_id']) {
-  console.log('starting server fn');
   const session = await auth();
   if (!session?.user) {
     throw new Error('You must be logged in to do this.');
   }
-  console.log('got past auth check');
+
   await httpClient.mutation(api.notifications.markNotificationAsRead, {
     notificationId,
   });
-  console.log('got past mutation');
+}
+
+export async function deleteNotification(notificationId: Doc<'notifications'>['_id']) {
+  const session = await auth();
+  if (!session?.user) {
+    throw new Error('You must be logged in to do this.');
+  }
+
+  await httpClient.mutation(api.notifications.deleteNotification, {
+    notificationId,
+  });
 }

@@ -13,7 +13,8 @@ import { Button } from '@/components/ui/button';
 import { useFormContext } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
-
+import { getFamilies } from './actions';
+import { Alert } from '@/components/ui/alert';
 export default function Attendees() {
   const form = useFormContext();
 
@@ -22,11 +23,8 @@ export default function Attendees() {
   const { data: families, isLoading: familiesLoading } = useQuery({
     queryKey: ['families'],
     queryFn: async (): Promise<FamilyFromGetFamily[]> => {
-      const response = await fetch('/api/getFamilies');
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      return response.json();
+      const response = await getFamilies();
+      return response;
     },
   });
 
@@ -91,129 +89,135 @@ export default function Attendees() {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Attendees</CardTitle>
-        <CardDescription>Select people to invite to this event</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="relative">
-          <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Search people..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10" />
-        </div>
-        {familiesLoading ? (
-          <TabsSkeleton />
-        ) : families ? (
-          <>
-            <Tabs defaultValue={families[0].id} className="w-full">
-              <TabsList className="w-full justify-start mb-4 overflow-x-auto">
-                {families.map((family) => (
-                  <TabsTrigger key={family.id} value={family.id} className="flex-shrink-0">
-                    {family.name}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-              {filteredFamilies?.map((family) => (
-                <TabsContent key={family.id} value={family.id} className="space-y-4">
-                  {family.members.length === 0 ? (
-                    <p className="text-center text-muted-foreground py-4">No matching members found</p>
-                  ) : (
-                    <div className="space-y-5">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-medium">{family.members.length} members</span>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            selectAllInFamily(family.id);
-                          }}
-                          className="h-8"
-                        >
-                          Add All
-                        </Button>
-                      </div>
-                      {family.members.map((member) => (
-                        <div key={member.id} className="flex items-center space-x-2">
-                          <Checkbox
-                            id={`member-${member.id}`}
-                            checked={selectedParticipants.includes(member.id)}
-                            onCheckedChange={() => toggleParticipant(member.id)}
-                          />
-                          <div className="flex items-center gap-3 flex-1">
-                            <Avatar>
-                              <AvatarImage src={member.image || undefined} alt={member.name || ''} />
-                              <AvatarFallback>
-                                {member.name
-                                  ?.split(' ')
-                                  .map((n) => n[0])
-                                  .join('')}
-                              </AvatarFallback>
-                            </Avatar>
-                            <div>
-                              <Label htmlFor={`member-${member.id}`}>{member.name}</Label>
-                              <p className="text-sm text-muted-foreground">{member.email}</p>
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle>Attendees</CardTitle>
+          <CardDescription>Select people to invite to this event</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="relative">
+            {/* TODO: add search here */}
+            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+            <Input placeholder="Search people..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10" />
+          </div>
+          {familiesLoading ? (
+            <TabsSkeleton />
+          ) : families && families.length ? (
+            <>
+              <Tabs defaultValue={families[0].id} className="w-full">
+                <TabsList className="w-full justify-start mb-4 overflow-x-auto">
+                  {families.map((family) => (
+                    <TabsTrigger key={family.id} value={family.id} className="flex-shrink-0">
+                      {family.name}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+                {filteredFamilies?.map((family) => (
+                  <TabsContent key={family.id} value={family.id} className="space-y-4">
+                    {family.members.length === 0 ? (
+                      <p className="text-center text-muted-foreground py-4">No matching members found</p>
+                    ) : (
+                      <div className="space-y-5">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-sm font-medium">{family.members.length} members</span>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              selectAllInFamily(family.id);
+                            }}
+                            className="h-8"
+                          >
+                            Add All
+                          </Button>
+                        </div>
+                        {family.members.map((member) => (
+                          <div key={member.id} className="flex items-center space-x-2">
+                            <Checkbox
+                              id={`member-${member.id}`}
+                              checked={selectedParticipants.includes(member.id)}
+                              onCheckedChange={() => toggleParticipant(member.id)}
+                            />
+                            <div className="flex items-center gap-3 flex-1">
+                              <Avatar>
+                                <AvatarImage src={member.image || undefined} alt={member.name || ''} />
+                                <AvatarFallback>
+                                  {member.name
+                                    ?.split(' ')
+                                    .map((n) => n[0])
+                                    .join('')}
+                                </AvatarFallback>
+                              </Avatar>
+                              <div>
+                                <Label htmlFor={`member-${member.id}`}>{member.name}</Label>
+                                <p className="text-sm text-muted-foreground">{member.email}</p>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </TabsContent>
-              ))}
-            </Tabs>
-            <Separator className="my-6" />
-            <div>
-              <h3 className="text-lg font-medium mb-4">External Invites</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Invite people who don't have an account or aren't in your family. They'll receive an email invitation to join the event.
-              </p>
-            </div>
-            {externalInvites.length > 0 && (
-              <div className="mb-4 space-y-2">
-                {externalInvites.map((invite) => (
-                  <div key={invite} className="flex items-center justify-between p-3 bg-muted rounded-md">
-                    <div className="flex items-center gap-3">
-                      <Avatar>
-                        <AvatarFallback className="bg-primary/10 text-primary">
-                          <Mail className="h-4 w-4" />
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="text-sm text-muted-foreground">{invite}</p>
+                        ))}
                       </div>
-                    </div>
-                    <Button variant="ghost" size="sm" onClick={() => removeExternalInvite(invite)} className="h-8 w-8 p-0">
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
+                    )}
+                  </TabsContent>
                 ))}
-              </div>
-            )}
-            <div className="space-y-4">
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="grid gap-2">
-                  <Label htmlFor="inviteEmail">Email Address</Label>
-                  <Input
-                    id="inviteEmail"
-                    type="email"
-                    value={newInviteEmail}
-                    onChange={(e) => setNewInviteEmail(e.target.value)}
-                    placeholder="friend@example.com"
-                  />
+              </Tabs>
+            </>
+          ) : (
+            <Alert variant="default">No families found</Alert>
+          )}
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>External Invites</CardTitle>
+          <CardDescription>
+            Invite people who don't have an account or aren't in your family. They'll receive an email invitation to join the event.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {externalInvites.length > 0 && (
+            <div className="mb-4 space-y-2">
+              {externalInvites.map((invite) => (
+                <div key={invite} className="flex items-center justify-between p-3 bg-muted rounded-md">
+                  <div className="flex items-center gap-3">
+                    <Avatar>
+                      <AvatarFallback className="bg-primary/10 text-primary">
+                        <Mail className="h-4 w-4" />
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="text-sm text-muted-foreground">{invite}</p>
+                    </div>
+                  </div>
+                  <Button variant="ghost" size="sm" onClick={() => removeExternalInvite(invite)} className="h-8 w-8 p-0">
+                    <X className="h-4 w-4" />
+                  </Button>
                 </div>
-              </div>
-              <Button onClick={addExternalInvite} variant="outline" className="flex items-center gap-2">
-                <Plus className="h-4 w-4" />
-                Add Invite
-              </Button>
+              ))}
             </div>
-          </>
-        ) : (
-          <ErrorMessage title="Couldn't get families" />
-        )}
-      </CardContent>
-    </Card>
+          )}
+          <div className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-2">
+                <Label htmlFor="inviteEmail">Email Address</Label>
+                <Input
+                  id="inviteEmail"
+                  type="email"
+                  value={newInviteEmail}
+                  onChange={(e) => setNewInviteEmail(e.target.value)}
+                  placeholder="friend@example.com"
+                />
+              </div>
+            </div>
+            <Button onClick={addExternalInvite} variant="outline" className="flex items-center gap-2">
+              <Plus className="h-4 w-4" />
+              Add Invite
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </>
   );
 }
 

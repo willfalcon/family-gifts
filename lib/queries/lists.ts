@@ -7,43 +7,53 @@ import { getActiveFamilyId } from '../rscUtils';
 export const getUserLists = cache(async () => {
   const session = await auth();
   if (!session?.user) {
-    return {
-      success: false,
-      message: 'You must be logged in to do this.',
-      lists: [],
-    };
+    throw new Error('You must be logged in to do this.');
   }
 
-  try {
-    const lists = await prisma.list.findMany({
-      where: {
-        user: {
-          id: session.user.id,
+  const lists = await prisma.list.findMany({
+    where: {
+      user: {
+        id: session.user.id,
+      },
+    },
+    include: {
+      _count: {
+        select: {
+          items: true,
         },
       },
-      include: {
-        _count: {
-          select: {
-            items: true,
-          },
-        },
-        visibleTo: true,
-      },
-    });
+    },
+  });
 
-    return {
-      success: true,
-      lists,
-      message: '',
-    };
-  } catch (err) {
-    console.error(err);
-    return {
-      success: false,
-      message: 'Something went wrong.',
-      lists: [],
-    };
+  return lists;
+});
+
+export const dashboardGetUserLists = cache(async (rest: boolean = false) => {
+  const session = await auth();
+  if (!session?.user) {
+    throw new Error('You must be logged in to do this.');
   }
+  const listsCount = await prisma.list.count({
+    where: {
+      user: {
+        id: session.user.id,
+      },
+    },
+  });
+  const lists = await prisma.list.findMany({
+    where: {
+      user: {
+        id: session.user.id,
+      },
+    },
+    take: rest ? undefined : 3,
+    skip: rest ? 3 : 0,
+  });
+
+  return {
+    lists,
+    total: listsCount,
+  };
 });
 
 export const getDefaultListId = cache(async (userId: User['id']) => {

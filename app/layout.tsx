@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import './globals.css';
-import { Open_Sans } from 'next/font/google';
+import { Inter } from 'next/font/google';
 
 import { Toaster } from '@/components/ui/sonner';
 
-const font = Open_Sans({
+const font = Inter({
   subsets: ['latin'],
   display: 'swap',
 });

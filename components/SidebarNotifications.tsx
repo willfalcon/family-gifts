@@ -66,6 +66,11 @@ export default function SidebarNotifications() {
           </ScrollArea>
         </>
       )}
+      <DropdownMenuItem>
+        <Link href="/dashboard/notifications" className="flex">
+          View all notifications
+        </Link>
+      </DropdownMenuItem>
     </>
   );
 }

@@ -1,7 +1,7 @@
 import { auth } from '@/auth';
 import Title from '@/components/Title';
 import { buttonVariants } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { Calendar, Plus } from 'lucide-react';
 import Link from 'next/link';
 
 import { redirect } from 'next/navigation';
@@ -9,6 +9,8 @@ import DashboardUpcomingEvents from './components/DashboardUpcomingEvents';
 import { getEvents, getEventsCount } from '@/lib/queries/events';
 import SetBreadcrumbs from '@/components/SetBreadcrumbs';
 import FamilySection from './components/FamilySection';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import WishListSection from './components/WishListSection';
 
 export default async function page() {
   const session = await auth();
@@ -20,8 +22,8 @@ export default async function page() {
   // const activeFamily = await getActiveFamilyId();
 
   // const membersRes = await getSomeMembers(3);
-  const eventsRes = await getEvents(3);
-  const { count: eventsCount } = await getEventsCount();
+  const events = await getEvents(3);
+  const eventsCount = await getEventsCount();
   // const { success, message, family } = await getFamily();
 
   return (
@@ -49,15 +51,27 @@ export default async function page() {
           </div>
         </div>
 
-        <FamilySection />
+        <div className="grid md:grid-cols-2 gap-4">
+          <FamilySection />
 
-        {/* <DashboardFamilyMembers {...membersRes} activeFamilyId={activeFamily ?? ''} /> */}
+          {!!events.length ? (
+            <DashboardUpcomingEvents events={events} total={eventsCount} />
+          ) : (
+            <Card className="border-dashed flex flex-col items-center justify-center p-8">
+              <Calendar className="h-8 w-8 text-muted-foreground mb-4" />
+              <h3 className="font-medium text-center mb-2">Plan an Event</h3>
+              <p className="text-sm text-muted-foreground text-center mb-4">Create an event and invite people</p>
 
-        {!!eventsRes.events.length && <DashboardUpcomingEvents {...eventsRes} total={eventsCount} />}
+              <Link href="/dashboard/events/new" className={buttonVariants()}>
+                <Plus className="mr-2 h-4 w-4" />
+                New Event
+              </Link>
+            </Card>
+          )}
+
+          <WishListSection />
+        </div>
       </div>
-      {/* <FloatingMessages /> */}
     </div>
-    // {/* <MessagesSidebar familyId={family?.id} session={session} /> */}
-    // </SidebarProvider>
   );
 }

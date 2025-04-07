@@ -115,7 +115,7 @@ export default async function FamilyMemberPage({ params }: { params: { memberId:
                 </div>
               </CardContent>
               <CardFooter>
-                <Link href={`/dashboard/wish-list/${list.id}`} className={buttonVariants({ size: 'sm', className: 'w-full' })}>
+                <Link href={`/dashboard/wish-lists/${list.id}`} className={buttonVariants({ size: 'sm', className: 'w-full' })}>
                   View Wish List
                 </Link>
               </CardFooter>

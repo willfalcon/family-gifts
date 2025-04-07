@@ -14,6 +14,11 @@ import { Resend } from 'resend';
 import EventInviteEmailTemplate from '@/emails/eventEnvite';
 
 import { getEvent } from '@/lib/queries/events';
+import { Id } from '@/convex/_generated/dataModel';
+import { getFamilies as getFamiliesQuery } from '@/lib/queries/families';
+export async function getFamilies() {
+  return await getFamiliesQuery();
+}
 
 export async function createEvent(event: EventSchemaType) {
   const session = await auth();
@@ -89,9 +94,7 @@ export async function createEvent(event: EventSchemaType) {
         create: [...knownInvites, ...unknownInvites],
       },
       attendees: {
-        connect: {
-          id: session.user?.id,
-        },
+        connect: knownInvitees.map((i) => ({ id: i.id })),
       },
       creator: {
         connect: {
@@ -201,7 +204,7 @@ export async function updateEventDetails(id: Event['id'], event: EventDetailsSch
       },
     });
     if (updatedEvent) {
-      revalidatePath(`/dashboard/event/${updatedEvent.id}`);
+      revalidatePath(`/dashboard/events/${updatedEvent.id}`);
       return updatedEvent;
     } else {
       throw new Error("Couldn't update event.");
@@ -293,9 +296,12 @@ export async function updateEventAttendees(id: Event['id'], attendees: EventAtte
     const invitesToSend = updatedEvent.invites.filter((invite) => !currentEvent.invites.some((i) => i.id === invite.id));
     // update the channel with the new users
     // TODO: add the new users to the channel
-    const channel = await client.mutation(api.channels.updateChannel, {
-      users: [session.user.id!, ...knownInvitees.map((i) => i.id)],
-    });
+    if (updatedEvent.eventChannel) {
+      await client.mutation(api.channels.updateChannel, {
+        channel: updatedEvent.eventChannel as Id<'channels'>,
+        users: [session.user.id!, ...updatedEvent.invites.filter((i) => i.userId).map((i) => i.userId!)],
+      });
+    }
     await Promise.all(
       invitesToSend.map(async (invite) => {
         // send emails
@@ -311,9 +317,28 @@ export async function updateEventAttendees(id: Event['id'], attendees: EventAtte
       }),
     );
 
-    revalidatePath(`/dashboard/event/${updatedEvent.id}`);
+    revalidatePath(`/dashboard/events/${updatedEvent.id}`);
     return updatedEvent;
   } else {
     throw new Error("Couldn't update event.");
   }
+}
+
+export async function deleteEvent(id: Event['id']) {
+  const session = await auth();
+  if (!session?.user) {
+    throw new Error('You must be logged in to do this!');
+  }
+  const event = await getEvent(id);
+  if (!event) {
+    throw new Error('Event not found');
+  }
+  if (!event.managers.some((manager) => manager.id === session.user?.id)) {
+    throw new Error('You are not authorized to delete this event');
+  }
+  await prisma.event.delete({
+    where: { id },
+  });
+  revalidatePath('/dashboard/events');
+  return true;
 }

@@ -3,7 +3,7 @@ import { Family, Invite } from '@prisma/client';
 
 export default function InviteEmailTemplate(member: Invite, family: Family) {
   const previewText = `Someone invited you to join the family on Family Gifts.`;
-  const inviteLink = `https://${process.env.FRONTEND_URL}/join?token=${member.token}`;
+  const inviteLink = `${process.env.NEXT_PUBLIC_FRONTEND_URL}/join?token=${member.token}`;
   return (
     <Html>
       <Head />

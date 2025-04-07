@@ -9,20 +9,19 @@ import { format } from 'date-fns';
 import { CalendarDays, ChevronDown, ChevronRight, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { dashboardGetEvents } from '../actions';
+import { Event } from '@prisma/client';
 
 type Props = {
-  success: boolean;
-  message: string;
-  events: EventWithFamily[];
+  events: Event[];
   total: number | undefined;
 };
 
 type QueryFnReturn = {
-  events: EventWithFamily[];
+  events: Event[];
   total: number | undefined;
 };
 
-export default function DashboardUpcomingEvents({ success, message, events, total }: Props) {
+export default function DashboardUpcomingEvents({ events, total }: Props) {
   const hasMore = total && total > events.length;
 
   const { data, hasNextPage, fetchNextPage, isFetchingNextPage } = useInfiniteQuery({
@@ -38,12 +37,8 @@ export default function DashboardUpcomingEvents({ success, message, events, tota
     initialData: { pages: [{ events, total }], pageParams: [false] },
   });
 
-  if (!success) {
-    return <ErrorMessage title={message} />;
-  }
-
   return (
-    <section className="mb-10">
+    <section className="mb-10 col-span-2">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-semibold">Upcoming Events</h2>
 
@@ -66,7 +61,7 @@ export default function DashboardUpcomingEvents({ success, message, events, tota
                   <p className="text-xs text-muted-foreground">{event.location}</p>
                 </CardContent>
                 <CardFooter>
-                  <Link href={`/dashboard/event/${event.id}`} className={buttonVariants({ variant: 'outline', size: 'sm', className: 'w-full' })}>
+                  <Link href={`/dashboard/events/${event.id}`} className={buttonVariants({ variant: 'outline', size: 'sm', className: 'w-full' })}>
                     View Details
                   </Link>
                 </CardFooter>

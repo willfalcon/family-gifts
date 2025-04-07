@@ -26,11 +26,14 @@ model User {
   events          Event[]
   receiving       Assignment[]    @relation("Recipient")
   giving          Assignment[]    @relation("Giver")
+  excludedFrom    Exclusion[]     @relation("ExclusionFrom")
+  excludedTo      Exclusion[]     @relation("ExclusionTo")
   eventInvite     Invite[]        @relation("EventInviteUser")
   channels        Channel[]
   invitesSent     Invite[]        @relation("inviteSender")
   createdEvents   Event[]         @relation("EventCreator")
   managedEvents   Event[]         @relation("EventManager")
+  purchasedItems  Item[]          @relation("ItemPurchasedBy")
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt()
 }
@@ -96,14 +99,14 @@ model Invite {
   email         String
   token         String         @unique()
   tokenExpiry   DateTime
-  family        Family?        @relation("FamilyInvite", fields: [familyId], references: [id])
+  family        Family?        @relation("FamilyInvite", fields: [familyId], references: [id], onDelete: Cascade)
   familyId      String?
-  event         Event?         @relation("EventInvite", fields: [eventId], references: [id])
+  event         Event?         @relation("EventInvite", fields: [eventId], references: [id], onDelete: Cascade)
   eventId       String?
   eventResponse EventResponse?
-  user          User?          @relation("EventInviteUser", fields: [userId], references: [id])
+  user          User?          @relation("EventInviteUser", fields: [userId], references: [id], onDelete: Cascade)
   userId        String?
-  inviter       User?          @relation("inviteSender", fields: [inviterId], references: [id])
+  inviter       User?          @relation("inviteSender", fields: [inviterId], references: [id], onDelete: Cascade)
   inviterId     String?
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt()
@@ -126,19 +129,28 @@ model Family {
   updatedAt     DateTime  @updatedAt()
 }
 
+enum VisiblityType {
+  private
+  link
+  public
+  specific
+}
+
 model List {
-  id                String   @id() @default(cuid())
+  id                String        @id() @default(cuid())
   name              String
   description       Json?
   userId            String
-  user              User     @relation(fields: [userId], references: [id])
+  user              User          @relation(fields: [userId], references: [id])
   items             Item[]
-  visibleToFamilies Family[] @relation("ListVisibleToFamilies")
-  visibleToEvents   Event[]  @relation("ListVisibleToEvents")
-  visibleToUsers    User[]   @relation("ListVisibleToUsers")
-  default           Boolean?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt()
+  visibleToFamilies Family[]      @relation("ListVisibleToFamilies")
+  visibleToEvents   Event[]       @relation("ListVisibleToEvents")
+  visibleToUsers    User[]        @relation("ListVisibleToUsers")
+  shareLink         String?
+  visibilityType    VisiblityType @default(private)
+  categories        String[]
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt()
 }
 
 enum Priority {
@@ -148,22 +160,22 @@ enum Priority {
 }
 
 model Item {
-  id         String    @id() @default(cuid())
-  name       String
-  listId     String?
-  list       List?     @relation(fields: [listId], references: [id])
-  link       String?
-  notes      Json?
-  priority   Priority?
-  price      Float?
-  image      String?
-  categories String[]
-  parentId   String?
-  parent     Item?     @relation("ChildParentItems", fields: [parentId], references: [id])
-  children   Item[]    @relation("ChildParentItems")
-  // boughtBy   FamilyMember[] @relation("ItemBoughtBy")
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt()
+  id          String    @id() @default(cuid())
+  name        String
+  listId      String?
+  list        List?     @relation(fields: [listId], references: [id])
+  link        String?
+  notes       Json?
+  priority    Priority?
+  price       Float?
+  image       String?
+  categories  String[]
+  parentId    String?
+  parent      Item?     @relation("ChildParentItems", fields: [parentId], references: [id])
+  children    Item[]    @relation("ChildParentItems")
+  purchasedBy User[]    @relation("ItemPurchasedBy")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt()
 }
 
 model Event {
@@ -177,7 +189,8 @@ model Event {
   familyId          String? // TODO: remove family relation
   family            Family?      @relation(fields: [familyId], references: [id])
   assignments       Assignment[]
-  secretSantaBudget Float?
+  exclusions        Exclusion[]
+  secretSantaBudget String?
   channels          Channel[] // TODO: remove
   creatorId         String
   creator           User         @relation("EventCreator", fields: [creatorId], references: [id])
@@ -193,13 +206,25 @@ model Event {
 model Assignment {
   id          String   @id() @default(cuid())
   eventId     String
-  event       Event    @relation(fields: [eventId], references: [id])
-  giverId     String?
-  giver       User?    @relation("Giver", fields: [giverId], references: [id])
-  recipientId String?
-  recipient   User?    @relation("Recipient", fields: [recipientId], references: [id])
+  event       Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  giverId     String
+  giver       User     @relation("Giver", fields: [giverId], references: [id])
+  recipientId String
+  recipient   User     @relation("Recipient", fields: [recipientId], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt()
+}
+
+model Exclusion {
+  id        String   @id() @default(cuid())
+  eventId   String
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  fromId    String
+  from      User     @relation("ExclusionFrom", fields: [fromId], references: [id])
+  toId      String
+  to        User     @relation("ExclusionTo", fields: [toId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
 }
 
 // TODO: remove all channel stuff

@@ -37,7 +37,7 @@ export default function NewEvent() {
     onSuccess(data) {
       console.log(data);
       toast.success(`${data.name} created!`);
-      router.push(`/dashboard/event/${data.id}`);
+      router.push(`/dashboard/events/${data.id}`);
     },
   });
 

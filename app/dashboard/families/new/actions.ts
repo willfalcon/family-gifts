@@ -1,7 +1,7 @@
 'use server';
 
 import { auth } from '@/auth';
-import { FamilySchema, FamilySchemaType } from '../../manage-family/familySchema';
+import { FamilySchema, FamilySchemaType } from '../familySchema';
 import { prisma } from '@/prisma';
 import { randomBytes } from 'crypto';
 import { addDays } from 'date-fns';
@@ -20,6 +20,7 @@ export async function createFamily(data: FamilySchemaType) {
   const strippedInvites = data.members?.filter((member) => member.value) || [];
   const validatedData = FamilySchema.parse({ ...data, members: strippedInvites });
 
+  console.log(session.user);
   try {
     const family = await prisma.family.create({
       data: {
