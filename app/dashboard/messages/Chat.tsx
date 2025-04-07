@@ -4,7 +4,6 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
-import { useMe } from '../Providers';
 import { Doc } from '@/convex/_generated/dataModel';
 import { useMutation, useQuery } from 'convex/react';
 import { Send } from 'lucide-react';
@@ -13,7 +12,6 @@ import { Fragment } from 'react';
 import { format, isSameDay } from 'date-fns';
 import { toast } from 'sonner';
 import Message from './Message';
-import { ChatSkeleton } from '@/components/Messages/ChatSkeleton';
 
 type Props = {
   channel: Doc<'channels'>;
@@ -21,8 +19,6 @@ type Props = {
   sidebar?: boolean;
 };
 export default function Chat({ channel, user, sidebar = false }: Props) {
-  const { data: me } = useMe();
-
   const messages = useQuery(api.messages.getMessages, { channelId: channel._id });
 
   const sendMessage = useMutation(api.messages.sendMessage);
@@ -44,9 +40,6 @@ export default function Chat({ channel, user, sidebar = false }: Props) {
       });
     }
     form.reset();
-  }
-  if (!me) {
-    return <ChatSkeleton />;
   }
 
   return (

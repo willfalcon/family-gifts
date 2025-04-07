@@ -3,7 +3,7 @@ import { auth } from '@/auth';
 import Title from '@/components/Title';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { CalendarDays, ChevronRight, Gift, Users } from 'lucide-react';
+import { Calendar, CalendarDays, ChevronRight, Gift, Plus, Users } from 'lucide-react';
 import { redirect } from 'next/navigation';
 import { buttonVariants } from '@/components/ui/button';
 import Link from 'next/link';
@@ -17,16 +17,7 @@ export default async function EventsPage() {
     redirect('/sign-in');
   }
 
-  const { events, success, message } = await getEvents();
-
-  if (!success) {
-    return (
-      <div>
-        <h3>Event query failed.</h3>
-        <p>{message}</p>
-      </div>
-    );
-  }
+  const events = await getEvents();
 
   const getEventIcon = (type: string) => {
     switch (type) {
@@ -48,33 +39,40 @@ export default async function EventsPage() {
         ]}
       />
       <Title>Events</Title>
-      {events.length ? (
-        events.map((event) => (
-          <Card key={event.id}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{event.name}</CardTitle>
-              <Badge variant="secondary">
-                {getEventIcon('gathering')}
-                <span className="ml-1 capitalize">gathering</span>
-              </Badge>
-            </CardHeader>
-            <CardContent>
-              {event.date && <div className="text-sm text-muted-foreground mb-2">{format(new Date(event.date), 'MMMM dd, yyyy')}</div>}
-            </CardContent>
-            <CardFooter className="flex justify-between">
-              <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={`/dashboard/event/${event.id}`}>
-                View Details
-                <ChevronRight className="ml-2 h-4 w-4" />
-              </Link>
-            </CardFooter>
-          </Card>
-        ))
-      ) : (
-        <p>{message}</p>
-      )}
-      <Link href="/dashboard/events/new" className={buttonVariants()}>
-        Create New Event
-      </Link>
+      <div className="grid md:grid-cols-2 gap-4">
+        {!!events.length &&
+          events.map((event) => (
+            <Card key={event.id}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">{event.name}</CardTitle>
+                <Badge variant="secondary">
+                  {getEventIcon('gathering')}
+                  <span className="ml-1 capitalize">gathering</span>
+                </Badge>
+              </CardHeader>
+              <CardContent>
+                {event.date && <div className="text-sm text-muted-foreground mb-2">{format(new Date(event.date), 'MMMM dd, yyyy')}</div>}
+              </CardContent>
+              <CardFooter className="flex justify-between">
+                <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={`/dashboard/events/${event.id}`}>
+                  View Details
+                  <ChevronRight className="ml-2 h-4 w-4" />
+                </Link>
+              </CardFooter>
+            </Card>
+          ))}
+
+        <Card className="border-dashed flex flex-col items-center justify-center p-8">
+          <Calendar className="h-8 w-8 text-muted-foreground mb-4" />
+          <h3 className="font-medium text-center mb-2">Plan an Event</h3>
+          <p className="text-sm text-muted-foreground text-center mb-4">Create an event and invite people</p>
+
+          <Link href="/dashboard/events/new" className={buttonVariants()}>
+            <Plus className="mr-2 h-4 w-4" />
+            New Event
+          </Link>
+        </Card>
+      </div>
     </div>
   );
 }

@@ -1,14 +1,12 @@
 import Header from '@/components/Header';
 import { PropsWithChildren } from 'react';
-import Providers from './Providers';
+import Providers from './components/Providers';
 import DashboardSidebar from '@/components/DashboardSidebar';
 import { SidebarInset } from '@/components/ui/sidebar';
-import { getActiveFamilyId } from '@/lib/rscUtils';
 
-export default async function DashboardLayout({ children }: PropsWithChildren) {
-  const activeFamilyId = await getActiveFamilyId();
+export default function DashboardLayout({ children }: PropsWithChildren) {
   return (
-    <Providers activeFamilyId={activeFamilyId}>
+    <Providers>
       {/* <div className="flex h-full min-h-screen w-full flex-col"> */}
       <DashboardSidebar />
       <SidebarInset>

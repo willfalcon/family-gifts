@@ -15,4 +15,14 @@ export default defineSchema({
     sender: v.string(),
     text: v.string(),
   }).index('by_channel', ['channel']),
+  notifications: defineTable({
+    userId: v.string(),
+    title: v.string(),
+    message: v.string(),
+    type: v.union(v.literal('info'), v.literal('success'), v.literal('warning'), v.literal('error')),
+    readAt: v.optional(v.number()),
+    link: v.optional(v.string()),
+  })
+    .index('by_user', ['userId'])
+    .index('by_read_at', ['readAt']),
 });

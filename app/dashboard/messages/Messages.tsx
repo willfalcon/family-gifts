@@ -29,7 +29,7 @@ export default function Messages({ session, channelId }: Props) {
     <div className="space-y-4 p-8 pt-6">
       <Title>Messages</Title>
       <div className="flex gap-4">
-        {channels ? <ChannelsList channels={channels} /> : <ChannelListSkeleton />}
+        {channels ? <ChannelsList channels={channels} activeChannel={channelId} /> : <ChannelListSkeleton />}
         {channel ? <Chat channel={channel} user={session.user!.id!} /> : <ChatSkeleton />}
       </div>
     </div>

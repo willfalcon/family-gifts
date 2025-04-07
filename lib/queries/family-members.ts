@@ -1,14 +1,14 @@
 import { auth } from '@/auth';
 import { prisma } from '@/prisma';
 import { FamilyMemberWithRefs, FamilyMemberWithUser } from '@/prisma/types';
-import { Family, FamilyMember } from '@prisma/client';
+import { Family, User } from '@prisma/client';
 import { cache } from 'react';
 import { getActiveFamilyId } from '../rscUtils';
 
 type GetMembersResult = {
   success: boolean;
   message: string;
-  members: FamilyMemberWithUser[];
+  members: User[];
 };
 
 /**
@@ -30,23 +30,24 @@ export const getSomeMembers = cache(async (limit: number | undefined, skip?: num
 
   const activeFamilyId = await getActiveFamilyId();
   try {
-    const members = await prisma.familyMember.findMany({
+    const members = await prisma.user.findMany({
       where: {
-        familyId: activeFamilyId,
+        families: {
+          some: {
+            id: activeFamilyId,
+          },
+        },
       },
       include: {
         managing: true,
-        user: {
-          include: {
-            _count: {
-              select: {
-                lists: {
-                  where: {
-                    visibleTo: {
-                      some: {
-                        id: activeFamilyId,
-                      },
-                    },
+
+        _count: {
+          select: {
+            lists: {
+              where: {
+                visibleTo: {
+                  some: {
+                    id: activeFamilyId,
                   },
                 },
               },
@@ -63,9 +64,13 @@ export const getSomeMembers = cache(async (limit: number | undefined, skip?: num
         }),
       skip: skip ?? 0,
     });
-    const count = await prisma.familyMember.count({
+    const count = await prisma.user.count({
       where: {
-        familyId: activeFamilyId,
+        families: {
+          some: {
+            id: activeFamilyId,
+          },
+        },
       },
     });
     if (members) {
@@ -105,13 +110,11 @@ export const getMembers = cache(async (id: Family['id'], limit?: number | undefi
     },
     include: {
       members: {
-        include: {
-          user: true,
-        },
         ...(limit && {
           take: limit,
         }),
       },
+      managers: true,
     },
   });
 
@@ -124,7 +127,7 @@ export const getMembers = cache(async (id: Family['id'], limit?: number | undefi
   }
 
   // am i a member or a manager of the family?
-  if (family?.members.find((member) => member.userId === session.user!.id || family.managerId === session.user!.id)) {
+  if (family?.members.find((member) => member.id === session.user!.id || family.managers.find((user) => user.id === session.user!.id))) {
     return {
       success: true,
       members: family.members || [],
@@ -175,16 +178,19 @@ export const getFamilyMembers = cache(async (): Promise<FamilyMemberListsResult>
         lists: [],
       };
     }
-    const members = await prisma.familyMember.findMany({
+    const members = await prisma.user.findMany({
       where: {
-        familyId: activeFamilyId,
+        families: {
+          some: {
+            id: activeFamilyId,
+          },
+        },
         NOT: {
           id: me.id,
         },
       },
       include: {
-        items: true,
-        user: true,
+        lists: true,
       },
     });
 
@@ -227,16 +233,13 @@ export const getFamilyMember = cache(async () => {
   const activeFamilyId = await getActiveFamilyId();
 
   try {
-    const member = await prisma.familyMember.findFirst({
+    const member = await prisma.user.findFirst({
       where: {
-        user: {
-          is: {
-            id: session.user.id,
-          },
-        },
+        id: session.user.id,
+
         ...(activeFamilyId && {
-          family: {
-            is: {
+          families: {
+            some: {
               id: activeFamilyId,
             },
           },
@@ -270,7 +273,7 @@ export const getFamilyMember = cache(async () => {
 /**
  * Retrieves the family member along with their user
  */
-export const getFamilyMemberById = cache(async (id: FamilyMember['id']) => {
+export const getFamilyMemberById = cache(async (id: User['id']) => {
   const session = await auth();
   if (!session?.user) {
     return {
@@ -281,15 +284,15 @@ export const getFamilyMemberById = cache(async (id: FamilyMember['id']) => {
   }
 
   try {
-    const member = await prisma.familyMember.findFirst({
+    const activeFamilyId = await getActiveFamilyId();
+    const member = await prisma.user.findFirst({
       where: {
         id,
       },
       include: {
-        user: true,
-        family: {
-          include: {
-            managers: true,
+        families: {
+          where: {
+            id: activeFamilyId,
           },
         },
       },
@@ -321,13 +324,13 @@ export const getFamilyMemberById = cache(async (id: FamilyMember['id']) => {
 /**
  * Returns the user for a family member
  */
-export const getMemberUser = cache(async (member: FamilyMember) => {
-  if (!member.userId) {
+export const getMemberUser = cache(async (member: User) => {
+  if (!member.id) {
     return null;
   }
   const user = await prisma.user.findUnique({
     where: {
-      id: member.userId,
+      id: member.id,
     },
   });
   return user;
@@ -347,10 +350,12 @@ export const getFamilyMemberCount = cache(async () => {
   const activeFamilyId = await getActiveFamilyId();
 
   try {
-    const count = await prisma.familyMember.count({
+    const count = await prisma.user.count({
       where: {
-        family: {
-          id: activeFamilyId,
+        families: {
+          some: {
+            id: activeFamilyId,
+          },
         },
       },
     });
@@ -388,16 +393,15 @@ export const getActiveMember = cache(async () => {
   }
 
   const activeFamilyId = await getActiveFamilyId();
-  const me = await prisma.familyMember.findFirst({
+  const me = await prisma.user.findFirst({
     where: {
-      user: {
-        id: session?.user.id,
-      },
-      family: {
-        id: activeFamilyId,
-        members: {
-          some: {
-            user: {
+      id: session?.user.id,
+
+      families: {
+        some: {
+          id: activeFamilyId,
+          members: {
+            some: {
               id: session?.user.id,
             },
           },
@@ -418,16 +422,15 @@ export const getActiveMemberUser = cache(async () => {
   }
 
   const activeFamilyId = await getActiveFamilyId();
-  const me = await prisma.familyMember.findFirst({
+  const me = await prisma.user.findFirst({
     where: {
-      user: {
-        id: session?.user.id,
-      },
-      family: {
-        id: activeFamilyId,
-        members: {
-          some: {
-            user: {
+      id: session?.user.id,
+
+      families: {
+        some: {
+          id: activeFamilyId,
+          members: {
+            some: {
               id: session?.user.id,
             },
           },
@@ -435,7 +438,6 @@ export const getActiveMemberUser = cache(async () => {
       },
     },
     include: {
-      user: true,
       managing: true,
     },
   });
@@ -452,16 +454,15 @@ export const getActiveMemberAll = cache(async () => {
   }
 
   const activeFamilyId = await getActiveFamilyId();
-  const me = await prisma.familyMember.findFirst({
+  const me = await prisma.user.findFirst({
     where: {
-      user: {
-        id: session?.user.id,
-      },
-      family: {
-        id: activeFamilyId,
-        members: {
-          some: {
-            user: {
+      id: session?.user.id,
+
+      families: {
+        some: {
+          id: activeFamilyId,
+          members: {
+            some: {
               id: session?.user.id,
             },
           },
@@ -469,14 +470,12 @@ export const getActiveMemberAll = cache(async () => {
       },
     },
     include: {
-      user: true,
       managing: true,
       giving: {
         include: {
-          receiver: true,
+          recipient: true,
         },
       },
-      eventsManaged: true,
     },
   });
   return me;
@@ -491,16 +490,15 @@ export const getActiveMemberUserAssignments = cache(async () => {
   }
 
   const activeFamilyId = await getActiveFamilyId();
-  const me = await prisma.familyMember.findFirst({
+  const me = await prisma.user.findFirst({
     where: {
-      user: {
-        id: session?.user.id,
-      },
-      family: {
-        id: activeFamilyId,
-        members: {
-          some: {
-            user: {
+      id: session?.user.id,
+
+      families: {
+        some: {
+          id: activeFamilyId,
+          members: {
+            some: {
               id: session?.user.id,
             },
           },
@@ -508,11 +506,10 @@ export const getActiveMemberUserAssignments = cache(async () => {
       },
     },
     include: {
-      user: true,
       managing: true,
       giving: {
         include: {
-          receiver: true,
+          recipient: true,
         },
       },
     },
@@ -527,16 +524,15 @@ export const getMemberAssignment = cache(async () => {
   }
 
   const activeFamilyId = await getActiveFamilyId();
-  const me = await prisma.familyMember.findFirst({
+  const me = await prisma.user.findFirst({
     where: {
-      user: {
-        id: session?.user.id,
-      },
-      family: {
-        id: activeFamilyId,
-        members: {
-          some: {
-            user: {
+      id: session?.user.id,
+
+      families: {
+        some: {
+          id: activeFamilyId,
+          members: {
+            some: {
               id: session?.user.id,
             },
           },
@@ -546,10 +542,9 @@ export const getMemberAssignment = cache(async () => {
     include: {
       giving: {
         include: {
-          receiver: true,
+          recipient: true,
         },
       },
-      user: true,
     },
   });
   return me;

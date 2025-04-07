@@ -12,18 +12,20 @@ import {
 } from './ui/dropdown-menu';
 import SignOut from './SignOut';
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from './ui/sidebar';
-import { ChevronsUpDown, UserCog, UserPlus } from 'lucide-react';
+import { Bell, ChevronsUpDown, UserCog, UserPlus } from 'lucide-react';
 import { Session } from 'next-auth';
 import Link from 'next/link';
 
+import SidebarNotifications from './SidebarNotifications';
+import { useQuery } from 'convex/react';
+import { api } from '@/convex/_generated/api';
+
 export default function UserButton({ session }: { session: Session }) {
   const { isMobile } = useSidebar();
-
+  const unreadNotificationsCount = useQuery(api.notifications.getUnreadNotificationsCount, session.user?.id ? { userId: session.user?.id } : 'skip');
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        {/* <span className="hidden text-sm sm:inline-flex">{session.user.email}</span> */}
-        {/* <span className="hidden text-sm sm:inline-flex">Username or Email</span> */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton size="lg" className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
@@ -40,14 +42,19 @@ export default function UserButton({ session }: { session: Session }) {
                 <span className="truncate font-semibold">{session.user?.name}</span>
                 <span className="truncate text-xs">{session.user?.email}</span>
               </div>
-              <ChevronsUpDown className="ml-auto size-4" />
+              {unreadNotificationsCount && unreadNotificationsCount > 0 ? (
+                <span className="rounded-full bg-red-500 px-1.5 py-0.5 text-xs text-white">{unreadNotificationsCount}</span>
+              ) : (
+                <ChevronsUpDown className="ml-auto size-4" />
+              )}
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-            side={isMobile ? 'bottom' : 'right'}
-            align="end"
-            sideOffset={4}
+            className="w-96 min-w-56 rounded-lg"
+            side={isMobile ? 'bottom' : 'top'}
+            align="start"
+            // alignOffset={16}
+            // sideOffset={16}
           >
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
@@ -67,6 +74,8 @@ export default function UserButton({ session }: { session: Session }) {
                 </div>
               </div>
             </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <SidebarNotifications />
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>

@@ -8,9 +8,10 @@ interface EditorProps {
   placeholder?: string;
   onChange: (value: object) => void;
   className?: string;
+  immediatelyRender?: boolean;
 }
 
-const Editor = ({ content, placeholder, onChange }: EditorProps) => {
+const Editor = ({ content, placeholder, onChange, immediatelyRender = true }: EditorProps) => {
   const editor = useEditor({
     extensions: [StarterKit],
     content: content,
@@ -22,6 +23,7 @@ const Editor = ({ content, placeholder, onChange }: EditorProps) => {
         class: 'outline-none min-h-[200px] prose-p:my-2',
       },
     },
+    immediatelyRender,
   });
 
   if (!editor) return <></>;
@@ -30,7 +32,7 @@ const Editor = ({ content, placeholder, onChange }: EditorProps) => {
     <div className="prose max-w-none w-full border border-input bg-background dark:prose-invert">
       <EditorToolbar editor={editor} />
       <div className="editor">
-        <EditorContent editor={editor} placeholder={placeholder} className="px-4 min-h-[200px] " />
+        <EditorContent editor={editor} placeholder={placeholder} className="px-4 min-h-[200px]" />
       </div>
     </div>
   );

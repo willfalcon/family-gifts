@@ -3,8 +3,9 @@ import { cache } from 'react';
 import { getActiveFamilyId } from '../rscUtils';
 import { prisma } from '@/prisma';
 import { getActiveMember } from './family-members';
-import { FamilyMember, List } from '@prisma/client';
+import { List, Prisma } from '@prisma/client';
 import { ItemWithRefs, ListWithItems } from '@/prisma/types';
+import { randomBytes } from 'crypto';
 
 export const getItems = cache(async (limit?: number) => {
   const session = await auth();
@@ -91,66 +92,102 @@ export const getDefaultList = cache(async () => {
     };
   }
 });
-export const getListById = cache(async (id: List['id']) => {
+
+export const getList = cache(async (id: List['id']) => {
   const session = await auth();
   if (!session?.user) {
-    return {
-      success: false,
-      message: 'You must be logged in to do this.',
-      list: undefined,
-    };
+    throw new Error('You must be logged in to do this.');
   }
 
-  try {
-    const activeFamilyId = await getActiveFamilyId();
-    const list = await prisma.list.findFirst({
+  // TODO: restrict by visibility
+
+  const list = await prisma.list.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      items: {
+        include: {
+          purchasedBy: true,
+        },
+      },
+      user: true,
+      visibleToFamilies: true,
+      visibleToEvents: true,
+      visibleToUsers: true,
+    },
+  });
+
+  return list;
+});
+
+export type GetList = Prisma.ListGetPayload<{
+  include: {
+    items: {
+      include: {
+        purchasedBy: true;
+      };
+    };
+    user: true;
+    visibleToFamilies: true;
+    visibleToEvents: true;
+    visibleToUsers: true;
+  };
+}>;
+
+export type ItemFromGetList = GetList['items'][number];
+
+export const getListForEdit = cache(async (id: List['id']) => {
+  const session = await auth();
+  if (!session?.user) {
+    throw new Error('You must be logged in to do this.');
+  }
+
+  const list = await prisma.list.findUnique({
+    where: {
+      id,
+      user: {
+        id: session.user.id,
+      },
+    },
+    include: {
+      items: true,
+      visibleToFamilies: true,
+      visibleToEvents: true,
+      visibleToUsers: true,
+    },
+  });
+
+  if (list && !list.shareLink) {
+    const shareLink = randomBytes(10).toString('hex');
+    const list = await prisma.list.update({
       where: {
         id,
-        OR: [
-          {
-            user: {
-              id: session.user.id,
-            },
-          },
-          {
-            visibleTo: {
-              some: {
-                id: activeFamilyId,
-              },
-            },
-          },
-        ],
+      },
+      data: {
+        shareLink,
       },
       include: {
-        visibleTo: true,
-        items: {
-          include: {
-            member: true,
-            boughtBy: true,
-          },
-        },
-        user: {
-          include: {
-            familyMemberships: true,
-          },
-        },
+        items: true,
+        visibleToFamilies: true,
+        visibleToEvents: true,
+        visibleToUsers: true,
       },
     });
-
-    return {
-      success: true,
-      message: '',
-      list,
-    };
-  } catch (err) {
-    console.error(err);
-    return {
-      success: false,
-      message: 'Something went wrong.',
-      list: undefined,
-    };
+    return list;
   }
+
+  return list;
 });
+
+export type GetListForEdit = Prisma.ListGetPayload<{
+  include: {
+    items: true;
+    visibleToFamilies: true;
+    visibleToEvents: true;
+    visibleToUsers: true;
+  };
+}>;
 
 export const getListAll = cache(async (memberId: FamilyMember['id']) => {
   const session = await auth();
@@ -267,69 +304,5 @@ export const boughtCount = cache(async () => {
     message: '',
     items,
     bought,
-  };
-});
-
-export const getList = cache(async (id: FamilyMember['id']) => {
-  const session = await auth();
-  if (!session?.user) {
-    return {
-      success: false,
-      message: 'You must be logged in to do this.',
-      list: null,
-    };
-  }
-
-  // Find this family member
-  const member = await prisma.familyMember.findUnique({
-    where: { id },
-    include: { family: { include: { members: true } }, items: { include: { member: true, boughtBy: true } } },
-  });
-  if (!member) {
-    return {
-      success: false,
-      message: `Couldn't find family member.`,
-      list: null,
-    };
-  }
-  const activeFamilyId = await getActiveFamilyId();
-
-  // Find the current user's Member which is in the same family as the requested member.
-  const me = await prisma.familyMember.findFirst({
-    where: {
-      user: {
-        id: session.user.id,
-      },
-      family: {
-        id: activeFamilyId,
-        members: {
-          some: {
-            id,
-          },
-        },
-      },
-    },
-  });
-
-  if (!me) {
-    return {
-      success: false,
-      message: `This list isn't visible to you! Make sure you've got the right family selected.`,
-      list: null,
-    };
-  }
-
-  if (me.id === id) {
-    return {
-      success: false,
-      message: `You can't look at your own list this way!`,
-      list: null,
-    };
-  }
-
-  return {
-    success: true,
-    list: member.items,
-    message: '',
   };
 });

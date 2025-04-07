@@ -1,8 +1,6 @@
 import { ControllerRenderProps, useFormContext } from 'react-hook-form';
 import { Input } from './ui/input';
-import { ItemSchemaType } from '@/app/dashboard/wish-list/itemSchema';
-import { ChangeEvent } from 'react';
-import currency from 'currency.js';
+import { ItemSchemaType } from '@/app/dashboard/wish-lists/[id]/itemSchema';
 type Props = {
   field: ControllerRenderProps<ItemSchemaType>;
 };

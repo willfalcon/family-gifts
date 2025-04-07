@@ -9,26 +9,22 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 import { updateProfile } from './actions';
-import { FamilyMember } from '@prisma/client';
 import InfoField from '../events/InfoField';
+import { User } from '@prisma/client';
 
 interface ProfileFormProps {
-  profile: FamilyMember;
+  user: User;
 }
 
-export default function ProfileForm({ profile }: ProfileFormProps) {
+export default function ProfileForm({ user }: ProfileFormProps) {
   const form = useForm<ProfileSchemaType>({
     resolver: zodResolver(ProfileSchema),
-    defaultValues: { name: profile.name, email: profile.email },
+    defaultValues: { name: user.name || '', email: user.email || '' },
   });
   async function onSubmit(values: ProfileSchemaType) {
     try {
       const profile = await updateProfile(values);
-      if (profile.success) {
-        toast.success(profile.message);
-      } else {
-        toast.error(profile.message);
-      }
+      toast.success('Profile updated');
     } catch (err) {
       console.error(err);
       toast.error('Something went wrong!');

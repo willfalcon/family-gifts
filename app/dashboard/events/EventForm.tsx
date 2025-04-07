@@ -5,69 +5,73 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import DateField from './DateField';
 import InfoField from './InfoField';
+import TimeField from './TimeField';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import Attendees from './Attendees';
+import { Loader2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 type EventFormProps = {
   form: UseFormReturn<EventSchemaType>;
   onSubmit: (data: EventSchemaType) => Promise<void>;
   submitText: string;
+  pending?: boolean;
 };
 
 // TODO: Add location map features
 
-export default function EventForm({ form, onSubmit, submitText }: EventFormProps) {
+export default function EventForm({ form, onSubmit, submitText, pending }: EventFormProps) {
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => {
-            return (
-              <FormItem>
-                <FormLabel>Name</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            );
-          }}
-        />
-        <DateField />
-        <FormField
-          control={form.control}
-          name="time"
-          render={({ field }) => {
-            const timeString = field.value ? (typeof field.value === 'string' ? field.value : field.value.toLocaleTimeString()) : '';
-
-            return (
-              <FormItem>
-                <FormLabel>Time</FormLabel>
-                <FormControl>
-                  <Input {...field} type="time" value={timeString} onChange={(e) => field.onChange(new Date(e.target.value))} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            );
-          }}
-        />
-        <FormField
-          control={form.control}
-          name="location"
-          render={({ field }) => {
-            return (
-              <FormItem>
-                <FormLabel>Location</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            );
-          }}
-        />
-        <InfoField />
-        <Button type="submit">{submitText}</Button>
+      <form onSubmit={form.handleSubmit(onSubmit)} className={cn('space-y-4', pending && 'opacity-60 pointer-events-none')}>
+        <Card>
+          <CardHeader>
+            <CardTitle>Event Details</CardTitle>
+            <CardDescription>Basic information about your event</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <FormLabel>Event Name</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <InfoField />
+            <div className="grid grid-cols-2 gap-4">
+              <DateField />
+              <TimeField />
+            </div>
+            <FormField
+              control={form.control}
+              name="location"
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <FormLabel>Location</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+          </CardContent>
+        </Card>
+        <Attendees />
+        <Button type="submit" disabled={pending}>
+          {pending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {submitText}
+        </Button>
       </form>
     </Form>
   );

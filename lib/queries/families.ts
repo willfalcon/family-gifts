@@ -2,8 +2,157 @@ import { auth } from '@/auth';
 import { prisma } from '@/prisma';
 import { cache } from 'react';
 import { getActiveFamilyId } from '../rscUtils';
+import { Family, Prisma } from '@prisma/client';
 
-export const getFamily = cache(async () => {
+export type MemberFromGetFamily = Prisma.UserGetPayload<{
+  include: {
+    events: {
+      include: {
+        _count: {
+          select: {
+            assignments: true;
+          };
+        };
+        attendees: true;
+      };
+    };
+    lists: {
+      include: {
+        _count: {
+          select: {
+            items: true;
+          };
+        };
+      };
+    };
+    _count: {
+      select: {
+        lists: true;
+      };
+    };
+  };
+}>;
+
+export type EventFromGetFamily = Prisma.EventGetPayload<{
+  include: {
+    _count: {
+      select: {
+        assignments: true;
+      };
+    };
+    attendees: true;
+  };
+}>;
+
+export type ListFromGetFamily = Prisma.ListGetPayload<{
+  include: {
+    _count: {
+      select: {
+        items: true;
+      };
+    };
+  };
+}>;
+
+export type FamilyFromGetFamily = Prisma.FamilyGetPayload<{
+  include: {
+    managers: true;
+    invites: true;
+    members: {
+      include: {
+        events: {
+          include: {
+            _count: {
+              select: {
+                assignments: true;
+              };
+            };
+            attendees: true;
+          };
+        };
+        lists: {
+          include: {
+            _count: {
+              select: {
+                items: true;
+              };
+            };
+          };
+        };
+        _count: {
+          select: {
+            lists: true;
+          };
+        };
+      };
+    };
+    creator: true;
+    _count: {
+      select: {
+        members: true;
+      };
+    };
+  };
+}>;
+
+export const getFamily = cache(async (id: Family['id']) => {
+  const session = await auth();
+  if (!session?.user) {
+    throw new Error('You must be logged in to do this');
+  }
+
+  const family = await prisma.family.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      managers: true,
+      invites: true,
+      members: {
+        include: {
+          events: {
+            include: {
+              _count: {
+                select: {
+                  assignments: true,
+                },
+              },
+              attendees: true,
+            },
+          },
+          lists: {
+            include: {
+              _count: {
+                select: {
+                  items: true,
+                },
+              },
+            },
+          },
+          _count: {
+            select: {
+              lists: true,
+            },
+          },
+        },
+      },
+      creator: true,
+      _count: {
+        select: {
+          members: true,
+        },
+      },
+    },
+  });
+
+  if (!family) {
+    throw new Error(`Couldn't find family.`);
+  }
+
+  return family;
+});
+
+export const oldGetFamily = cache(async () => {
   const session = await auth();
   if (!session?.user) {
     return {
@@ -28,6 +177,7 @@ export const getFamily = cache(async () => {
       },
       include: {
         managers: true,
+        members: true,
       },
     });
     if (family) {
@@ -53,32 +203,176 @@ export const getFamily = cache(async () => {
   }
 });
 
+/**
+ * Get all families where user is a member.
+ */
 export const getFamilies = cache(async () => {
   const session = await auth();
   if (!session?.user) {
-    return {
-      success: false,
-      message: 'You must be logged in to do this.',
-      families: [],
-    };
+    throw new Error('You must be logged in to get families');
   }
   const families = await prisma.family.findMany({
     where: {
       members: {
         some: {
-          user: {
-            id: session.user.id,
-          },
+          id: session.user.id,
         },
       },
     },
     include: {
       managers: true,
+      invites: true,
+      members: {
+        include: {
+          events: {
+            include: {
+              _count: {
+                select: {
+                  assignments: true,
+                },
+              },
+              attendees: true,
+            },
+          },
+          lists: {
+            include: {
+              _count: {
+                select: {
+                  items: true,
+                },
+              },
+            },
+          },
+          _count: {
+            select: {
+              lists: true,
+            },
+          },
+        },
+      },
+      creator: true,
+      _count: {
+        select: {
+          members: true,
+        },
+      },
     },
   });
-  return {
-    success: true,
-    families,
-    message: '',
-  };
+  return families;
 });
+
+export type FamilyFromGetFamilies = Prisma.FamilyGetPayload<{
+  include: {
+    managers: true;
+    invites: true;
+    members: {
+      include: {
+        events: {
+          include: {
+            _count: {
+              select: {
+                assignments: true;
+              };
+            };
+            attendees: true;
+          };
+        };
+        lists: {
+          include: {
+            _count: {
+              select: {
+                items: true;
+              };
+            };
+          };
+        };
+        _count: {
+          select: {
+            lists: true;
+          };
+        };
+      };
+    };
+    creator: true;
+    _count: {
+      select: {
+        members: true;
+      };
+    };
+  };
+}>;
+
+/**
+ * Get all families where user is a member plus initial 3 members - for dashboard use.
+ */
+export const dashboardGetFamilies = cache(async () => {
+  const session = await auth();
+  if (!session?.user) {
+    throw new Error('You must be logged in to get families');
+  }
+  const families = await prisma.family.findMany({
+    where: {
+      members: {
+        some: {
+          id: session.user.id,
+        },
+      },
+    },
+    include: {
+      managers: true,
+      invites: true,
+      members: {
+        include: {
+          managing: true,
+          _count: {
+            select: {
+              lists: true,
+            },
+          },
+        },
+        take: 3,
+      },
+      creator: true,
+      _count: {
+        select: {
+          members: true,
+        },
+      },
+    },
+  });
+  return families;
+});
+
+export type FamilyFromDashboardGetFamilies = Prisma.FamilyGetPayload<{
+  include: {
+    managers: true;
+    invites: true;
+    members: {
+      include: {
+        managing: true;
+        _count: {
+          select: {
+            lists: true;
+          };
+        };
+      };
+    };
+    creator: true;
+    _count: {
+      select: {
+        members: true;
+      };
+    };
+  };
+}>;
+
+export type MemberFromDashboardGetFamilies = Prisma.UserGetPayload<{
+  include: {
+    managing: true;
+    _count: {
+      select: {
+        lists: true;
+      };
+    };
+  };
+}>;

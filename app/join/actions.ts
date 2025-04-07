@@ -4,80 +4,122 @@ import { auth } from '@/auth';
 import { api } from '@/convex/_generated/api';
 import { prisma } from '@/prisma';
 import { ConvexHttpClient } from 'convex/browser';
+import { GetInvite } from '@/lib/queries/onboarding';
 
-export async function joinFamily(token: string) {
+export async function joinFamily(invite: GetInvite) {
   const session = await auth();
-  if (!session?.user) {
+  if (!session?.user?.id) {
+    throw new Error('You must be logged in to do this.');
+  }
+
+  if (invite.tokenExpiry && invite.tokenExpiry < new Date()) {
+    throw new Error('This invite has expired. Ask the family manager to send you a new one.');
+  }
+  if (!invite.familyId) {
+    throw new Error(`FamilyId not attached to invite.`);
+  }
+
+  try {
+    const updatedUser = await prisma.user.update({
+      where: {
+        id: session.user.id,
+      },
+      data: {
+        families: {
+          connect: {
+            id: invite.familyId,
+          },
+        },
+      },
+    });
+    if (updatedUser) {
+      // Add the user to the family channel
+      const client = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
+
+      await client.mutation(api.channels.addChannelUser, {
+        family: invite.familyId,
+        user: updatedUser.id!,
+      });
+
+      // Delete the invite
+      await prisma.invite.delete({
+        where: {
+          id: invite.id,
+        },
+      });
+
+      return { familyId: invite.familyId, userName: updatedUser.name };
+    }
+
+    throw new Error(`User not updated.`);
+  } catch (err) {
+    console.error(err);
     return {
       success: false,
-      message: 'You must be logged in to do this.',
+      message: 'Something went wrong. 🤷‍♂️',
       updatedMember: null,
     };
   }
+}
 
-  const familyMember = await prisma.familyMember.findFirst({
-    where: {
-      inviteToken: token,
-    },
-  });
+export async function joinEvent(invite: GetInvite) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    throw new Error('You must be logged in to do this.');
+  }
 
-  if (familyMember) {
-    if (familyMember.inviteTokenExpiry && familyMember.inviteTokenExpiry < new Date()) {
-      return {
-        success: false,
-        message: 'This invite has expired. Ask the family manager to send you a new one.',
-        updatedMember: null,
-      }
-    }
-    try {
-      const updatedMember = await prisma.familyMember.update({
+  if (invite.tokenExpiry && invite.tokenExpiry < new Date()) {
+    throw new Error('This invite has expired. Ask the event creator to send you a new one.');
+  }
+  if (!invite.eventId) {
+    throw new Error(`EventId not attached to invite.`);
+  }
+
+  try {
+    const updatedUser = await prisma.user.update({
+      where: {
+        id: session.user.id,
+      },
+      data: {
+        events: {
+          connect: {
+            id: invite.eventId,
+          },
+        },
+      },
+    });
+    if (updatedUser) {
+      // Add the user to the event channel
+      const client = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
+
+      await client.mutation(api.channels.addChannelUser, {
+        event: invite.eventId,
+        user: updatedUser.id!,
+      });
+
+      // Update the invite to include the user id
+      await prisma.invite.update({
         where: {
-          id: familyMember.id,
+          id: invite.id,
         },
         data: {
           user: {
             connect: {
-              id: session.user.id,
+              id: updatedUser.id,
             },
           },
-          joined: true,
-          inviteToken: null,
-          inviteTokenExpiry: null,
         },
       });
-      if (updatedMember) {
-        // Add the user to the family channe
-        const client = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
-
-        await client.mutation(api.channels.addChannelUser, {
-          family: updatedMember.familyId,
-          user: updatedMember.userId!,
-        });
-        return {
-          success: true,
-          updatedMember,
-          message: ''
-        };
-      }
-
-      return {
-        success: false,
-        updatedMember: null,
-        message: `Couldn't find the family member. How did you get here with logging in our making an account?`
-      };
-      
-    } catch (err) {
-      console.error(err);
-      return {
-        success: false,
-        message: 'Something went wrong. 🤷‍♂️',
-        updatedMember: null,
-      };
+      return { eventId: invite.eventId, userName: updatedUser.name };
     }
+
+    throw new Error(`User not updated.`);
+  } catch (err) {
+    console.error(err);
+    return {
+      success: false,
+      message: 'Something went wrong. 🤷‍♂️',
+      updatedMember: null,
+    };
   }
-  return {
-    success: false,
-    message: 'Invalid token.',
-    updatedMember: null,
-  };
 }

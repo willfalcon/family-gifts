@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from 'clsx';
 import { setCookie } from 'cookies-next';
+import { format } from 'date-fns';
 import { twMerge } from 'tailwind-merge';
 import { z } from 'zod';
 
@@ -41,4 +42,12 @@ const ACTIVE_FAMILY_COOKIE = 'activeFamilyId';
 
 export function setActiveFamilyId(familyId: string) {
   setCookie(ACTIVE_FAMILY_COOKIE, familyId, { maxAge: 30 * 24 * 60 * 60 }); // 30 days
+}
+
+export function capitalize(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+export function formatDate(date: Date) {
+  return format(date, 'MMMM d, yyyy');
 }
