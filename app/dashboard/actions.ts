@@ -4,36 +4,8 @@ import { auth } from '@/auth';
 import { api } from '@/convex/_generated/api';
 import { Doc } from '@/convex/_generated/dataModel';
 import { getEvents, getEventsCount } from '@/lib/queries/events';
-import { getSomeMembers } from '@/lib/queries/family-members';
 import { prisma } from '@/prisma';
 import { ConvexHttpClient } from 'convex/browser';
-import { revalidatePath } from 'next/cache';
-
-export async function reloadDashboard() {
-  revalidatePath('/dashboard');
-}
-
-export async function dashboardGetMembers(getRest = false) {
-  try {
-    if (getRest) {
-      const { success, members, message } = await getSomeMembers(-1, 2);
-      if (success) {
-        return members;
-      } else {
-        throw new Error(message);
-      }
-    } else {
-      const { success, members, message } = await getSomeMembers(3);
-      if (success) {
-        return members;
-      } else {
-        throw new Error(message);
-      }
-    }
-  } catch (err) {
-    throw new Error('Something went wrong.');
-  }
-}
 
 export async function dashboardGetMoreMembers(familyId: string, getRest: boolean) {
   const session = await auth();

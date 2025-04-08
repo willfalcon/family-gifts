@@ -37,7 +37,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             lists: {
               create: {
                 name: 'Default List',
-                default: true,
               },
             },
           },

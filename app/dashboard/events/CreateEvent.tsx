@@ -21,14 +21,10 @@ export default function CreateEvent() {
 
   async function onSubmit(values: EventSchemaType) {
     try {
-      const { event, success, message } = await createEvent(values);
-      if (success && event) {
-        toast.success(`Created ${event.name}`);
-        setOpen(false);
-      } else {
-        console.log(event);
-        toast.error(message);
-      }
+      const event = await createEvent(values);
+
+      toast.success(`Created ${event.name}`);
+      setOpen(false);
     } catch (err) {
       console.error(err);
       toast.error(`Something went wrong.`);

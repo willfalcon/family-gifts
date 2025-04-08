@@ -5,9 +5,6 @@ import { Sidebar, SidebarContent, SidebarGroup } from '../ui/sidebar';
 import { Session } from 'next-auth';
 import { useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
-import { ReceiptEuroIcon } from 'lucide-react';
-import { Skeleton } from '../ui/skeleton';
-import { Card, CardContent, CardHeader } from '../ui/card';
 import { ChatSkeleton } from './ChatSkeleton';
 
 type Props = {

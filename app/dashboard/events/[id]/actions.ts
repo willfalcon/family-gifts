@@ -1,6 +1,5 @@
 'use server';
 
-import { getActiveMember, getMembers as getMembersQuery } from '@/lib/queries/family-members';
 import { auth } from '@/auth';
 import { EventResponse, Prisma } from '@prisma/client';
 import { prisma } from '@/prisma';
@@ -10,10 +9,6 @@ import { getActiveFamilyId } from '@/lib/rscUtils';
 // import { Resend } from 'resend';
 // import secretSantaNotification from '@/emails/secretSanta';
 import { getEvent as getEventQuery } from '@/lib/queries/events';
-export async function getMembers(id: string) {
-  const res = await getMembersQuery(id);
-  return res;
-}
 
 export async function getEvent(id: string) {
   return await getEventQuery(id);

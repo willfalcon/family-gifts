@@ -1,11 +1,10 @@
-import { Form } from '@/components/ui/form';
-import { EventAttendeesSchema, EventAttendeesSchemaType } from '@/app/dashboard/events/eventSchema';
+import { EventAttendeesSchemaType } from '@/app/dashboard/events/eventSchema';
 import { EventFromGetEvent } from '@/lib/queries/events';
-import { FamilyFromGetFamily } from '@/lib/queries/families';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { GetFamily } from '@/lib/queries/families';
+
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { FormEvent, useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { Card, CardContent, CardTitle, CardHeader, CardDescription, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -25,7 +24,7 @@ export default function AttendeesForm({ event }: { event: EventFromGetEvent }) {
 
   const { data: families, isLoading: familiesLoading } = useQuery({
     queryKey: ['families'],
-    queryFn: async (): Promise<FamilyFromGetFamily[]> => {
+    queryFn: async (): Promise<GetFamily[]> => {
       const response = await fetch('/api/getFamilies');
       if (!response.ok) {
         throw new Error('Network response was not ok');

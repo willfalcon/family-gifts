@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { ChevronDown } from 'lucide-react';
 import { Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { GetList } from '@/lib/queries/items';
+import { GetListForEdit } from '@/lib/queries/items';
 import { ChevronUp } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -13,7 +13,7 @@ import { getItemToEdit, updateItem } from './actions';
 import { CollapsibleContent } from '@radix-ui/react-collapsible';
 import { Controller, useForm } from 'react-hook-form';
 import { ItemSchema, ItemSchemaType } from '../itemSchema';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import CurrencyField from '@/components/CurrencyField';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -21,13 +21,12 @@ import Editor from '@/components/ui/rich-text/editor';
 import { Select } from '@radix-ui/react-select';
 import { SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import CategoryField from '../components/CategoryField';
-import SubmitButton from '@/components/SubmitButton';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
 type Props = {
   index: number;
-  item: GetList['items'][number];
+  item: GetListForEdit['items'][number];
   categories: string[];
 };
 

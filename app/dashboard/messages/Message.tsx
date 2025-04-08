@@ -4,8 +4,6 @@ import { getSender } from './actions';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { format } from 'date-fns';
 import { User } from '@prisma/client';
-// import { useMe } from '../Providers';
-import { FamilyMemberWithAll } from '@/prisma/types';
 import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarTrigger } from '@/components/ui/menubar';
 import { EllipsisVertical } from 'lucide-react';
 import { useMutation } from 'convex/react';

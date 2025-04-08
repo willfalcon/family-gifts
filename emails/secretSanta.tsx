@@ -1,11 +1,8 @@
-import { Body, Button, Container, Head, Heading, Html, Link, Preview, Section, Text, Tailwind, Row, Column } from '@react-email/components';
-import { EventWithFamily } from '@/prisma/types';
-import { FamilyMember } from '@prisma/client';
-import { format } from 'date-fns';
-// import { JSONContent } from '@tiptap/react';
-// import Viewer from '@/components/ui/rich-text/viewer';
+import { Body, Button, Container, Head, Heading, Html, Preview, Section, Text, Tailwind, Row, Column } from '@react-email/components';
+import { Event, User } from '@prisma/client';
+import { formatDate } from '@/lib/utils';
 
-export default function secretSantaNotification({ recipient, event }: { recipient: FamilyMember; event: EventWithFamily }) {
+export default function secretSantaNotification({ recipient, event }: { recipient: User; event: Event }) {
   return (
     <Html>
       <Head />
@@ -20,10 +17,8 @@ export default function secretSantaNotification({ recipient, event }: { recipien
               <Row>
                 <Column>
                   <Heading as="h2">Event details:</Heading>
-                  <Text>Family: {event.family.name}</Text>
-                  {event.date && <Text>Date: {format(event.date, 'MMMM dd, yyyy')}</Text>}
+                  {event.date && <Text>Date: {formatDate(event.date)}</Text>}
                   {event.location && <Text>Location: {event.location}</Text>}
-                  {/* {event.info && <Viewer content={event.info as JSONContent} />} */}
                 </Column>
               </Row>
               <Row>

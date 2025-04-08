@@ -1,9 +1,6 @@
 import { auth } from '@/auth';
 import { cache } from 'react';
-import { getActiveFamilyId } from '../rscUtils';
-import { getActiveMember } from './family-members';
 import { prisma } from '@/prisma';
-import { addMonths } from 'date-fns';
 import { Event, Prisma } from '@prisma/client';
 
 /**

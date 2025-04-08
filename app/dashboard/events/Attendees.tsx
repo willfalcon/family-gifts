@@ -4,8 +4,8 @@ import { FormEvent, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Tabs, TabsTrigger, TabsList, TabsContent } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ErrorMessage } from '@/components/ErrorMessage';
-import { FamilyFromGetFamily } from '@/lib/queries/families';
+
+import { GetFamily } from '@/lib/queries/families';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Label } from '@/components/ui/label';
@@ -22,7 +22,7 @@ export default function Attendees() {
 
   const { data: families, isLoading: familiesLoading } = useQuery({
     queryKey: ['families'],
-    queryFn: async (): Promise<FamilyFromGetFamily[]> => {
+    queryFn: async (): Promise<GetFamily[]> => {
       const response = await getFamilies();
       return response;
     },

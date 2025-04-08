@@ -5,6 +5,7 @@ import { UseFieldArrayReturn, UseFormReturn } from 'react-hook-form';
 import { FamilySchemaType } from './familySchema';
 import { cn } from '@/lib/utils';
 import { Loader2, Plus } from 'lucide-react';
+import RichTextField from '@/components/RichTextField';
 
 type FamilyFormProps = {
   form: UseFormReturn<FamilySchemaType>;
@@ -34,6 +35,7 @@ export default function FamilyForm({ form, onSubmit, submitText, membersArray, n
             );
           }}
         />
+        <RichTextField name="description" />
         {membersArray.fields.map((field, index) => (
           <FormField
             control={form.control}

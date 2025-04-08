@@ -1,13 +1,14 @@
-import { Controller, UseFormReturn } from 'react-hook-form';
+import { UseFormReturn } from 'react-hook-form';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import Editor from '@/components/ui/rich-text/editor';
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import SubmitButton from '@/components/SubmitButton';
 
 import { ListSchemaType } from '../listSchema';
 import Visibility from './Visibility';
 import CategoriesField from './CategoriesField';
+import RichTextField from '@/components/RichTextField';
 
 type ListFormProps = {
   form: UseFormReturn<ListSchemaType>;
@@ -42,17 +43,7 @@ export default function ListForm({ form, onSubmit, submitText, shareLinkId }: Li
                 );
               }}
             />
-            <Controller
-              name="description"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Info</FormLabel>
-                  <Editor content={field.value} onChange={field.onChange} immediatelyRender={false} />
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <RichTextField name="description" />
           </CardContent>
         </Card>
 

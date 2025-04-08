@@ -1,15 +1,14 @@
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Controller, UseFormReturn } from 'react-hook-form';
+import { UseFormReturn } from 'react-hook-form';
 import { ItemSchemaType } from '../itemSchema';
 
-import Editor from '@/components/ui/rich-text/editor';
 import CurrencyField from '@/components/CurrencyField';
 import SubmitButton from '@/components/SubmitButton';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import CategoryField from './CategoryField';
+import RichTextField from '@/components/RichTextField';
 
 type ItemFormProps = {
   form: UseFormReturn<ItemSchemaType>;
@@ -70,17 +69,7 @@ export default function ItemForm({ form, onSubmit, text, categories, className =
             );
           }}
         />
-        <Controller
-          name="notes"
-          control={form.control}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Notes</FormLabel>
-              <Editor content={field.value} onChange={field.onChange} />
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <RichTextField name="notes" />
         <FormField
           control={form.control}
           name="priority"

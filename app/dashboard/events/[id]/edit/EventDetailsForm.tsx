@@ -1,22 +1,21 @@
-import { EventDetailsSchema } from '@/app/dashboard/events/eventSchema';
-
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import { Loader2 } from 'lucide-react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation } from '@tanstack/react-query';
 
-import { EventDetailsSchemaType } from '@/app/dashboard/events/eventSchema';
+import { cn } from '@/lib/utils';
+import { EventFromGetEvent } from '@/lib/queries/events';
+import { updateEventDetails } from '@/app/dashboard/events/actions';
+import { EventDetailsSchema, type EventDetailsSchemaType } from '@/app/dashboard/events/eventSchema';
+
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import DateField from '@/app/dashboard/events/DateField';
-import InfoField from '@/app/dashboard/events/InfoField';
 import TimeField from '@/app/dashboard/events/TimeField';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { EventFromGetEvent } from '@/lib/queries/events';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
-import { updateEventDetails } from '@/app/dashboard/events/actions';
-import { toast } from 'sonner';
+import RichTextField from '@/components/RichTextField';
 
 type Props = {
   event: EventFromGetEvent;
@@ -74,7 +73,7 @@ export default function EventDetailsForm({ event }: Props) {
                 );
               }}
             />
-            <InfoField />
+            <RichTextField name="info" />
             <div className="grid grid-cols-2 gap-4">
               <DateField />
               <TimeField />

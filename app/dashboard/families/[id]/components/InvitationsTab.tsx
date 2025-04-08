@@ -1,17 +1,18 @@
+import { redirect } from 'next/navigation';
+import { formatDistanceToNow } from 'date-fns';
+
+import { auth } from '@/auth';
+import { GetFamily } from '@/lib/queries/families';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { TabsContent } from '@/components/ui/tabs';
 
-import { formatDistanceToNow } from 'date-fns';
-import { Mail, UserPlus } from 'lucide-react';
-import { FamilyFromGetFamily } from '@/lib/queries/families';
-import { auth } from '@/auth';
-import { redirect } from 'next/navigation';
 import InviteMembers from './InviteMembers';
 import ResendInvite from './ResendInvite';
 
 type Props = {
-  family: FamilyFromGetFamily;
+  family: GetFamily;
 };
 
 export default async function InvitationsTab({ family }: Props) {

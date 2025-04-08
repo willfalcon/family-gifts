@@ -4,12 +4,12 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import DateField from './DateField';
-import InfoField from './InfoField';
 import TimeField from './TimeField';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Attendees from './Attendees';
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import RichTextField from '@/components/RichTextField';
 
 type EventFormProps = {
   form: UseFormReturn<EventSchemaType>;
@@ -45,7 +45,7 @@ export default function EventForm({ form, onSubmit, submitText, pending }: Event
                 );
               }}
             />
-            <InfoField />
+            <RichTextField name="info" />
             <div className="grid grid-cols-2 gap-4">
               <DateField />
               <TimeField />

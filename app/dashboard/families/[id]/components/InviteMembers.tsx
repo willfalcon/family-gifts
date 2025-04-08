@@ -1,22 +1,23 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { FamilyFromGetFamily } from '@/lib/queries/families';
-import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Loader2, Plus, UserPlus } from 'lucide-react';
 import { useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { inviteMembers } from '../actions';
 import { toast } from 'sonner';
+
+import { GetFamily } from '@/lib/queries/families';
+import { cn } from '@/lib/utils';
+import { inviteMembers } from '../actions';
 import { InvitesSchema, InvitesSchemaType } from '../inviteSchema';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 
 type Props = {
-  family: FamilyFromGetFamily;
+  family: GetFamily;
 };
 
 export default function InviteMembers({ family }: Props) {

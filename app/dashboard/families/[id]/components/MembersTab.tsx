@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 
 import { Input } from '@/components/ui/input';
 import { TabsContent } from '@/components/ui/tabs';
-import { FamilyFromGetFamily } from '@/lib/queries/families';
+import { GetFamily } from '@/lib/queries/families';
 import { AvatarImage } from '@radix-ui/react-avatar';
 import { Search, Gift, Mail } from 'lucide-react';
 import Link from 'next/link';
@@ -19,7 +19,7 @@ import { getFamily } from '../actions';
 
 type Props = {
   isManager: boolean;
-  family: FamilyFromGetFamily;
+  family: GetFamily;
 };
 
 export default function MembersTab({ isManager, family }: Props) {

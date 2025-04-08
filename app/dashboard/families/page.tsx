@@ -64,7 +64,7 @@ export default async function FamiliesPage() {
               </CardContent>
               <CardFooter>
                 <Button size="sm" className="w-full" asChild>
-                  <Link href={`/dashboard/family/${family.id}`}>View Family</Link>
+                  <Link href={`/dashboard/families/${family.id}`}>View Family</Link>
                 </Button>
               </CardFooter>
             </Card>

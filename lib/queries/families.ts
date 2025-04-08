@@ -54,10 +54,11 @@ export type ListFromGetFamily = Prisma.ListGetPayload<{
   };
 }>;
 
-export type FamilyFromGetFamily = Prisma.FamilyGetPayload<{
+export type GetFamily = Prisma.FamilyGetPayload<{
   include: {
     managers: true;
     invites: true;
+    creator: true;
     members: {
       include: {
         events: {
@@ -86,7 +87,6 @@ export type FamilyFromGetFamily = Prisma.FamilyGetPayload<{
         };
       };
     };
-    creator: true;
     _count: {
       select: {
         members: true;
@@ -95,7 +95,7 @@ export type FamilyFromGetFamily = Prisma.FamilyGetPayload<{
   };
 }>;
 
-export const getFamily = cache(async (id: Family['id']) => {
+export const getFamily = cache(async (id: Family['id']): Promise<GetFamily> => {
   const session = await auth();
   if (!session?.user) {
     throw new Error('You must be logged in to do this');
@@ -108,6 +108,7 @@ export const getFamily = cache(async (id: Family['id']) => {
     include: {
       managers: true,
       invites: true,
+      creator: true,
       members: {
         include: {
           events: {
@@ -136,7 +137,6 @@ export const getFamily = cache(async (id: Family['id']) => {
           },
         },
       },
-      creator: true,
       _count: {
         select: {
           members: true,

@@ -9,6 +9,7 @@ import { sendInviteEmail } from '../../families/new/actions';
 import { InvitesSchema, InvitesSchemaType } from './inviteSchema';
 import { getFamily as getFamilyQuery } from '@/lib/queries/families';
 import { revalidatePath } from 'next/cache';
+import { FamilySchemaType } from '../familySchema';
 
 export async function inviteMembers(familyId: Family['id'], data: InvitesSchemaType) {
   const session = await auth();
@@ -103,4 +104,32 @@ export async function removeMember(familyId: Family['id'], memberId: User['id'])
       },
     },
   });
+}
+
+export async function updateFamily(familyId: Family['id'], data: FamilySchemaType) {
+  const session = await auth();
+  if (!session?.user) {
+    throw new Error('You must be logged in to do this.');
+  }
+  const family = await prisma.family.findUnique({
+    where: { id: familyId },
+    include: {
+      managers: true,
+    },
+  });
+  if (!family) {
+    throw new Error('Family not found');
+  }
+  if (!family.managers.some((manager) => manager.id === session?.user?.id)) {
+    throw new Error('You must be a manager to edit this family');
+  }
+  const updatedFamily = await prisma.family.update({
+    where: { id: familyId },
+    data: {
+      name: data.name,
+      description: JSON.parse(JSON.stringify(data.description || {})),
+    },
+  });
+  revalidatePath(`/dashboard/families/${familyId}`);
+  return updatedFamily;
 }

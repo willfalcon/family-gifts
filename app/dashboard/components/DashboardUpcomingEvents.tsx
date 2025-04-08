@@ -1,9 +1,7 @@
 'use client';
 
-import { ErrorMessage } from '@/components/ErrorMessage';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { EventWithFamily } from '@/prisma/types';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { CalendarDays, ChevronDown, ChevronRight, Loader2 } from 'lucide-react';

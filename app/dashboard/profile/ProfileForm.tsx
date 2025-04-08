@@ -9,8 +9,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 import { updateProfile } from './actions';
-import InfoField from '../events/InfoField';
 import { User } from '@prisma/client';
+import RichTextField from '@/components/RichTextField';
 
 interface ProfileFormProps {
   user: User;
@@ -63,7 +63,7 @@ export default function ProfileForm({ user }: ProfileFormProps) {
             );
           }}
         />
-        <InfoField />
+        <RichTextField name="info" />
         <Button type="submit">Save</Button>
       </form>
     </Form>
