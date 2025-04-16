@@ -20,6 +20,7 @@ type Props = {
   user: string;
   sidebar?: boolean;
 };
+
 export default function Chat({ channel, user, sidebar = false }: Props) {
   const messages = useQuery(api.messages.getMessages, { channelId: channel._id });
 

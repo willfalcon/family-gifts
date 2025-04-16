@@ -11,6 +11,29 @@ export const getChannels = query({
   },
 });
 
+export const getChannel = query({
+  args: {
+    familyId: v.optional(v.string()),
+    eventId: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    if (args.familyId) {
+      const channels = await ctx.db
+        .query('channels')
+        .filter((q) => q.eq(q.field('family'), args.familyId))
+        .take(1);
+      return channels?.[0];
+    }
+    if (args.eventId) {
+      const channels = await ctx.db
+        .query('channels')
+        .filter((q) => q.eq(q.field('event'), args.eventId))
+        .take(1);
+      return channels?.[0];
+    }
+  },
+});
+
 export const createChannel = mutation({
   args: {
     name: v.string(),

@@ -35,7 +35,7 @@ export default function MembersTab({ isManager, family }: Props) {
               <CardTitle>Family Members</CardTitle>
               <CardDescription>People in your family group</CardDescription>
             </div>
-            {/* TODO: Possibly show to all members based on family settings */}
+
             {isManager && <InviteMembers family={family} />}
           </>
         </CardHeader>

@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 
 import SetBreadcrumbs from '@/components/SetBreadcrumbs';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { getUser } from '@/lib/queries/user';
 import EventsTab from './EventsTab/EventsTab';
 import InvitationsTab from './InvitationsTab/InvitationsTab';
 import MembersTab from './MembersTab/MembersTab';
@@ -17,9 +18,15 @@ export default async function FamilyPage({ params }: { params: { id: string } })
     redirect('/sign-in');
   }
 
+  if (!session.user.id) {
+    redirect('/sign-in');
+  }
+
   const family = await getFamily(params.id);
 
   const isManager = family.managers.some((manager) => manager.id === session.user?.id);
+
+  const me = await getUser(session.user.id);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -30,7 +37,7 @@ export default async function FamilyPage({ params }: { params: { id: string } })
           { name: family.name, href: `/dashboard/families/${family.id}` },
         ]}
       />
-      <FamilyHeader family={family} isManager={isManager} />
+      <FamilyHeader family={family} isManager={isManager} me={me} />
 
       <Tabs defaultValue="members" className="space-y-6">
         <TabsList>
