@@ -1,10 +1,12 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { TabsContent } from '@/components/ui/tabs';
-import Viewer from '@/components/ui/rich-text/viewer';
 import { JSONContent } from '@tiptap/react';
-import { CalendarDays, Clock, MapPin } from 'lucide-react';
 import { format } from 'date-fns';
+import { CalendarDays, Clock, MapPin } from 'lucide-react';
+
 import { EventFromGetEvent } from '@/lib/queries/events';
+
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import Viewer from '@/components/ui/rich-text/viewer';
+import { TabsContent } from '@/components/ui/tabs';
 
 type Props = {
   event: EventFromGetEvent;

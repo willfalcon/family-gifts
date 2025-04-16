@@ -1,9 +1,9 @@
 import { prisma } from '@/prisma';
+import { clsx, type ClassValue } from 'clsx';
 import { getCookie } from 'cookies-next';
 import { cookies } from 'next/headers';
-import { getFamilies } from './queries/families';
-import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { getFamilies } from './queries/families';
 
 const ACTIVE_FAMILY_COOKIE = 'activeFamilyId';
 

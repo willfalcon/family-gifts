@@ -1,8 +1,8 @@
-import Title, { SubTitle } from '@/components/Title';
-
-import NewEvent from './NewEvent';
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
+
+import Title, { SubTitle } from '@/components/Title';
+import NewEvent from './NewEvent';
 
 export default async function NewEventPage() {
   const session = await auth();

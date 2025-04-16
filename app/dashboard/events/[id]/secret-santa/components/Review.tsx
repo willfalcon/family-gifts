@@ -1,10 +1,11 @@
 'use client';
 
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { ArrowLeft, RefreshCw, Shuffle } from 'lucide-react';
+
+import { EventFromGetEvent } from '@/lib/queries/events';
+import { formatDate } from '@/lib/utils';
+import { useSecretSantaStore } from '../store';
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,19 +17,21 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { RefreshCw, Shuffle } from 'lucide-react';
-import { useSecretSantaStore } from '../store';
-import { formatDate } from '@/lib/utils';
-import { EventFromGetEvent } from '@/lib/queries/events';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useTabs } from '@/components/ui/tabs';
 
 type Props = {
   event: EventFromGetEvent;
-  onPrevious: () => void;
 };
 
-export default function Review({ event, onPrevious }: Props) {
+export default function Review({ event }: Props) {
   const { budget, participants, exclusions, assignments, generateAssignments, resetAssignments, showAssignments, setShowAssignments } =
     useSecretSantaStore();
+  const { setValue } = useTabs();
   return (
     <Card>
       <CardHeader>
@@ -215,7 +218,10 @@ export default function Review({ event, onPrevious }: Props) {
         </div>
       </CardContent>
       <CardFooter>
-        <Button onClick={onPrevious}>Previous</Button>
+        <Button variant="outline" onClick={() => setValue('exclusions')}>
+          <ArrowLeft className="w-4 h-4" />
+          Exclusions
+        </Button>
       </CardFooter>
     </Card>
   );

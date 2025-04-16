@@ -3,12 +3,14 @@ import { auth } from '@/auth';
 import { getFamily } from '@/lib/queries/families';
 import { redirect } from 'next/navigation';
 
+import SetBreadcrumbs from '@/components/SetBreadcrumbs';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import MembersTab from './components/MembersTab';
-import EventsTab from './components/EventsTab';
-import WishListsTab from './components/WishListsTab';
-import InvitationsTab from './components/InvitationsTab';
+import EventsTab from './EventsTab/EventsTab';
+import InvitationsTab from './InvitationsTab/InvitationsTab';
+import MembersTab from './MembersTab/MembersTab';
 import FamilyHeader from './components/FamilyHeader';
+import WishListsTab from './components/WishListsTab';
+
 export default async function FamilyPage({ params }: { params: { id: string } }) {
   const session = await auth();
   if (!session?.user) {
@@ -21,6 +23,13 @@ export default async function FamilyPage({ params }: { params: { id: string } })
 
   return (
     <div className="container mx-auto px-4 py-8">
+      <SetBreadcrumbs
+        items={[
+          { name: 'Dashboard', href: '/dashboard' },
+          { name: 'Families', href: '/dashboard/families' },
+          { name: family.name, href: `/dashboard/families/${family.id}` },
+        ]}
+      />
       <FamilyHeader family={family} isManager={isManager} />
 
       <Tabs defaultValue="members" className="space-y-6">

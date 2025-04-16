@@ -1,16 +1,16 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
-import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { getDefaults } from '@/lib/utils';
+import { ListSchema, type ListSchemaType } from '../listSchema';
 import { createList } from './actions';
 
-import { ListSchema, type ListSchemaType } from '../listSchema';
-import ListForm from '../components/ListForm';
 import SetBreadcrumbs from '@/components/SetBreadcrumbs';
+import ListForm from '../components/ListForm';
 
 export default function NewListForm() {
   const form = useForm<ListSchemaType>({

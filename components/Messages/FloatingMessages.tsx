@@ -1,9 +1,11 @@
 'use client';
 
 import { MessagesSquare } from 'lucide-react';
-import { Button } from '../ui/button';
-import { useSidebar } from '../ui/sidebar';
+
 import { cn } from '@/lib/utils';
+import { useSidebar } from '../ui/sidebar';
+
+import { Button } from '../ui/button';
 
 export default function FloatingMessages() {
   const { toggleSidebar, open } = useSidebar();

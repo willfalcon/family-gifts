@@ -1,15 +1,17 @@
 'use client';
 
-import { FamilyFromDashboardGetFamilies, MemberFromDashboardGetFamilies } from '@/lib/queries/families';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { ChevronDown, ChevronRight, Gift, Loader2, Mail } from 'lucide-react';
-import { useState } from 'react';
-import { dashboardGetMoreMembers } from '../actions';
-import { Button, buttonVariants } from '@/components/ui/button';
 import Link from 'next/link';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { useState } from 'react';
+
+import { FamilyFromDashboardGetFamilies, MemberFromDashboardGetFamilies } from '@/lib/queries/families';
+import { dashboardGetMoreMembers } from '../actions';
+
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function FamilySectionFamily({ family }: { family: FamilyFromDashboardGetFamilies }) {
   const [expanded, setExpanded] = useState(true);
@@ -69,7 +71,7 @@ export default function FamilySectionFamily({ family }: { family: FamilyFromDash
                         </Avatar>
                         <div>
                           <CardTitle className="text-base">
-                            <Link href={`/dashboard/family-members/${member.id}`} className="hover:underline">
+                            <Link href={`/dashboard/members/${member.id}`} className="hover:underline">
                               {member.name}
                             </Link>
                           </CardTitle>
@@ -92,7 +94,7 @@ export default function FamilySectionFamily({ family }: { family: FamilyFromDash
                         Message
                       </Button>
                       <Button variant="ghost" size="sm" asChild>
-                        <Link href={`/dashboard/family-members/${member.id}`}>
+                        <Link href={`/dashboard/wish-lists/${member.id}`}>
                           <Gift className="h-4 w-4 mr-1" />
                           Lists
                         </Link>

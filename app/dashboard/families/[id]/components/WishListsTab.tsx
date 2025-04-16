@@ -1,13 +1,14 @@
+import { formatDistanceToNow } from 'date-fns';
+import { Gift, Plus, Search } from 'lucide-react';
+import Link from 'next/link';
+
+import { ListFromGetFamily, MemberFromGetFamily } from '@/lib/queries/families';
+
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { TabsContent } from '@/components/ui/tabs';
-import { ListFromGetFamily, MemberFromGetFamily } from '@/lib/queries/families';
-import { List } from '@prisma/client';
-import { format, formatDistanceToNow } from 'date-fns';
-import { Gift, Plus, Search } from 'lucide-react';
-import Link from 'next/link';
 
 type Props = {
   members: MemberFromGetFamily[];

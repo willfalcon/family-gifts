@@ -1,11 +1,12 @@
 'use server';
 
 import { auth } from '@/auth';
-import { ItemSchema, ItemSchemaType } from '../itemSchema';
 import { prisma } from '@/prisma';
-import { revalidatePath } from 'next/cache';
 import { Item } from '@prisma/client';
 import { JSONContent } from '@tiptap/react';
+import { revalidatePath } from 'next/cache';
+
+import { ItemSchema, ItemSchemaType } from '../itemSchema';
 
 export const getItemToEdit = async (id: string) => {
   const session = await auth();

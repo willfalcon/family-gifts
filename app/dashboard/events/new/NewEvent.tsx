@@ -1,15 +1,17 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
-import { EventSchema, EventSchemaType } from '../eventSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+
+import { useBreadcrumbs } from '@/components/HeaderBreadcrumbs';
 import { getDefaults } from '@/lib/utils';
 import { createEvent } from '../actions';
-import { toast } from 'sonner';
-import EventForm from '../EventForm';
-import { useRouter } from 'next/navigation';
-import { useMutation } from '@tanstack/react-query';
-import { useBreadcrumbs } from '@/components/HeaderBreadcrumbs';
+import { EventSchema, EventSchemaType } from '../eventSchema';
+
+import EventForm from '../components/EventForm';
 
 export default function NewEvent() {
   const setBreadcrumbs = useBreadcrumbs();

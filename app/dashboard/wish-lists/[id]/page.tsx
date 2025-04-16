@@ -1,5 +1,6 @@
 import { auth } from '@/auth';
 import { notFound, redirect } from 'next/navigation';
+
 import { getList } from '@/lib/queries/items';
 
 import WishListPage from './components/WishListPage';

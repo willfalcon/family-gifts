@@ -1,7 +1,8 @@
 import { auth } from '@/auth';
-import SignIn from '@/components/SignIn';
 import { Gift } from 'lucide-react';
 import { redirect } from 'next/navigation';
+
+import SignIn from '@/components/SignIn';
 
 export default async function Home() {
   const session = await auth();

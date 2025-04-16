@@ -9,33 +9,45 @@ generator client {
 }
 
 model User {
-  id              String          @id() @default(cuid())
-  name            String?
-  email           String          @unique()
-  emailVerified   DateTime?
-  image           String?
-  accounts        Account[]
-  sessions        Session[]
-  Authenticator   Authenticator[]
+  id                 String          @id() @default(cuid())
+  name               String?
+  email              String          @unique()
+  emailVerified      DateTime?
+  image              String?
+  bio                Json?
+  accounts           Account[]
+  sessions           Session[]
+  Authenticator      Authenticator[]
   // familyMemberships FamilyMember[]  @relation("FamilyMembers")
-  families        Family[]        @relation("FamilyUser")
-  createdFamilies Family[]        @relation("FamilyCreator")
-  managing        Family[]        @relation("FamilyManager")
-  lists           List[]
-  visibleLists    List[]          @relation("ListVisibleToUsers")
-  events          Event[]
-  receiving       Assignment[]    @relation("Recipient")
-  giving          Assignment[]    @relation("Giver")
-  excludedFrom    Exclusion[]     @relation("ExclusionFrom")
-  excludedTo      Exclusion[]     @relation("ExclusionTo")
-  eventInvite     Invite[]        @relation("EventInviteUser")
-  channels        Channel[]
-  invitesSent     Invite[]        @relation("inviteSender")
-  createdEvents   Event[]         @relation("EventCreator")
-  managedEvents   Event[]         @relation("EventManager")
-  purchasedItems  Item[]          @relation("ItemPurchasedBy")
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt()
+  families           Family[]        @relation("FamilyUser")
+  createdFamilies    Family[]        @relation("FamilyCreator")
+  managing           Family[]        @relation("FamilyManager")
+  lists              List[]
+  visibleLists       List[]          @relation("ListVisibleToUsers")
+  events             Event[]
+  receiving          Assignment[]    @relation("Recipient")
+  giving             Assignment[]    @relation("Giver")
+  excludedFrom       Exclusion[]     @relation("ExclusionFrom")
+  excludedTo         Exclusion[]     @relation("ExclusionTo")
+  eventInvite        Invite[]        @relation("EventInviteUser")
+  channels           Channel[]
+  invitesSent        Invite[]        @relation("inviteSender")
+  createdEvents      Event[]         @relation("EventCreator")
+  managedEvents      Event[]         @relation("EventManager")
+  purchasedItems     Item[]          @relation("ItemPurchasedBy")
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt()
+  profileVisibility  Visibility[]    @default([family, events, lists])
+  wishListVisibility Visibility[]    @default([family, events, lists])
+  activityVisibility Visibility[]    @default([family, events, lists])
+}
+
+enum Visibility {
+  public
+  family
+  events
+  lists
+  private
 }
 
 model Account {
@@ -112,21 +124,30 @@ model Invite {
   updatedAt     DateTime       @updatedAt()
 }
 
+enum FamilyVisibility {
+  private
+  link
+  public
+}
+
 model Family {
-  id            String    @id() @default(cuid())
-  name          String
-  description   Json?
-  managers      User[]    @relation("FamilyManager")
-  creatorId     String
-  creator       User      @relation("FamilyCreator", fields: [creatorId], references: [id])
-  members       User[]    @relation("FamilyUser")
-  invites       Invite[]  @relation("FamilyInvite")
-  events        Event[]
-  visibleLists  List[]    @relation("ListVisibleToFamilies")
-  channels      Channel[] // TODO: remove
-  familyChannel String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt()
+  id              String           @id() @default(cuid())
+  name            String
+  description     Json?
+  managers        User[]           @relation("FamilyManager")
+  creatorId       String
+  creator         User             @relation("FamilyCreator", fields: [creatorId], references: [id])
+  members         User[]           @relation("FamilyUser")
+  invites         Invite[]         @relation("FamilyInvite")
+  events          Event[]
+  visibleLists    List[]           @relation("ListVisibleToFamilies")
+  channels        Channel[] // TODO: remove
+  familyChannel   String?
+  visibility      FamilyVisibility @default(private)
+  allowInvites    Boolean          @default(false)
+  requireApproval Boolean          @default(true)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt()
 }
 
 enum VisiblityType {

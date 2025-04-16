@@ -1,12 +1,12 @@
 'use client';
 
-import { buttonVariants } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { TabsContent } from '@/components/ui/tabs';
-import { EventFromGetEvent } from '@/lib/queries/events';
-import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
+
+import { EventFromGetEvent } from '@/lib/queries/events';
 import { getListsByEvent } from '../actions';
+
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { TabsContent } from '@/components/ui/tabs';
 import WishListCard from '@/components/WishListCard';
 
 type Props = {

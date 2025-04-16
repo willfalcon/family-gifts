@@ -1,14 +1,15 @@
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { buttonVariants } from '@/components/ui/button';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Collapsible, CollapsibleContent } from '@/components/ui/collapsible';
-import { CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Input } from '@/components/ui/input';
-import { Doc } from '@/convex/_generated/dataModel';
-import { cn } from '@/lib/utils';
 import { Calendar, ChevronDown, ChevronRight, MessageSquare, Search, Users } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
+
+import { Doc } from '@/convex/_generated/dataModel';
+import { cn } from '@/lib/utils';
+
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { buttonVariants } from '@/components/ui/button';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Input } from '@/components/ui/input';
 
 type Props = {
   channels: Doc<'channels'>[];

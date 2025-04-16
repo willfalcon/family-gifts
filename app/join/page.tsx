@@ -1,12 +1,13 @@
 import { auth } from '@/auth';
-import SignIn from '@/components/SignIn';
 import { redirect } from 'next/navigation';
-import JoinButton from './JoinButton';
+
 import { getInvite } from '@/lib/queries/onboarding';
 
+import SignIn from '@/components/SignIn';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Check, Gift, Users } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import JoinButton from './JoinButton';
 
 type PageProps = {
   params: { slug: string };

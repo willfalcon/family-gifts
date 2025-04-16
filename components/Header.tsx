@@ -1,6 +1,6 @@
-import { SidebarTrigger } from './ui/sidebar';
-import { Separator } from './ui/separator';
 import HeaderBreadcrumbs from './HeaderBreadcrumbs';
+import { Separator } from './ui/separator';
+import { SidebarTrigger } from './ui/sidebar';
 
 export default async function Header() {
   return (

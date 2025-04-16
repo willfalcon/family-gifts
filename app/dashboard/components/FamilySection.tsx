@@ -1,10 +1,12 @@
-import { buttonVariants } from '@/components/ui/button';
-import { dashboardGetFamilies } from '@/lib/queries/families';
+import { Plus, Users } from 'lucide-react';
 import Link from 'next/link';
 
-import { Plus, Users } from 'lucide-react';
-import FamilySectionFamily from './FamilySectionFamily';
+import { dashboardGetFamilies } from '@/lib/queries/families';
+
+import { buttonVariants } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+
+import FamilySectionFamily from './FamilySectionFamily';
 
 export default async function FamilySection() {
   const families = await dashboardGetFamilies();

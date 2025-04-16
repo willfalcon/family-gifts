@@ -1,5 +1,13 @@
 'use client';
 
+import { useQuery } from 'convex/react';
+import { ChevronsUpDown, UserCog, UserPlus } from 'lucide-react';
+import { Session } from 'next-auth';
+import Link from 'next/link';
+
+import { api } from '@/convex/_generated/api';
+
+import SignOut from './SignOut';
 import { Avatar, AvatarImage } from './ui/avatar';
 import {
   DropdownMenu,
@@ -10,15 +18,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
-import SignOut from './SignOut';
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from './ui/sidebar';
-import { Bell, ChevronsUpDown, UserCog, UserPlus } from 'lucide-react';
-import { Session } from 'next-auth';
-import Link from 'next/link';
 
-import SidebarNotifications from './SidebarNotifications';
-import { useQuery } from 'convex/react';
-import { api } from '@/convex/_generated/api';
+import SidebarNotifications from './notifications/SidebarNotifications';
 
 export default function UserButton({ session }: { session: Session }) {
   const { isMobile } = useSidebar();
@@ -74,9 +76,13 @@ export default function UserButton({ session }: { session: Session }) {
                 </div>
               </div>
             </DropdownMenuLabel>
+
             <DropdownMenuSeparator />
+
             <SidebarNotifications />
+
             <DropdownMenuSeparator />
+
             <DropdownMenuGroup>
               <DropdownMenuItem>
                 <Link href="/dashboard/manage-family" className="flex">

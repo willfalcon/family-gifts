@@ -1,30 +1,21 @@
 'use client';
+import { Invite, Prisma } from '@prisma/client';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { MoreHorizontal } from 'lucide-react';
+import { toast } from 'sonner';
+
+import { EventFromGetEvent } from '@/lib/queries/events';
+import { cn } from '@/lib/utils';
+import { addManager, type GetParticipant, getParticipant, removeInvite, removeManager, removeParticipant } from '../actions';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
-import { Invite, Prisma } from '@prisma/client';
 import { Button } from '@/components/ui/button';
-import { MoreHorizontal } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { addManager, getParticipant, removeManager } from '../actions';
-import { EventFromGetEvent } from '@/lib/queries/events';
-import { getEvent } from '../actions';
 
 type Participant = Prisma.UserGetPayload<{
   include: {
     managedEvents: true;
-  };
-}>;
-
-type GetParticipant = Prisma.InviteGetPayload<{
-  include: {
-    user: {
-      include: {
-        managedEvents: true;
-      };
-    };
   };
 }>;
 
@@ -51,7 +42,7 @@ export default function Participant({ participant: initialParticipant, invite: i
 
   const queryClient = useQueryClient();
   const mutation = useMutation({
-    mutationFn: async (action: 'addManager' | 'removeManager') => {
+    mutationFn: async (action: 'addManager' | 'removeManager' | 'removeParticipant' | 'removeInvite') => {
       switch (action) {
         case 'addManager':
           await addManager(event.id, initialParticipant?.id);
@@ -59,20 +50,29 @@ export default function Participant({ participant: initialParticipant, invite: i
         case 'removeManager':
           await removeManager(event.id, initialParticipant?.id);
           break;
+        case 'removeParticipant':
+          await removeParticipant(event.id, initialInvite.id);
+          break;
+        case 'removeInvite':
+          await removeInvite(event.id, initialInvite.id);
+          break;
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['participant', initialInvite.id] });
     },
+    onError: (error) => {
+      console.error(error);
+      toast.error(error.message);
+    },
   });
 
   if (!query.isLoading && !query.data) {
-    console.log('no data');
     return null;
   }
 
   const { user: participant, ...invite } = query.data!;
-  // const attendeeIsManager = event?.managers.some((manager) => manager.id === initialAttendee?.id);
+
   const attendeeIsManager = participant?.managedEvents.some((e) => e.id === event.id);
   if (participant) {
     return (
@@ -130,7 +130,7 @@ export default function Participant({ participant: initialParticipant, invite: i
               {attendeeIsManager && <DropdownMenuItem onClick={() => mutation.mutate('removeManager')}>Remove as Manager</DropdownMenuItem>}
               {!attendeeIsManager && <DropdownMenuItem onClick={() => mutation.mutate('addManager')}>Make Manager</DropdownMenuItem>}
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Remove</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => mutation.mutate('removeParticipant')}>Remove</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         )}
@@ -138,35 +138,38 @@ export default function Participant({ participant: initialParticipant, invite: i
     );
   }
   if (invite) {
-    <div className="flex items-center justify-between p-2 hover:bg-muted rounded-md">
-      <div className="flex items-center gap-3">
-        <Avatar>
-          <AvatarFallback>{invite.email[0]}</AvatarFallback>
-        </Avatar>
-        <div>
-          <p className="font-medium">{invite.email}</p>
+    return (
+      <div className="flex items-center justify-between p-2 hover:bg-muted rounded-md">
+        <div className="flex items-center gap-3 flex-1">
+          <Avatar>
+            <AvatarFallback>{invite.email[0]}</AvatarFallback>
+          </Avatar>
+          <div>
+            <p className="font-medium">{invite.email}</p>
+          </div>
         </div>
-      </div>
-      <Badge className={cn('rounded-full bg-gray-600')}>Pending</Badge>
-      {isManager && (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm">
-              <MoreHorizontal className="h-4 w-4" />
-              <span className="sr-only">More</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {/* <DropdownMenuItem asChild>
+        <Badge className={cn('rounded-full bg-gray-600')}>Pending</Badge>
+        {isManager && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm">
+                <MoreHorizontal className="h-4 w-4" />
+                <span className="sr-only">More</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {/* <DropdownMenuItem asChild>
               <Link href={`/dashboard/family-members/${.id}`}>View Profile</Link>
             </DropdownMenuItem> */}
 
-            {/* <DropdownMenuSeparator /> */}
-            {/* TODO: Implement */}
-            <DropdownMenuItem className="text-destructive">Remove from Event</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )}
-    </div>;
+              {/* <DropdownMenuSeparator /> */}
+              <DropdownMenuItem className="text-destructive" onClick={() => mutation.mutate('removeInvite')}>
+                Remove from Event
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+      </div>
+    );
   }
 }

@@ -1,8 +1,8 @@
 'use server';
 
 import { v } from 'convex/values';
-import { mutation, query } from './_generated/server';
-import { auth } from '@/auth';
+
+import { mutation, query, QueryCtx } from './_generated/server';
 
 export const createNotification = mutation({
   args: {
@@ -13,7 +13,7 @@ export const createNotification = mutation({
     link: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    await ctx.db.insert('notifications', {
+    const res = await ctx.db.insert('notifications', {
       userId: args.userId,
       title: args.title,
       message: args.message,
@@ -40,22 +40,15 @@ export const getNotifications = query({
 export const getUnreadNotifications = query({
   args: { userId: v.string() },
   handler: async (ctx, args) => {
-    const notifications = await ctx.db
-      .query('notifications')
-      .withIndex('by_user', (q) => q.eq('userId', args.userId))
-      .collect();
-    return notifications.filter((notification) => !notification.readAt);
+    return await getUnreadNotificationsUtil(ctx, args.userId);
   },
 });
 
 export const getUnreadNotificationsCount = query({
   args: { userId: v.string() },
   handler: async (ctx, args) => {
-    const notifications = await ctx.db
-      .query('notifications')
-      .withIndex('by_user', (q) => q.eq('userId', args.userId))
-      .collect();
-    return notifications.filter((notification) => !notification.readAt).length;
+    const unreads = await getUnreadNotificationsUtil(ctx, args.userId);
+    return unreads.length;
   },
 });
 
@@ -67,6 +60,29 @@ export const markNotificationAsRead = mutation({
     await ctx.db.patch(args.notificationId, {
       readAt: Date.now(),
     });
+  },
+});
+
+async function getUnreadNotificationsUtil(ctx: QueryCtx, userId: string) {
+  const notifications = await ctx.db
+    .query('notifications')
+    .withIndex('by_user', (q) => q.eq('userId', userId))
+    .order('desc')
+    .collect();
+  return notifications.filter((notification) => !notification.readAt);
+}
+
+export const markAllAsRead = mutation({
+  args: {
+    userId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const unreadNotifications = await getUnreadNotificationsUtil(ctx, args.userId);
+    for (const notification of unreadNotifications) {
+      await ctx.db.patch(notification._id, {
+        readAt: Date.now(),
+      });
+    }
   },
 });
 

@@ -3,6 +3,6 @@
   "editor.formatOnPaste": true, // optional
   "editor.formatOnSave": true, // optional
   "editor.formatOnSaveMode": "file",
-  "cSpell.words": ["cuid", "sonner", "unmark"] // required to format on save
+  "cSpell.words": ["cuid", "sonner", "unmark", "unreads"] // required to format on save
   // "files.autoSave": "onFocusChange", // optional but recommended
 }

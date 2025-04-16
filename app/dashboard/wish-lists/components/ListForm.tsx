@@ -1,14 +1,14 @@
 import { UseFormReturn } from 'react-hook-form';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import SubmitButton from '@/components/SubmitButton';
 
 import { ListSchemaType } from '../listSchema';
-import Visibility from './Visibility';
-import CategoriesField from './CategoriesField';
+
 import RichTextField from '@/components/RichTextField';
+import SubmitButton from '@/components/SubmitButton';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import CategoriesField from './CategoriesField';
+import Visibility from './Visibility';
 
 type ListFormProps = {
   form: UseFormReturn<ListSchemaType>;

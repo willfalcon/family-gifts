@@ -1,9 +1,9 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
-import { JSONContent } from '@tiptap/react';
 import { auth } from '@/auth';
 import { prisma } from '@/prisma';
+import { JSONContent } from '@tiptap/react';
+import { revalidatePath } from 'next/cache';
 
 import { ListSchema, type ListSchemaType } from '../listSchema';
 

@@ -1,14 +1,23 @@
-import { auth } from '@/auth';
-import Title from '@/components/Title';
-
-import { getFamily } from '@/lib/queries/families';
 import { redirect } from 'next/navigation';
-import EditFamily from './EditFamily';
+
+import { auth } from '@/auth';
+import { getFamily } from '@/lib/queries/families';
+
+import SetBreadcrumbs from '@/components/SetBreadcrumbs';
+import Title, { SubTitle } from '@/components/Title';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import DangerZone from './components/DangerZone';
+import EditFamily from './components/EditFamily';
+import EditFamilyMembers from './components/Members';
 
 export default async function FamilyEditPage({ params }: { params: { id: string } }) {
   const session = await auth();
   if (!session?.user) {
     redirect('/sign-in');
+  }
+
+  if (!session.user.id) {
+    throw new Error('User ID is not set');
   }
 
   const family = await getFamily(params.id);
@@ -19,13 +28,38 @@ export default async function FamilyEditPage({ params }: { params: { id: string 
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8">
-        <div className="flex items-center gap-2">
-          <Title>{family.name}</Title>
-        </div>
+      <SetBreadcrumbs
+        items={[
+          { name: 'Families', href: '/dashboard/families' },
+          { name: family.name, href: `/dashboard/families/${family.id}` },
+          { name: 'Edit', href: `/dashboard/families/${family.id}/edit` },
+        ]}
+      />
+      <div className="mb-6">
+        <Title>Edit Family</Title>
+        <SubTitle>Manage your family settings and members</SubTitle>
       </div>
 
-      <EditFamily family={family} />
+      <Tabs defaultValue="details">
+        <TabsList>
+          <TabsTrigger value="details">Details</TabsTrigger>
+          <TabsTrigger value="members">Members</TabsTrigger>
+          {/* <TabsTrigger value="privacy">Privacy & Access</TabsTrigger> */}
+          <TabsTrigger value="danger">Danger Zone</TabsTrigger>
+        </TabsList>
+        <TabsContent value="details">
+          <EditFamily family={family} />
+        </TabsContent>
+        <TabsContent value="members">
+          <EditFamilyMembers family={family} userId={session.user.id} />
+        </TabsContent>
+        {/* <TabsContent value="privacy">
+          <FamilyPrivacy family={family} />
+        </TabsContent> */}
+        <TabsContent value="danger">
+          <DangerZone family={family} />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

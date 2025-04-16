@@ -1,5 +1,5 @@
-import { Body, Button, Container, Head, Heading, Html, Link, Preview, Section, Text, Tailwind } from '@react-email/components';
-import { Event, Family, Invite } from '@prisma/client';
+import { Event, Invite } from '@prisma/client';
+import { Body, Button, Container, Head, Heading, Html, Link, Preview, Section, Tailwind, Text } from '@react-email/components';
 
 export default function EventInviteEmailTemplate(member: Invite, event: Event) {
   const previewText = `Someone invited you to join an event on Family Gifts.`;

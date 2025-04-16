@@ -1,18 +1,18 @@
 'use client';
 
 import { Prisma } from '@prisma/client';
-import { JSONContent } from '@tiptap/react';
 import { useQuery } from '@tanstack/react-query';
+import { JSONContent } from '@tiptap/react';
 import { formatDistanceToNow } from 'date-fns';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 
 import { getList } from '@/app/actions';
 
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { buttonVariants } from './ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from './ui/card';
 import Viewer from './ui/rich-text/viewer';
-import { useSession } from 'next-auth/react';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 
 type Props = {

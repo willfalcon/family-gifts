@@ -4,6 +4,7 @@ import { auth } from '@/auth';
 import { api } from '@/convex/_generated/api';
 import { prisma } from '@/prisma';
 import { ConvexHttpClient } from 'convex/browser';
+
 import { GetInvite } from '@/lib/queries/onboarding';
 
 export async function joinFamily(invite: GetInvite) {

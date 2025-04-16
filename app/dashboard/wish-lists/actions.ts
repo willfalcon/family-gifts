@@ -1,12 +1,15 @@
 'use server';
+
 import { auth } from '@/auth';
 import { prisma } from '@/prisma';
-import { ListSchema, ListSchemaType } from './listSchema';
-import { revalidatePath } from 'next/cache';
 import { List } from '@prisma/client';
 import { JSONContent } from '@tiptap/react';
-import { getFamilies as getFamiliesQuery } from '@/lib/queries/families';
+import { revalidatePath } from 'next/cache';
+
 import { getEvents as getEventsQuery } from '@/lib/queries/events';
+import { getFamilies as getFamiliesQuery } from '@/lib/queries/families';
+import { ListSchema, ListSchemaType } from './listSchema';
+
 export async function getFamilies() {
   return await getFamiliesQuery();
 }

@@ -1,10 +1,12 @@
 'use client';
 
+import { useQuery } from 'convex/react';
+import { Session } from 'next-auth';
+
+import { api } from '@/convex/_generated/api';
+
 import Chat from '@/app/dashboard/messages/Chat';
 import { Sidebar, SidebarContent, SidebarGroup } from '../ui/sidebar';
-import { Session } from 'next-auth';
-import { useQuery } from 'convex/react';
-import { api } from '@/convex/_generated/api';
 import { ChatSkeleton } from './ChatSkeleton';
 
 type Props = {

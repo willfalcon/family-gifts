@@ -1,11 +1,13 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-
-import { joinEvent, joinFamily } from './actions';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { GetInvite } from '@/lib/queries/onboarding';
+
+import { type GetInvite } from '@/lib/queries/onboarding';
+import { joinEvent, joinFamily } from './actions';
+
+import { Button } from '@/components/ui/button';
+
 type Props = {
   name: string;
   token: string;
@@ -24,7 +26,7 @@ export default function JoinButton({ name, token, inviteType, invite }: Props) {
           if (inviteType === 'Family') {
             const res = await joinFamily(invite);
             toast.success(`Welcome, ${res.userName}`);
-            router.push(`/dashboard/family/${res.familyId}`);
+            router.push(`/dashboard/families/${res.familyId}`);
           } else {
             const res = await joinEvent(invite);
             toast.success(`Welcome, ${res.userName}`);

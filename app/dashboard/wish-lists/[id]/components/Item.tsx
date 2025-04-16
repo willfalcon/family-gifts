@@ -1,15 +1,15 @@
 import { Badge } from '@/components/ui/badge';
-import { Item } from '@prisma/client';
-
-import { Card, CardContent } from '@/components/ui/card';
-import Image from 'next/image';
 import { JSONContent } from '@tiptap/react';
-import Viewer from '@/components/ui/rich-text/viewer';
-import { Button } from '@/components/ui/button';
 import { ExternalLink } from 'lucide-react';
+import Image from 'next/image';
+
 import { ItemFromGetList } from '@/lib/queries/items';
-import Purchased from './Purchased';
 import { capitalize } from '@/lib/utils';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import Viewer from '@/components/ui/rich-text/viewer';
+import Purchased from './Purchased';
 
 type Props = {
   item: ItemFromGetList;

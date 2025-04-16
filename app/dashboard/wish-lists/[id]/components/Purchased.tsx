@@ -1,19 +1,18 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-
 import { AlertCircle, Info } from 'lucide-react';
+import { useSession } from 'next-auth/react';
+
+import { ItemFromGetList } from '@/lib/queries/items';
+import { getPurchasedBy, markAsPurchased } from '../actions';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-
-import { ItemFromGetList } from '@/lib/queries/items';
-import { getPurchasedBy, markAsPurchased } from '../actions';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 type Props = {
   item: ItemFromGetList;

@@ -2,10 +2,11 @@
 
 import { auth } from '@/auth';
 import { api } from '@/convex/_generated/api';
-import { Doc } from '@/convex/_generated/dataModel';
-import { getEvents, getEventsCount } from '@/lib/queries/events';
 import { prisma } from '@/prisma';
 import { ConvexHttpClient } from 'convex/browser';
+
+import { Doc } from '@/convex/_generated/dataModel';
+import { getEvents, getEventsCount } from '@/lib/queries/events';
 
 export async function dashboardGetMoreMembers(familyId: string, getRest: boolean) {
   const session = await auth();

@@ -1,8 +1,7 @@
 import { auth } from '@/auth';
-import { SubTitle } from '@/components/Title';
-
-import Title from '@/components/Title';
 import { redirect } from 'next/navigation';
+
+import Title, { SubTitle } from '@/components/Title';
 import NotificationsPage from './NotificationsPage';
 
 export default async function page() {

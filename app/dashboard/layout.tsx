@@ -1,8 +1,9 @@
-import Header from '@/components/Header';
 import { PropsWithChildren } from 'react';
-import Providers from './components/Providers';
+
 import DashboardSidebar from '@/components/DashboardSidebar';
+import Header from '@/components/Header';
 import { SidebarInset } from '@/components/ui/sidebar';
+import Providers from './components/Providers';
 
 export default function DashboardLayout({ children }: PropsWithChildren) {
   return (

@@ -2,22 +2,21 @@ import { User } from 'next-auth';
 
 import { GetList } from '@/lib/queries/items';
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import SetBreadcrumbs from '@/components/SetBreadcrumbs';
-
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import WishListHeader from './Header';
 import WishListItem from './Item';
 
 type Props = {
   list: GetList;
-  me: User;
+  me?: User;
 };
 
 export default function WishListPage({ list, me }: Props) {
   // Get all unique categories from items
   const categories = Array.from(new Set(list.items.flatMap((item) => item.categories || []))).sort();
 
-  const isOwner = list.userId === me.id;
+  const isOwner = list.userId === me?.id;
 
   // Group items by category
   const itemsByCategory = categories.reduce<Record<string, typeof list.items>>((acc, category) => {
@@ -35,7 +34,7 @@ export default function WishListPage({ list, me }: Props) {
         ]}
       />
 
-      <WishListHeader list={list} categories={categories} isOwner={isOwner} />
+      <WishListHeader list={list} categories={categories} isOwner={isOwner} me={me} />
 
       <Tabs defaultValue="all" className="space-y-6">
         <TabsList className="flex flex-wrap">

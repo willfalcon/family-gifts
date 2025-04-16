@@ -1,20 +1,23 @@
+import { ArrowLeft, ArrowRight } from 'lucide-react';
+
+import { EventFromGetEvent } from '@/lib/queries/events';
+import { useSecretSantaStore } from '../store';
+
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { useSecretSantaStore } from '../store';
-import { EventFromGetEvent } from '@/lib/queries/events';
+import { useTabs } from '@/components/ui/tabs';
 
 type Props = {
   event: EventFromGetEvent;
-  onNext: () => void;
-  onPrevious: () => void;
 };
 
-export default function Participants({ event, onNext, onPrevious }: Props) {
+export default function Participants({ event }: Props) {
   const { participants, addParticipant, removeParticipant, setParticipants } = useSecretSantaStore();
+  const { setValue } = useTabs();
   function addAll() {
     setParticipants(event.attendees);
   }
@@ -85,9 +88,14 @@ export default function Participants({ event, onNext, onPrevious }: Props) {
           </div>
         </div>
       </CardContent>
-      <CardFooter className="justify-between">
-        <Button onClick={onPrevious}>Previous</Button>
-        <Button onClick={onNext}>Next</Button>
+      <CardFooter className="justify-end">
+        <Button variant="outline" onClick={() => setValue('setup')}>
+          <ArrowLeft className="w-4 h-4" />
+          Setup
+        </Button>
+        <Button onClick={() => setValue('exclusions')}>
+          Next <ArrowRight className="w-4 h-4" />
+        </Button>
       </CardFooter>
     </Card>
   );

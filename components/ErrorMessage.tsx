@@ -1,6 +1,7 @@
 import { AlertCircle, AlertTriangle, Info } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { PropsWithChildren } from 'react';
+
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 type ErrorSeverity = 'error' | 'warning' | 'info';
 

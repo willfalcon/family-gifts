@@ -1,19 +1,23 @@
 'use client';
 
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { EventFromGetEvent } from '@/lib/queries/events';
 import { ArrowRight } from 'lucide-react';
+
+import { EventFromGetEvent } from '@/lib/queries/events';
 import { useSecretSantaStore } from '../store';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useTabs } from '@/components/ui/tabs';
 
 type Props = {
   event: EventFromGetEvent;
-  onNext: () => void;
 };
-export default function Setup({ event, onNext }: Props) {
+
+export default function Setup({ event }: Props) {
   const { budget, setBudget } = useSecretSantaStore();
+  const { setValue } = useTabs();
   return (
     <Card>
       <CardHeader>
@@ -37,7 +41,7 @@ export default function Setup({ event, onNext }: Props) {
         </div> */}
       </CardContent>
       <CardFooter className="justify-end">
-        <Button onClick={onNext}>
+        <Button onClick={() => setValue('participants')}>
           Participants <ArrowRight className="w-4 h-4" />
         </Button>
       </CardFooter>

@@ -1,36 +1,8 @@
 import { auth } from '@/auth';
-import { cache } from 'react';
 import { prisma } from '@/prisma';
 import { List, Prisma } from '@prisma/client';
 import { randomBytes } from 'crypto';
-
-export const getList = cache(async (id: List['id']) => {
-  const session = await auth();
-  if (!session?.user) {
-    throw new Error('You must be logged in to do this.');
-  }
-
-  // TODO: restrict by visibility
-
-  const list = await prisma.list.findUnique({
-    where: {
-      id,
-    },
-    include: {
-      items: {
-        include: {
-          purchasedBy: true,
-        },
-      },
-      user: true,
-      visibleToFamilies: true,
-      visibleToEvents: true,
-      visibleToUsers: true,
-    },
-  });
-
-  return list;
-});
+import { cache } from 'react';
 
 export type GetList = Prisma.ListGetPayload<{
   include: {
@@ -45,6 +17,36 @@ export type GetList = Prisma.ListGetPayload<{
     visibleToUsers: true;
   };
 }>;
+
+export const getListInclude = {
+  items: {
+    include: {
+      purchasedBy: true,
+    },
+  },
+  user: true,
+  visibleToFamilies: true,
+  visibleToEvents: true,
+  visibleToUsers: true,
+};
+
+export const getList = cache(async (id: List['id'], shareLink?: string) => {
+  const session = await auth();
+  if (!session?.user) {
+    throw new Error('You must be logged in to do this.');
+  }
+
+  // TODO: restrict by visibility
+
+  const list = await prisma.list.findUnique({
+    where: {
+      id,
+    },
+    include: getListInclude,
+  });
+
+  return list;
+});
 
 export type ItemFromGetList = GetList['items'][number];
 

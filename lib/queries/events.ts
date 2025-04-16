@@ -1,7 +1,7 @@
 import { auth } from '@/auth';
-import { cache } from 'react';
 import { prisma } from '@/prisma';
 import { Event, Prisma } from '@prisma/client';
+import { cache } from 'react';
 
 /**
  * Gets all or some upcoming events for the current member
@@ -14,19 +14,39 @@ export const getEvents = cache(async (limit?: number, skip?: number) => {
 
   const events = await prisma.event.findMany({
     where: {
-      attendees: {
-        some: {
-          id: session.user.id,
-        },
-      },
-      OR: [
+      AND: [
         {
-          date: {
-            gte: new Date(),
-          },
+          OR: [
+            {
+              attendees: {
+                some: {
+                  id: session.user.id,
+                },
+              },
+            },
+            {
+              creatorId: session.user.id,
+            },
+            {
+              managers: {
+                some: {
+                  id: session.user.id,
+                },
+              },
+            },
+          ],
         },
         {
-          date: null,
+          OR: [
+            {
+              date: {
+                gte: new Date(),
+              },
+            },
+            {
+              date: null,
+            },
+          ],
         },
       ],
     },
@@ -34,6 +54,83 @@ export const getEvents = cache(async (limit?: number, skip?: number) => {
     skip: skip ?? 0,
     orderBy: {
       date: 'asc',
+    },
+    include: {
+      assignments: true,
+      _count: {
+        select: {
+          visibleLists: true,
+        },
+      },
+    },
+  });
+  return events?.toSorted((a, b) => ((a.date?.getUTCDate() || '') > (b.date?.getUTCDate() || '') ? 1 : -1));
+});
+
+export type GetEvents = Prisma.EventGetPayload<{
+  include: {
+    assignments: true;
+    _count: {
+      select: {
+        visibleLists: true;
+      };
+    };
+  };
+}>[];
+
+/**
+ * Gets all or some past events for the current member
+ * Used alongside getEvents --- make sure to include the same include options
+ */
+export const getPastEvents = cache(async (limit?: number, skip?: number) => {
+  const session = await auth();
+  if (!session?.user) {
+    throw new Error('You must be logged in to get events.');
+  }
+
+  const events = await prisma.event.findMany({
+    where: {
+      AND: [
+        {
+          OR: [
+            {
+              attendees: {
+                some: {
+                  id: session.user.id,
+                },
+              },
+            },
+            {
+              creatorId: session.user.id,
+            },
+            {
+              managers: {
+                some: {
+                  id: session.user.id,
+                },
+              },
+            },
+          ],
+        },
+        {
+          date: {
+            lt: new Date(),
+          },
+        },
+      ],
+    },
+    take: limit || undefined,
+    skip: skip ?? 0,
+    orderBy: {
+      date: 'asc',
+    },
+    include: {
+      assignments: true,
+      _count: {
+        select: {
+          visibleLists: true,
+        },
+      },
     },
   });
   return events?.toSorted((a, b) => ((a.date?.getUTCDate() || '') > (b.date?.getUTCDate() || '') ? 1 : -1));
@@ -80,14 +177,30 @@ export const getEvent = cache(async (id: Event['id']) => {
     throw new Error('You must be logged in to do this.');
   }
 
+  // don't check for permissions here, we want to know if the event exists. Check for permissions in the page.
+
   const event = await prisma.event.findUnique({
     where: {
       id,
-      attendees: {
-        some: {
-          id: session.user.id,
-        },
-      },
+      // OR: [
+      //   {
+      //     attendees: {
+      //       some: {
+      //         id: session.user.id,
+      //       },
+      //     },
+      //   },
+      //   {
+      //     creatorId: session.user.id,
+      //   },
+      //   {
+      //     managers: {
+      //       some: {
+      //         id: session.user.id,
+      //       },
+      //     },
+      //   },
+      // ],
     },
     include: {
       managers: true,
@@ -99,7 +212,19 @@ export const getEvent = cache(async (id: Event['id']) => {
       assignments: {
         include: {
           giver: true,
-          recipient: true,
+          recipient: {
+            include: {
+              lists: {
+                where: {
+                  visibleToEvents: {
+                    some: {
+                      id,
+                    },
+                  },
+                },
+              },
+            },
+          },
         },
       },
       exclusions: {
@@ -115,6 +240,12 @@ export const getEvent = cache(async (id: Event['id']) => {
   return event;
 });
 
+export type Recipient = Prisma.UserGetPayload<{
+  include: {
+    lists: true;
+  };
+}>;
+
 export type EventFromGetEvent = Prisma.EventGetPayload<{
   include: {
     managers: true;
@@ -126,7 +257,11 @@ export type EventFromGetEvent = Prisma.EventGetPayload<{
     assignments: {
       include: {
         giver: true;
-        recipient: true;
+        recipient: {
+          include: {
+            lists: true;
+          };
+        };
       };
     };
     exclusions: {
@@ -139,3 +274,27 @@ export type EventFromGetEvent = Prisma.EventGetPayload<{
     invites: true;
   };
 }>;
+
+/**
+ * Gets all events for the current member regardless of date
+ */
+export const getAllEvents = cache(async () => {
+  const session = await auth();
+  if (!session?.user) {
+    throw new Error('You must be logged in to get events.');
+  }
+
+  const events = await prisma.event.findMany({
+    where: {
+      attendees: {
+        some: {
+          id: session.user.id,
+        },
+      },
+    },
+    orderBy: {
+      date: 'asc',
+    },
+  });
+  return events?.toSorted((a, b) => ((a.date?.getUTCDate() || '') > (b.date?.getUTCDate() || '') ? 1 : -1));
+});

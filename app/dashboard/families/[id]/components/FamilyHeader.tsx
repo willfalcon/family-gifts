@@ -10,6 +10,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import Title from '@/components/Title';
 import { Badge } from '@/components/ui/badge';
 import Viewer from '@/components/ui/rich-text/viewer';
+import RemoveSelf from '../edit/components/RemoveSelf';
+import { ShareButton } from '@/components/ShareButton';
 
 type Props = {
   family: GetFamily;
@@ -22,7 +24,9 @@ export default function FamilyHeader({ family, isManager }: Props) {
       <div>
         <div className="flex items-center gap-2">
           <Title>{family.name}</Title>
-          <Badge variant="outline">{family._count.members} members</Badge>
+          <Badge variant="outline">
+            {family._count.members} member{family._count.members === 1 ? '' : 's'}
+          </Badge>
         </div>
         <p className="text-sm text-muted-foreground mt-1">
           Created by {family.creator.name} • {format(family.createdAt, 'yyyyI-mm-dd')}
@@ -35,11 +39,7 @@ export default function FamilyHeader({ family, isManager }: Props) {
           <Mail className="mr-2 h-4 w-4" />
           Message All
         </Button>
-        {/* TODO: Add share */}
-        <Button variant="outline" size="sm">
-          <Share className="mr-2 h-4 w-4" />
-          Share
-        </Button>
+        <ShareButton />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm">
@@ -60,7 +60,9 @@ export default function FamilyHeader({ family, isManager }: Props) {
               Message All
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-destructive">Leave Family</DropdownMenuItem>
+            <DropdownMenuItem className="text-destructive" asChild>
+              <RemoveSelf family={family} trigger={<Button variant="ghost">Leave Family</Button>} />
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

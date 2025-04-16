@@ -1,6 +1,7 @@
 'use server';
 
 import { signIn, signOut } from '@/auth';
+
 import { getList as getListQuery } from '@/lib/queries/items';
 
 export async function serverSignIn({ provider }: { provider?: string }) {

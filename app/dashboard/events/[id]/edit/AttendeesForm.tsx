@@ -1,23 +1,23 @@
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { Loader2, Mail, Plus, Search, X } from 'lucide-react';
+import { FormEvent, useEffect, useState } from 'react';
+import { toast } from 'sonner';
+
+import { updateEventAttendees } from '@/app/dashboard/events/actions';
 import { EventAttendeesSchemaType } from '@/app/dashboard/events/eventSchema';
 import { EventFromGetEvent } from '@/lib/queries/events';
 import { GetFamily } from '@/lib/queries/families';
 
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { FormEvent, useEffect, useState } from 'react';
-
+import { TabsSkeleton } from '@/app/dashboard/events/components/Attendees';
 import { ErrorMessage } from '@/components/ErrorMessage';
-import { Card, CardContent, CardTitle, CardHeader, CardDescription, CardFooter } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Loader2, Mail, Plus, Search, X } from 'lucide-react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { TabsSkeleton } from '@/app/dashboard/events/Attendees';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { toast } from 'sonner';
-import { updateEventAttendees } from '@/app/dashboard/events/actions';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function AttendeesForm({ event }: { event: EventFromGetEvent }) {
   const [searchQuery, setSearchQuery] = useState('');

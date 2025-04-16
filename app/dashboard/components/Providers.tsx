@@ -1,17 +1,13 @@
 'use client';
 
-// import { getActiveFamilyId } from "@/lib/rscUtils";
-// import { getCookie } from 'cookies-next';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ConvexProvider, ConvexReactClient } from 'convex/react';
+import { SessionProvider } from 'next-auth/react';
 import { PropsWithChildren } from 'react';
 
-import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
-import { ConvexProvider, ConvexReactClient } from 'convex/react';
-
-import { SidebarProvider } from '@/components/ui/sidebar';
 import { BreadcrumbsProvider } from '@/components/HeaderBreadcrumbs';
-
-import { SessionProvider } from 'next-auth/react';
-import { NotificationsProvider } from '@/components/Notifications';
+import { NotificationsProvider } from '@/components/notifications/Notifications';
+import { SidebarProvider } from '@/components/ui/sidebar';
 
 function makeQueryClient() {
   return new QueryClient({

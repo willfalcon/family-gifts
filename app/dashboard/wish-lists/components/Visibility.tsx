@@ -1,18 +1,16 @@
+import { Globe, LinkIcon, Lock, Users } from 'lucide-react';
 import { FormEvent } from 'react';
-import { Lock, LinkIcon, Globe, Users } from 'lucide-react';
-import { toast } from 'sonner';
 import { useFormContext } from 'react-hook-form';
+import { toast } from 'sonner';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { FormDescription, FormLabel, FormItem } from '@/components/ui/form';
-import { FormControl, FormField } from '@/components/ui/form';
-
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { FormControl, FormDescription, FormField, FormItem, FormLabel } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import EventsField from './EventsField';
 import FamiliesField from './FamiliesField';
 import UsersField from './UsersField';
-import EventsField from './EventsField';
 
 export default function Visibility({ shareLinkId }: { shareLinkId?: string | null }) {
   const form = useFormContext();

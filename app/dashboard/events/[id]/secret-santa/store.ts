@@ -1,6 +1,7 @@
-import { EventFromGetEvent } from '@/lib/queries/events';
 import { User } from '@prisma/client';
 import { create } from 'zustand';
+
+import { EventFromGetEvent } from '@/lib/queries/events';
 
 export type Exclusion = {
   from: User;

@@ -1,13 +1,15 @@
 'use client';
 
-import { useBreadcrumbs } from '@/components/HeaderBreadcrumbs';
-import Title from '@/components/Title';
-import { api } from '@/convex/_generated/api';
 import { useQuery } from 'convex/react';
 import { Session } from 'next-auth';
+
+import { useBreadcrumbs } from '@/components/HeaderBreadcrumbs';
+import { api } from '@/convex/_generated/api';
+
+import { ChannelListSkeleton, ChatSkeleton } from '@/components/messages/ChatSkeleton';
+import Title from '@/components/Title';
 import ChannelsList from './ChannelsList';
 import Chat from './Chat';
-import { ChannelListSkeleton, ChatSkeleton } from '@/components/Messages/ChatSkeleton';
 
 type Props = {
   session: Session;

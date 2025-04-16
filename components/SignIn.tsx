@@ -1,6 +1,7 @@
-import { ComponentPropsWithRef } from 'react';
-import { Button } from './ui/button';
 import { signIn } from '@/auth';
+import { ComponentPropsWithRef } from 'react';
+
+import { Button } from './ui/button';
 
 export default function SignIn({ provider, ...props }: { provider?: string } & ComponentPropsWithRef<typeof Button>) {
   return (

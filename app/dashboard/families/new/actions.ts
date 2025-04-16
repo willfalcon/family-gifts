@@ -1,15 +1,16 @@
 'use server';
 
 import { auth } from '@/auth';
-import { FamilySchema, FamilySchemaType } from '../familySchema';
+import { api } from '@/convex/_generated/api';
 import { prisma } from '@/prisma';
+import { Family, Invite } from '@prisma/client';
+import { ConvexHttpClient } from 'convex/browser';
 import { randomBytes } from 'crypto';
 import { addDays } from 'date-fns';
-import { ConvexHttpClient } from 'convex/browser';
-import { api } from '@/convex/_generated/api';
-import { Family, Invite } from '@prisma/client';
 import { Resend } from 'resend';
+
 import InviteEmailTemplate from '@/emails/invite';
+import { FamilySchema, FamilySchemaType } from '../familySchema';
 
 export async function createFamily(data: FamilySchemaType) {
   const session = await auth();

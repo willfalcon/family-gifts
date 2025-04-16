@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect } from 'react';
+import { AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
+import { useEffect } from 'react';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertTriangle } from 'lucide-react';
 
 export default function DashboardError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   useEffect(() => {
@@ -23,11 +24,10 @@ export default function DashboardError({ error, reset }: { error: Error & { dige
               </div>
             </div>
             <CardTitle className="text-2xl">Error</CardTitle>
-            <CardDescription>There was a problem getting the page.</CardDescription>
+            <CardDescription>There's a problem.</CardDescription>
           </CardHeader>
           <CardContent className="text-center">
-            <p className="mb-4">Something went wrong... there should be a message below with maybe some information?</p>
-            <p className="text-sm text-muted-foreground">Error: {error.message || 'Unknown error'}</p>
+            <p className="mb-4">{error.message}</p>
           </CardContent>
           <CardFooter className="flex flex-col gap-3">
             <Button onClick={reset} className="w-full">

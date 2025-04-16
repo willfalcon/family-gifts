@@ -1,8 +1,9 @@
 'use client';
 
-import { Button } from './ui/button';
 import { Loader2 } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
+
+import { Button } from './ui/button';
 
 export default function SubmitButton({ children }: { children: React.ReactNode }) {
   const formStuff = useFormContext();

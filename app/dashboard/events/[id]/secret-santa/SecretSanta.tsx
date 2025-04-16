@@ -1,26 +1,25 @@
 'use client';
 
-import { EventFromGetEvent } from '@/lib/queries/events';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import Setup from './components/Setup';
-import Participants from './components/Participants';
-import Exclusions from './components/Exclusions';
-import Review from './components/Review';
-import { Button } from '@/components/ui/button';
-import { useEffect, createContext, useRef, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-
-import { updateSecretSanta } from './actions';
+import { useEffect } from 'react';
 import { toast } from 'sonner';
+
+import { EventFromGetEvent } from '@/lib/queries/events';
 import { cn } from '@/lib/utils';
+import { updateSecretSanta } from './actions';
 import { useSecretSantaStore } from './store';
+
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import Exclusions from './components/Exclusions';
+import Participants from './components/Participants';
+import Review from './components/Review';
+import Setup from './components/Setup';
 type Props = {
   event: EventFromGetEvent;
 };
 
 export default function SecretSanta({ event }: Props) {
-  const [tab, setTab] = useState('setup');
-
   const { assignments, exclusions, initializeStore } = useSecretSantaStore();
   useEffect(() => {
     initializeStore(event);
@@ -39,7 +38,7 @@ export default function SecretSanta({ event }: Props) {
 
   return (
     <>
-      <Tabs value={tab} onValueChange={setTab} className={cn(mutation.isPending && 'opacity-50')}>
+      <Tabs defaultValue="setup" className={cn(mutation.isPending && 'opacity-50')}>
         <TabsList>
           <TabsTrigger value="setup">Setup</TabsTrigger>
           <TabsTrigger value="participants">Participants</TabsTrigger>
@@ -47,16 +46,16 @@ export default function SecretSanta({ event }: Props) {
           <TabsTrigger value="review">Review & Send</TabsTrigger>
         </TabsList>
         <TabsContent value="setup" className="space-y-6">
-          <Setup event={event} onNext={() => setTab('participants')} />
+          <Setup event={event} />
         </TabsContent>
         <TabsContent value="participants" className="space-y-6">
-          <Participants event={event} onNext={() => setTab('exclusions')} onPrevious={() => setTab('setup')} />
+          <Participants event={event} />
         </TabsContent>
         <TabsContent value="exclusions" className="space-y-6">
-          <Exclusions onNext={() => setTab('review')} onPrevious={() => setTab('participants')} />
+          <Exclusions />
         </TabsContent>
         <TabsContent value="review" className="space-y-6">
-          <Review event={event} onPrevious={() => setTab('exclusions')} />
+          <Review event={event} />
         </TabsContent>
       </Tabs>
 

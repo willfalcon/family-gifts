@@ -1,14 +1,15 @@
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
 import { UseFormReturn } from 'react-hook-form';
+
+import { cn } from '@/lib/utils';
 import { ItemSchemaType } from '../itemSchema';
 
 import CurrencyField from '@/components/CurrencyField';
-import SubmitButton from '@/components/SubmitButton';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { cn } from '@/lib/utils';
-import CategoryField from './CategoryField';
 import RichTextField from '@/components/RichTextField';
+import SubmitButton from '@/components/SubmitButton';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import CategoryField from './CategoryField';
 
 type ItemFormProps = {
   form: UseFormReturn<ItemSchemaType>;

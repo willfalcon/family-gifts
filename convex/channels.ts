@@ -1,6 +1,7 @@
 import { v } from 'convex/values';
-import { mutation, query } from './_generated/server';
+
 import { Doc } from './_generated/dataModel';
+import { mutation, query } from './_generated/server';
 
 export const getChannels = query({
   args: { userId: v.string() },

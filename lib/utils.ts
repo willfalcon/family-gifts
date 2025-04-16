@@ -51,3 +51,7 @@ export function capitalize(str: string) {
 export function formatDate(date: Date) {
   return format(date, 'MMMM d, yyyy');
 }
+
+export function formatTime(time: Date) {
+  return format(time, 'h:mm aaa');
+}

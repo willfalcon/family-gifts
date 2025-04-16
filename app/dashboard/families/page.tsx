@@ -1,17 +1,15 @@
-import Link from 'next/link';
-import { Plus, Search, Users } from 'lucide-react';
-
-import { redirect } from 'next/navigation';
-
 import { auth } from '@/auth';
-import { Button, buttonVariants } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+import { Plus, Search, Users } from 'lucide-react';
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
 
 import { getFamilies } from '@/lib/queries/families';
 
-import Title, { SubTitle } from '@/components/Title';
 import SetBreadcrumbs from '@/components/SetBreadcrumbs';
+import Title, { SubTitle } from '@/components/Title';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 
 export default async function FamiliesPage() {
   const session = await auth();

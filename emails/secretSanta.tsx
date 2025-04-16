@@ -1,5 +1,6 @@
-import { Body, Button, Container, Head, Heading, Html, Preview, Section, Text, Tailwind, Row, Column } from '@react-email/components';
 import { Event, User } from '@prisma/client';
+import { Body, Button, Column, Container, Head, Heading, Html, Preview, Row, Section, Tailwind, Text } from '@react-email/components';
+
 import { formatDate } from '@/lib/utils';
 
 export default function secretSantaNotification({ recipient, event }: { recipient: User; event: Event }) {

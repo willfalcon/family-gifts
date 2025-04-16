@@ -1,18 +1,22 @@
 import { auth } from '@/auth';
-import { redirect } from 'next/navigation';
-import SetBreadcrumbs from '@/components/SetBreadcrumbs';
+import { notFound, redirect } from 'next/navigation';
+
+import { canViewEvent } from '@/lib/permissions';
 import { getEvent } from '@/lib/queries/events';
+
+import FloatingMessages from '@/components/messages/FloatingMessages';
+import MessagesSidebar from '@/components/messages/MessagesSidebar';
+import SetBreadcrumbs from '@/components/SetBreadcrumbs';
 import { SidebarProvider } from '@/components/ui/sidebar';
-import FloatingMessages from '@/components/Messages/FloatingMessages';
-import MessagesSidebar from '@/components/Messages/MessagesSidebar';
-import EventHeader from './components/EventHeader';
-import SecretSantaBanner from './components/SecretSantaBanner';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import DetailsTab from './components/DetailsTab';
-import ParticipantsTab from './components/ParticipantsTab';
-import WishListsTab from './components/WishListsTab';
-import { notFound } from 'next/navigation';
 import EventAttendance from './components/EventAttendance';
+import EventHeader from './components/EventHeader';
+import MyAssignment from './components/MyAssignment';
+import ParticipantsTab from './components/ParticipantsTab';
+import SecretSantaTab from './components/SecretSantaTab';
+import SetupSecretSanta from './components/SetupSecretSanta';
+import WishListsTab from './components/WishListsTab';
 
 type PageProps = {
   params: {
@@ -21,14 +25,19 @@ type PageProps = {
 };
 
 export default async function EventPage({ params }: PageProps) {
+  const event = await getEvent(params.id);
+  if (!event) {
+    notFound();
+  }
+
   const session = await auth();
   if (!session?.user?.id) {
     redirect('/sign-in');
   }
-  const event = await getEvent(params.id);
 
-  if (!event) {
-    notFound();
+  const canViewPage = await canViewEvent(event.id, session.user.id);
+  if (!canViewPage) {
+    throw new Error('You must be invited to this event to view it.');
   }
 
   const isManager = event.managers.some((manager) => manager.id === session.user?.id);
@@ -51,20 +60,19 @@ export default async function EventPage({ params }: PageProps) {
 
         <EventHeader event={event} isManager={isManager} />
         <EventAttendance invite={invite} />
-        {(!!event.assignments.length || isManager) && (
-          <SecretSantaBanner eventId={event.id} isManager={isManager} budget={event.secretSantaBudget} userRecipient={userAssignment?.recipient} />
-        )}
-
+        {!!event.assignments.length && <MyAssignment assignment={userAssignment?.recipient} />}
+        {!event.assignments.length && isManager && <SetupSecretSanta eventId={event.id} />}
         <Tabs defaultValue="details" className="space-y-6">
           <TabsList>
             <TabsTrigger value="details">Details</TabsTrigger>
             <TabsTrigger value="participants">Participants</TabsTrigger>
             <TabsTrigger value="wishlists">Wish Lists</TabsTrigger>
-            {!!event.assignments.length && <TabsTrigger value="secretsanta">Secret Santa</TabsTrigger>}
+            {(!!event.assignments.length || isManager) && <TabsTrigger value="secretsanta">Secret Santa</TabsTrigger>}
           </TabsList>
           <DetailsTab event={event} />
           <ParticipantsTab event={event} />
           <WishListsTab event={event} />
+          {(!!event.assignments.length || isManager) && <SecretSantaTab event={event} userId={session.user?.id} isManager={isManager} />}
         </Tabs>
 
         <FloatingMessages />

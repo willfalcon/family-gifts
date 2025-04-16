@@ -1,9 +1,10 @@
 'use server';
 
-import { prisma } from '@/prisma';
-import { Assignment, Exclusion } from './store';
 import { auth } from '@/auth';
+import { prisma } from '@/prisma';
+
 import { getEvent } from '@/lib/queries/events';
+import { Assignment, Exclusion } from './store';
 
 export async function updateSecretSanta(eventId: string, assignments: Assignment[], exclusions: Exclusion[]) {
   const session = await auth();

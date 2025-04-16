@@ -1,21 +1,22 @@
 'use server';
 
 import { auth } from '@/auth';
-import { EventSchema, EventSchemaType, EventDetailsSchema, EventDetailsSchemaType, EventAttendeesSchemaType } from './eventSchema';
 import { prisma } from '@/prisma';
-import { revalidatePath } from 'next/cache';
 import { JSONContent } from '@tiptap/react';
-import { Event, Invite } from '@prisma/client';
-import { api } from '@/convex/_generated/api';
 import { ConvexHttpClient } from 'convex/browser';
 import { randomBytes } from 'crypto';
 import { addDays } from 'date-fns';
+import { revalidatePath } from 'next/cache';
 import { Resend } from 'resend';
-import EventInviteEmailTemplate from '@/emails/eventEnvite';
 
-import { getEvent } from '@/lib/queries/events';
+import { api } from '@/convex/_generated/api';
 import { Id } from '@/convex/_generated/dataModel';
+import EventInviteEmailTemplate from '@/emails/eventEnvite';
+import { getEvent, getPastEvents as getPastEventsQuery } from '@/lib/queries/events';
 import { getFamilies as getFamiliesQuery } from '@/lib/queries/families';
+import { Event, Invite } from '@prisma/client';
+import { EventAttendeesSchemaType, EventDetailsSchema, EventDetailsSchemaType, EventSchema, EventSchemaType } from './eventSchema';
+
 export async function getFamilies() {
   return await getFamiliesQuery();
 }
@@ -24,6 +25,10 @@ export async function createEvent(event: EventSchemaType) {
   const session = await auth();
   if (!session?.user) {
     throw new Error('You must be logged in to do this!');
+  }
+
+  if (!session.user.id) {
+    throw new Error('Please log out and log back in, and then try again.');
   }
 
   const validatedData = EventSchema.parse(event);
@@ -295,7 +300,7 @@ export async function updateEventAttendees(id: Event['id'], attendees: EventAtte
     // get the invites that weren't already in the invites list. (attendees already accepted were already filtered out of the newKnownInvites)
     const invitesToSend = updatedEvent.invites.filter((invite) => !currentEvent.invites.some((i) => i.id === invite.id));
     // update the channel with the new users
-    // TODO: add the new users to the channel
+
     if (updatedEvent.eventChannel) {
       await client.mutation(api.channels.updateChannel, {
         channel: updatedEvent.eventChannel as Id<'channels'>,
@@ -341,4 +346,8 @@ export async function deleteEvent(id: Event['id']) {
   });
   revalidatePath('/dashboard/events');
   return true;
+}
+
+export async function getPastEvents() {
+  return await getPastEventsQuery();
 }

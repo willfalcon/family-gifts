@@ -1,14 +1,15 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
-import { TooltipProvider } from '@/components/ui/tooltip';
-import { cn } from '@/lib/utils';
 import { EventResponse, Invite } from '@prisma/client';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Check, HelpCircle, Loader2, X } from 'lucide-react';
+import { Check, HelpCircle, X } from 'lucide-react';
+
+import { cn } from '@/lib/utils';
 import { getEventAttendance, updateEventAttendance } from '../actions';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 export default function EventAttendance({ invite }: { invite: Invite }) {
   const { data: response, isFetching } = useQuery({

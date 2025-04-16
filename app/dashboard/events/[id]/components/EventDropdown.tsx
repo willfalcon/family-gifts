@@ -1,23 +1,24 @@
 'use client';
-import { ArrowLeft, CalendarDays, Clock, Edit, Gift, MapPin, MoreHorizontal, Share2, Users } from 'lucide-react';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
-
-import { EventFromGetEvent } from '@/lib/queries/events';
+import { MoreHorizontal } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { toast } from 'sonner';
+
+import { deleteEvent } from '@/app/dashboard/events/actions';
+import { EventFromGetEvent } from '@/lib/queries/events';
+
 import {
   AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogCancel,
-  AlertDialogAction,
 } from '@/components/ui/alert-dialog';
-import { deleteEvent } from '@/app/dashboard/events/actions';
-import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 type Props = {
   isManager: boolean;
@@ -40,7 +41,7 @@ export default function EventDropdown({ isManager, event }: Props) {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="icon" className="h-9 w-9">
+          <Button variant="outline" size="icon" className="h-8 w-8">
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>

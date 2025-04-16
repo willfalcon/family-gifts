@@ -1,20 +1,21 @@
 'use client';
 
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Button } from '@/components/ui/button';
-import { X } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { ArrowLeft, ArrowRight, X } from 'lucide-react';
+
 import { useSecretSantaStore } from '../store';
 
-type Props = {
-  onNext: () => void;
-  onPrevious: () => void;
-};
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useTabs } from '@/components/ui/tabs';
 
-export default function Exclusions({ onNext, onPrevious }: Props) {
+type Props = {};
+
+export default function Exclusions({}: Props) {
   const { participants, exclusions, addExclusion, removeExclusion, hasExclusion } = useSecretSantaStore();
+  const { setValue } = useTabs();
   return (
     <Card>
       <CardHeader>
@@ -136,9 +137,14 @@ export default function Exclusions({ onNext, onPrevious }: Props) {
           </>
         )}
       </CardContent>
-      <CardFooter className="justify-between">
-        <Button onClick={onPrevious}>Previous</Button>
-        <Button onClick={onNext}>Next</Button>
+      <CardFooter className="justify-end">
+        <Button variant="outline" onClick={() => setValue('participants')}>
+          <ArrowLeft className="w-4 h-4" />
+          Participants
+        </Button>
+        <Button onClick={() => setValue('review')}>
+          Next <ArrowRight className="w-4 h-4" />
+        </Button>
       </CardFooter>
     </Card>
   );

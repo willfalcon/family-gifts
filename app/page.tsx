@@ -1,18 +1,13 @@
 import { auth } from '@/auth';
+import { Calendar, Gift, Lock, Users } from 'lucide-react';
+import Link from 'next/link';
+
 import SignIn from '@/components/SignIn';
 import { buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Calendar, Gift, Lock, Users } from 'lucide-react';
-import Link from 'next/link';
-// import Link from "next/link";
-// import { redirect } from 'next/navigation';
 
 export default async function Home() {
   const session = await auth();
-
-  // if (session?.user) {
-  //   redirect('/dashboard');
-  // }
 
   return (
     <div className="flex flex-col min-h-screen">

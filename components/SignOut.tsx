@@ -1,6 +1,8 @@
 import { ComponentPropsWithRef } from 'react';
-import { Button } from './ui/button';
+
 import { serverSignOut } from '@/app/actions';
+
+import { Button } from './ui/button';
 
 export default function SignOut(props: ComponentPropsWithRef<typeof Button>) {
   return (

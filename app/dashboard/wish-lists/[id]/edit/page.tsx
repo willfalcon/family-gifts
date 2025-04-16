@@ -1,13 +1,13 @@
-import Title, { SubTitle } from '@/components/Title';
+import { notFound } from 'next/navigation';
 
 import { getListForEdit } from '@/lib/queries/items';
 
-import { notFound } from 'next/navigation';
-
+import SetBreadcrumbs from '@/components/SetBreadcrumbs';
+import Title, { SubTitle } from '@/components/Title';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import EditList from './EditList';
 import ListItemsForm from './ListItemsForm';
-import SetBreadcrumbs from '@/components/SetBreadcrumbs';
+
 export default async function EditListPage({ params }: { params: { id: string } }) {
   const list = await getListForEdit(params.id);
 

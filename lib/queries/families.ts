@@ -1,8 +1,9 @@
 import { auth } from '@/auth';
 import { prisma } from '@/prisma';
-import { cache } from 'react';
-import { getActiveFamilyId } from '../rscUtils';
 import { Family, Prisma } from '@prisma/client';
+import { cache } from 'react';
+
+import { getActiveFamilyId } from '../rscUtils';
 
 export type MemberFromGetFamily = Prisma.UserGetPayload<{
   include: {
@@ -95,54 +96,60 @@ export type GetFamily = Prisma.FamilyGetPayload<{
   };
 }>;
 
-export const getFamily = cache(async (id: Family['id']): Promise<GetFamily> => {
-  const session = await auth();
-  if (!session?.user) {
-    throw new Error('You must be logged in to do this');
-  }
-
-  const family = await prisma.family.findUnique({
-    where: {
-      id,
+export const getFamilyInclude = {
+  managers: true,
+  invites: true,
+  creator: true,
+  members: {
+    orderBy: {
+      createdAt: Prisma.SortOrder.asc,
     },
     include: {
-      managers: true,
-      invites: true,
-      creator: true,
-      members: {
+      events: {
         include: {
-          events: {
-            include: {
-              _count: {
-                select: {
-                  assignments: true,
-                },
-              },
-              attendees: true,
-            },
-          },
-          lists: {
-            include: {
-              _count: {
-                select: {
-                  items: true,
-                },
-              },
-            },
-          },
           _count: {
             select: {
-              lists: true,
+              assignments: true,
+            },
+          },
+          attendees: true,
+        },
+      },
+      lists: {
+        include: {
+          _count: {
+            select: {
+              items: true,
             },
           },
         },
       },
       _count: {
         select: {
-          members: true,
+          lists: true,
         },
       },
     },
+  },
+  _count: {
+    select: {
+      members: true,
+    },
+  },
+};
+
+export const getFamily = cache(async (id: Family['id']): Promise<GetFamily> => {
+  const session = await auth();
+  if (!session?.user) {
+    throw new Error('You must be logged in to do this');
+  }
+
+  // TODO: find a way to order by date added to family
+  const family = await prisma.family.findUnique({
+    where: {
+      id,
+    },
+    include: getFamilyInclude,
   });
 
   if (!family) {

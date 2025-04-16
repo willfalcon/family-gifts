@@ -1,13 +1,13 @@
-import { useFormContext } from 'react-hook-form';
-import { ChevronsUpDown, Loader2, Check } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
+import { Check, ChevronsUpDown, Loader2 } from 'lucide-react';
+import { useFormContext } from 'react-hook-form';
 
-import { getRelatedUsers } from '../actions';
 import { cn } from '@/lib/utils';
 import { User } from '@prisma/client';
+import { getRelatedUsers } from '../actions';
 
-import { Command, CommandGroup, CommandEmpty, CommandList, CommandInput, CommandItem } from '@/components/ui/command';
 import { Button } from '@/components/ui/button';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { FormControl, FormDescription, FormField, FormItem, FormLabel } from '@/components/ui/form';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 

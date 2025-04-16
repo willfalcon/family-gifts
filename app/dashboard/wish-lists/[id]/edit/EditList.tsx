@@ -1,12 +1,13 @@
 'use client';
 
-import { ListSchema, type ListSchemaType } from '@/app/dashboard/wish-lists/listSchema';
-import { type GetListForEdit } from '@/lib/queries/items';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 
 import { updateList } from '@/app/dashboard/wish-lists/actions';
-import { toast } from 'sonner';
+import { ListSchema, type ListSchemaType } from '@/app/dashboard/wish-lists/listSchema';
+import { type GetListForEdit } from '@/lib/queries/items';
+
 import ListForm from '../../components/ListForm';
 
 type Props = {

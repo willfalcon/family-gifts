@@ -1,19 +1,21 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Plus } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+
 import { getDefaults } from '@/lib/utils';
 import { createItem, maybeGetImage } from '../actions';
-import { toast } from 'sonner';
-import ItemForm from './ItemForm';
-import { Dialog, DialogContent, DialogHeader, DialogTrigger } from '@/components/ui/dialog';
-import { Plus, Scroll } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { DialogTitle } from '@radix-ui/react-dialog';
-import { usePathname } from 'next/navigation';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { useState } from 'react';
 import { ItemSchema, ItemSchemaType } from '../itemSchema';
+
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import ItemForm from './ItemForm';
+
 export default function NewItem({ categories }: { categories: string[] }) {
   const form = useForm<ItemSchemaType>({
     resolver: zodResolver(ItemSchema),
@@ -48,7 +50,7 @@ export default function NewItem({ categories }: { categories: string[] }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
+        <Button size="sm">
           <Plus />
           Add Item
         </Button>

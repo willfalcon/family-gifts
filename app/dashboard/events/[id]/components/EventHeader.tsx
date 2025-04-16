@@ -1,15 +1,15 @@
-import { ArrowLeft, CalendarDays, Clock, Edit, Gift, MapPin, MoreHorizontal, Share2, Users } from 'lucide-react';
-
-import Viewer from '@/components/ui/rich-text/viewer';
 import { JSONContent } from '@tiptap/react';
-import { format } from 'date-fns';
-import { Button, buttonVariants } from '@/components/ui/button';
-
-import EventDropdown from './EventDropdown';
-import Title from '@/components/Title';
-import { EventFromGetEvent } from '@/lib/queries/events';
+import { CalendarDays, Clock, Edit, MapPin } from 'lucide-react';
 import Link from 'next/link';
-import { formatDate } from '@/lib/utils';
+
+import { EventFromGetEvent } from '@/lib/queries/events';
+import { formatDate, formatTime } from '@/lib/utils';
+
+import { ShareButton } from '@/components/ShareButton';
+import Title from '@/components/Title';
+import { buttonVariants } from '@/components/ui/button';
+import Viewer from '@/components/ui/rich-text/viewer';
+import EventDropdown from './EventDropdown';
 
 type Props = {
   event: EventFromGetEvent;
@@ -34,7 +34,7 @@ export default function EventHeader({ event, isManager }: Props) {
             {event.time && (
               <div className="flex items-center gap-2">
                 <Clock className="h-4 w-4 text-muted-foreground" />
-                <span>{format(event.time, 'h:mm aaa')}</span>
+                <span>{formatTime(event.time)}</span>
               </div>
             )}
             {event.location && (
@@ -47,13 +47,10 @@ export default function EventHeader({ event, isManager }: Props) {
         </div>
 
         <div className="flex gap-2">
-          <Button variant="outline">
-            <Share2 className="mr-2 h-4 w-4" />
-            Share
-          </Button>
+          <ShareButton />
 
           {isManager && (
-            <Link href={`/dashboard/events/${event.id}/edit`} className={buttonVariants()}>
+            <Link href={`/dashboard/events/${event.id}/edit`} className={buttonVariants({ size: 'sm' })}>
               <Edit className="mr-2 h-4 w-4" />
               Edit Event
             </Link>

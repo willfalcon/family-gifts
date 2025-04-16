@@ -1,24 +1,26 @@
 'use client';
 
-import { useNotifications } from '@/components/Notifications';
+import { formatDistanceToNow } from 'date-fns';
+import { Bell, Check, ExternalLink, Trash2 } from 'lucide-react';
+import Link from 'next/link';
+
+import { cn } from '@/lib/utils';
+import { deleteNotification, markNotificationAsRead } from '../actions';
+
+import { useNotifications } from '@/components/notifications/Notifications';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { cn } from '@/lib/utils';
-import { formatDistanceToNow } from 'date-fns';
-import { Bell, Check, ExternalLink, Trash2 } from 'lucide-react';
-import { deleteNotification, markNotificationAsRead } from '../actions';
-import Link from 'next/link';
-import {
-  AlertDialog,
-  AlertDialogTitle,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTrigger,
-  AlertDialogFooter,
-  AlertDialogCancel,
-  AlertDialogAction,
-} from '@/components/ui/alert-dialog';
 
 export default function NotificationsPage() {
   const { notifications, unreadNotifications } = useNotifications();
@@ -35,10 +37,10 @@ export default function NotificationsPage() {
     }
   };
   return (
-    <Tabs defaultValue="all">
+    <Tabs defaultValue="unread">
       <TabsList>
-        <TabsTrigger value="all">All</TabsTrigger>
         <TabsTrigger value="unread">Unread</TabsTrigger>
+        <TabsTrigger value="all">All</TabsTrigger>
       </TabsList>
       <TabsContent value="all">
         {notifications?.length === 0 ? (

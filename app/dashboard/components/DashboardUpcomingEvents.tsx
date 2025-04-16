@@ -1,13 +1,15 @@
 'use client';
 
-import { Button, buttonVariants } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Event } from '@prisma/client';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { CalendarDays, ChevronDown, ChevronRight, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+
 import { dashboardGetEvents } from '../actions';
-import { Event } from '@prisma/client';
+
+import { Button, buttonVariants } from '@/components/ui/button';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 
 type Props = {
   events: Event[];

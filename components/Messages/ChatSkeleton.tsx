@@ -1,8 +1,9 @@
-import { Search, Send } from 'lucide-react';
+import { Search } from 'lucide-react';
+
 import { Card, CardContent, CardFooter, CardHeader } from '../ui/card';
 import { Input } from '../ui/input';
-import { Skeleton } from '../ui/skeleton';
 import { Separator } from '../ui/separator';
+import { Skeleton } from '../ui/skeleton';
 
 export function ChannelListSkeleton() {
   return (

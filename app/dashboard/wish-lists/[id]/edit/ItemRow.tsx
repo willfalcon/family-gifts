@@ -1,28 +1,26 @@
 'use client';
 
-import { Badge } from '@/components/ui/badge';
-import { ChevronDown } from 'lucide-react';
-import { Trash2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { GetListForEdit } from '@/lib/queries/items';
-import { ChevronUp } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Collapsible, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { getItemToEdit, updateItem } from './actions';
-import { CollapsibleContent } from '@radix-ui/react-collapsible';
+import { ChevronDown, ChevronUp, Trash2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+
+import { GetListForEdit } from '@/lib/queries/items';
+import { cn } from '@/lib/utils';
 import { ItemSchema, ItemSchemaType } from '../itemSchema';
+import { getItemToEdit, updateItem } from './actions';
+
+import CurrencyField from '@/components/CurrencyField';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import CurrencyField from '@/components/CurrencyField';
-import { zodResolver } from '@hookform/resolvers/zod';
 import Editor from '@/components/ui/rich-text/editor';
-import { Select } from '@radix-ui/react-select';
-import { SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import CategoryField from '../components/CategoryField';
-import { toast } from 'sonner';
-import { cn } from '@/lib/utils';
 
 type Props = {
   index: number;

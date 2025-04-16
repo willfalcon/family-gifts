@@ -1,6 +1,8 @@
-import Link from 'next/link';
-import { Gift, Home, List, MessagesSquare, Settings, UserPlus, Users } from 'lucide-react';
 import { auth } from '@/auth';
+import { Bell, CalendarDays, Gift, Home, MessagesSquare, Settings, User, Users } from 'lucide-react';
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
+
 import { buttonVariants } from './ui/button';
 import {
   Sidebar,
@@ -16,7 +18,6 @@ import {
   SidebarRail,
 } from './ui/sidebar';
 import UserButton from './UserButton';
-import { redirect } from 'next/navigation';
 
 export default async function DashboardSidebar() {
   const session = await auth();
@@ -28,19 +29,20 @@ export default async function DashboardSidebar() {
   const nav = [
     { text: 'Dashboard', href: '/dashboard', icon: Home },
     { text: 'Families', href: '/dashboard/families', icon: Users },
+    { text: 'Members', href: '/dashboard/members', icon: User },
     { text: 'Wish Lists', href: '/dashboard/wish-lists', icon: Gift },
-    { text: 'Events', href: '/dashboard/events', icon: List },
+    { text: 'Events', href: '/dashboard/events', icon: CalendarDays },
     { text: 'Messages', href: '/dashboard/messages', icon: MessagesSquare },
-    ...(session?.user ? [{ text: 'Manage Family', href: '/dashboard/manage-family', icon: UserPlus }] : []),
+    { text: 'Notifications', href: '/dashboard/notifications', icon: Bell },
     { text: 'Settings', href: '/dashboard/settings', icon: Settings },
   ];
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="icon" className="">
       <SidebarHeader>
-        <div className="flex items-center gap-2 px-4 py-2">
-          <Gift className="h-6 w-6 text-primary" />
-          <span className="font-bold text-xl">Family Gifts</span>
+        <div className="flex items-center gap-2 py-2">
+          <Gift className="h-6 w-6 text-primary flex-shrink-0 block ml-1" />
+          <span className="font-bold text-xl block flex-shrink overflow-hidden whitespace-nowrap">Family Gifts</span>
         </div>
       </SidebarHeader>
       <SidebarContent>

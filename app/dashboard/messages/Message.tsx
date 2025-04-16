@@ -1,17 +1,18 @@
 import { Doc } from '@/convex/_generated/dataModel';
-import { useQuery } from '@tanstack/react-query';
-import { getSender } from './actions';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { format } from 'date-fns';
 import { User } from '@prisma/client';
-import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarTrigger } from '@/components/ui/menubar';
-import { EllipsisVertical } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 import { useMutation } from 'convex/react';
-import { api } from '@/convex/_generated/api';
+import { EllipsisVertical } from 'lucide-react';
 
-import { MessageSkeleton } from '@/components/Messages/ChatSkeleton';
+import { api } from '@/convex/_generated/api';
 import { useMe } from '@/hooks/use-me';
 import { GetUser } from '@/lib/queries/user';
+import { formatTime } from '@/lib/utils';
+import { getSender } from './actions';
+
+import { MessageSkeleton } from '@/components/messages/ChatSkeleton';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarTrigger } from '@/components/ui/menubar';
 
 type Props = {
   message: Doc<'messages'>;
@@ -54,7 +55,7 @@ export default function Message({ message, channel }: Props) {
           )}
           <div className="flex-1">
             {hasSender && <h3 className="inline font-semibold h-5">{sender.name}</h3>}
-            <p className="inline text-muted-foreground h-5 text-xs ml-1">{format(new Date(message._creationTime), 'h:mm a').toLowerCase()}</p>
+            <p className="inline text-muted-foreground h-5 text-xs ml-1">{formatTime(new Date(message._creationTime))}</p>
             <div className="text-sm">{message.text}</div>
           </div>
           {user && userCanDelete(channel, user, sender) && (

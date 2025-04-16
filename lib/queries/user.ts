@@ -10,6 +10,7 @@ export const getUser = cache(async (id: User['id']) => {
     include: {
       managing: true,
       createdEvents: true,
+      families: true,
     },
   });
 
@@ -23,5 +24,6 @@ export type GetUser = Prisma.UserGetPayload<{
   include: {
     managing: true;
     createdEvents: true;
+    families: true;
   };
 }>;

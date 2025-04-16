@@ -1,10 +1,11 @@
-import { SubTitle } from '@/components/Title';
-
-import Title from '@/components/Title';
-import { redirect } from 'next/navigation';
 import { auth } from '@/auth';
+import { redirect } from 'next/navigation';
+
 import { getEvent } from '@/lib/queries/events';
+
+import Title, { SubTitle } from '@/components/Title';
 import UpdateEvent from './UpdateEvent';
+
 export default async function EditEventPage({ params }: { params: { id: string } }) {
   const session = await auth();
   if (!session?.user) {

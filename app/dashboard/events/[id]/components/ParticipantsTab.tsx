@@ -1,10 +1,9 @@
-import { TabsContent } from '@/components/ui/tabs';
-
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { auth } from '@/auth';
 
 import { EventFromGetEvent } from '@/lib/queries/events';
 
-import { auth } from '@/auth';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { TabsContent } from '@/components/ui/tabs';
 
 import Participant from './Participant';
 

@@ -1,9 +1,10 @@
-import { Card } from '@/components/ui/card';
 import { Gift, Plus } from 'lucide-react';
-import { dashboardGetUserLists } from '@/lib/queries/lists';
-import { Users } from 'lucide-react';
 import Link from 'next/link';
+
+import { dashboardGetUserLists } from '@/lib/queries/lists';
+
 import { buttonVariants } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 
 export default async function WishListSection() {
   const wishlists = await dashboardGetUserLists();

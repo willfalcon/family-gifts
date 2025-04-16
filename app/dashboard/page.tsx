@@ -1,15 +1,16 @@
 import { auth } from '@/auth';
-import Title from '@/components/Title';
-import { buttonVariants } from '@/components/ui/button';
 import { Calendar, Plus } from 'lucide-react';
 import Link from 'next/link';
-
 import { redirect } from 'next/navigation';
-import DashboardUpcomingEvents from './components/DashboardUpcomingEvents';
+
 import { getEvents, getEventsCount } from '@/lib/queries/events';
+
 import SetBreadcrumbs from '@/components/SetBreadcrumbs';
+import Title from '@/components/Title';
+import { buttonVariants } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import DashboardUpcomingEvents from './components/DashboardUpcomingEvents';
 import FamilySection from './components/FamilySection';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import WishListSection from './components/WishListSection';
 
 export default async function page() {

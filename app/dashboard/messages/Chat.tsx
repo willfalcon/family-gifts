@@ -1,16 +1,18 @@
+import { useMutation, useQuery } from 'convex/react';
+import { isSameDay } from 'date-fns';
+import { Send } from 'lucide-react';
+import { Fragment } from 'react';
+import { toast } from 'sonner';
+
+import { api } from '@/convex/_generated/api';
+import { Doc } from '@/convex/_generated/dataModel';
+import { cn, formatDate } from '@/lib/utils';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { cn } from '@/lib/utils';
-import { Doc } from '@/convex/_generated/dataModel';
-import { useMutation, useQuery } from 'convex/react';
-import { Send } from 'lucide-react';
-import { api } from '@/convex/_generated/api';
-import { Fragment } from 'react';
-import { format, isSameDay } from 'date-fns';
-import { toast } from 'sonner';
 import Message from './Message';
 
 type Props = {
@@ -63,7 +65,7 @@ export default function Chat({ channel, user, sidebar = false }: Props) {
                     {!isSameDay(lastMessageDate, new Date(message._creationTime)) && (
                       <>
                         {index > 0 && <Separator className="my-4" />}
-                        <p className="text-center text-xs text-muted-foreground mb-4">{format(new Date(message._creationTime), 'MMM dd, yyyy')}</p>
+                        <p className="text-center text-xs text-muted-foreground mb-4">{formatDate(new Date(message._creationTime))}</p>
                       </>
                     )}
                     <Message message={message} channel={channel} />
