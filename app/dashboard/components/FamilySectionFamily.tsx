@@ -1,17 +1,15 @@
 'use client';
 
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { ChevronDown, ChevronRight, Gift, Loader2, Mail } from 'lucide-react';
+import { ChevronDown, ChevronRight, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 
 import { FamilyFromDashboardGetFamilies, MemberFromDashboardGetFamilies } from '@/lib/queries/families';
 import { dashboardGetMoreMembers } from '../actions';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
+import MemberCard from '@/components/MemberCard';
 import { Button, buttonVariants } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function FamilySectionFamily({ family }: { family: FamilyFromDashboardGetFamilies }) {
   const [expanded, setExpanded] = useState(true);
@@ -56,52 +54,7 @@ export default function FamilySectionFamily({ family }: { family: FamilyFromDash
             {data.pages.map((page) =>
               page.map((member) => {
                 const isManager = member.managing.some((managedFam) => managedFam.id === family.id);
-                return (
-                  <Card key={member.id}>
-                    <CardHeader className="flex flex-row items-start space-y-0 pb-2">
-                      <div className="flex flex-1 items-center space-x-4">
-                        <Avatar>
-                          <AvatarImage src={member.image || undefined} alt={member.name || ''} />
-                          <AvatarFallback>
-                            {member.name
-                              ?.split(' ')
-                              .map((n) => n[0])
-                              .join('')}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <CardTitle className="text-base">
-                            <Link href={`/dashboard/members/${member.id}`} className="hover:underline">
-                              {member.name}
-                            </Link>
-                          </CardTitle>
-                          <CardDescription className="text-xs">{member.email}</CardDescription>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex justify-between text-sm">
-                        <Badge variant={isManager ? 'default' : 'secondary'} className="text-xs">
-                          {isManager ? 'Manager' : 'Member'}
-                        </Badge>
-                        <span className="text-muted-foreground text-xs">{member._count.lists} wish lists</span>
-                      </div>
-                    </CardContent>
-                    <CardFooter className="flex justify-between p-2">
-                      {/* //TODO: implement message button */}
-                      <Button variant="ghost" size="sm">
-                        <Mail className="h-4 w-4 mr-1" />
-                        Message
-                      </Button>
-                      <Button variant="ghost" size="sm" asChild>
-                        <Link href={`/dashboard/wish-lists/${member.id}`}>
-                          <Gift className="h-4 w-4 mr-1" />
-                          Lists
-                        </Link>
-                      </Button>
-                    </CardFooter>
-                  </Card>
-                );
+                return <MemberCard key={member.id} member={member} isManager={isManager} />;
               }),
             )}
           </div>

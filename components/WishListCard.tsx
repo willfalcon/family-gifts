@@ -11,7 +11,7 @@ import { getList } from '@/app/actions';
 
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { buttonVariants } from './ui/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from './ui/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './ui/card';
 import Viewer from './ui/rich-text/viewer';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 
@@ -45,6 +45,8 @@ export default function WishListCard({ list, includeUser = false }: Props) {
   }
 
   const isOwner = data.user.id === session.data?.user?.id;
+
+  console.log(data.description);
   return (
     <Card>
       <CardHeader className="flex items-center flex-row gap-2 pb-2">
@@ -63,12 +65,22 @@ export default function WishListCard({ list, includeUser = false }: Props) {
             </Tooltip>
           </TooltipProvider>
         )}
-
-        <CardTitle className="text-2xl leading-none">{data.name}</CardTitle>
+        <div className="flex flex-col">
+          <CardTitle className="text-2xl leading-none">{data.name}</CardTitle>
+          <CardDescription>{data.user.name}</CardDescription>
+        </div>
       </CardHeader>
       <CardContent>
+        {/* {data.description && (
+          <p className="text-sm text-muted-foreground leading-none mb-4">{data.description}</p>
+        )} */}
         {data.description && (
-          <Viewer content={data.description as JSONContent} immediatelyRender={false} className="text-sm text-muted-foreground leading-none mb-4" />
+          <Viewer
+            content={data.description as JSONContent}
+            immediatelyRender={false}
+            className="text-sm text-muted-foreground leading-none mb-4"
+            excerpt
+          />
         )}
         <div className="flex items-center justify-between text-sm">
           <span>{data.items.length} items</span>

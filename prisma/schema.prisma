@@ -9,37 +9,49 @@ generator client {
 }
 
 model User {
-  id                 String          @id() @default(cuid())
+  id String @id() @default(cuid())
+
+  // User Info
   name               String?
-  email              String          @unique()
+  email              String       @unique()
   emailVerified      DateTime?
   image              String?
   bio                Json?
-  accounts           Account[]
-  sessions           Session[]
-  Authenticator      Authenticator[]
-  // familyMemberships FamilyMember[]  @relation("FamilyMembers")
-  families           Family[]        @relation("FamilyUser")
-  createdFamilies    Family[]        @relation("FamilyCreator")
-  managing           Family[]        @relation("FamilyManager")
-  lists              List[]
-  visibleLists       List[]          @relation("ListVisibleToUsers")
-  events             Event[]
-  receiving          Assignment[]    @relation("Recipient")
-  giving             Assignment[]    @relation("Giver")
-  excludedFrom       Exclusion[]     @relation("ExclusionFrom")
-  excludedTo         Exclusion[]     @relation("ExclusionTo")
-  eventInvite        Invite[]        @relation("EventInviteUser")
-  channels           Channel[]
-  invitesSent        Invite[]        @relation("inviteSender")
-  createdEvents      Event[]         @relation("EventCreator")
-  managedEvents      Event[]         @relation("EventManager")
-  purchasedItems     Item[]          @relation("ItemPurchasedBy")
-  createdAt          DateTime        @default(now())
-  updatedAt          DateTime        @updatedAt()
-  profileVisibility  Visibility[]    @default([family, events, lists])
-  wishListVisibility Visibility[]    @default([family, events, lists])
-  activityVisibility Visibility[]    @default([family, events, lists])
+  profileVisibility  Visibility[] @default([family, events, lists])
+  wishListVisibility Visibility[] @default([family, events, lists])
+  activityVisibility Visibility[] @default([family, events, lists])
+
+  // Next Auth Stuff
+  accounts      Account[]
+  sessions      Session[]
+  Authenticator Authenticator[]
+
+  // Families
+  families        Family[] @relation("FamilyUser")
+  createdFamilies Family[] @relation("FamilyCreator")
+  managing        Family[] @relation("FamilyManager")
+  invitesSent     Invite[] @relation("inviteSender")
+
+  // Lists
+  lists          List[]
+  visibleLists   List[] @relation("ListVisibleToUsers")
+  purchasedItems Item[] @relation("ItemPurchasedBy")
+
+  // Events
+  events        Event[]
+  eventInvite   Invite[] @relation("EventInviteUser")
+  createdEvents Event[]  @relation("EventCreator")
+  managedEvents Event[]  @relation("EventManager")
+
+  // Secret Santa
+  receiving    Assignment[] @relation("Recipient")
+  giving       Assignment[] @relation("Giver")
+  excludedFrom Exclusion[]  @relation("ExclusionFrom")
+  excludedTo   Exclusion[]  @relation("ExclusionTo")
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
 }
 
 enum Visibility {
@@ -107,21 +119,29 @@ enum EventResponse {
 }
 
 model Invite {
-  id            String         @id() @default(cuid())
-  email         String
-  token         String         @unique()
-  tokenExpiry   DateTime
-  family        Family?        @relation("FamilyInvite", fields: [familyId], references: [id], onDelete: Cascade)
-  familyId      String?
-  event         Event?         @relation("EventInvite", fields: [eventId], references: [id], onDelete: Cascade)
-  eventId       String?
-  eventResponse EventResponse?
-  user          User?          @relation("EventInviteUser", fields: [userId], references: [id], onDelete: Cascade)
-  userId        String?
-  inviter       User?          @relation("inviteSender", fields: [inviterId], references: [id], onDelete: Cascade)
-  inviterId     String?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt()
+  // Invite Info
+  id               String         @id() @default(cuid())
+  email            String?
+  token            String?        @unique()
+  tokenExpiry      DateTime?
+  eventResponse    EventResponse?
+  needsApproval    Boolean        @default(false)
+  approvalRejected Boolean        @default(false)
+
+  // Relationships
+  // onDelete: cascade means that if the family is deleted, the invite will be deleted
+  family    Family? @relation("FamilyInvite", fields: [familyId], references: [id], onDelete: Cascade)
+  familyId  String?
+  event     Event?  @relation("EventInvite", fields: [eventId], references: [id], onDelete: Cascade)
+  eventId   String?
+  user      User?   @relation("EventInviteUser", fields: [userId], references: [id], onDelete: Cascade)
+  userId    String?
+  inviter   User?   @relation("inviteSender", fields: [inviterId], references: [id], onDelete: Cascade)
+  inviterId String?
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
 }
 
 enum FamilyVisibility {
@@ -131,23 +151,30 @@ enum FamilyVisibility {
 }
 
 model Family {
+  // Family Info
   id              String           @id() @default(cuid())
   name            String
   description     Json?
-  managers        User[]           @relation("FamilyManager")
-  creatorId       String
-  creator         User             @relation("FamilyCreator", fields: [creatorId], references: [id])
-  members         User[]           @relation("FamilyUser")
-  invites         Invite[]         @relation("FamilyInvite")
-  events          Event[]
-  visibleLists    List[]           @relation("ListVisibleToFamilies")
-  channels        Channel[] // TODO: remove
+  visibility      FamilyVisibility @default(private) // TODO: remove
   familyChannel   String?
-  visibility      FamilyVisibility @default(private)
   allowInvites    Boolean          @default(false)
   requireApproval Boolean          @default(true)
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt()
+
+  // Relationships
+  managers     User[]  @relation("FamilyManager")
+  creatorId    String
+  creator      User    @relation("FamilyCreator", fields: [creatorId], references: [id])
+  members      User[]  @relation("FamilyUser")
+  events       Event[]
+  visibleLists List[]  @relation("ListVisibleToFamilies")
+
+  // Invites
+  invites          Invite[]  @relation("FamilyInvite")
+  inviteLinkToken  String?
+  inviteLinkExpiry DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
 }
 
 enum VisiblityType {
@@ -200,28 +227,34 @@ model Item {
 }
 
 model Event {
-  id                String       @id() @default(cuid())
-  name              String
-  date              DateTime?
-  time              DateTime?
-  info              Json?
-  type              String?
-  location          String?
-  familyId          String? // TODO: remove family relation
-  family            Family?      @relation(fields: [familyId], references: [id])
+  // Event Info
+  id       String    @id() @default(cuid())
+  name     String
+  date     DateTime?
+  time     DateTime?
+  info     Json?
+  type     String?
+  location String?
+
+  // Relationships
+  familyId     String? // TODO: remove family relation
+  family       Family?  @relation(fields: [familyId], references: [id])
+  creatorId    String
+  creator      User     @relation("EventCreator", fields: [creatorId], references: [id])
+  attendees    User[]
+  managers     User[]   @relation("EventManager")
+  invites      Invite[] @relation("EventInvite")
+  visibleLists List[]   @relation("ListVisibleToEvents")
+
+  // Secret Santa
   assignments       Assignment[]
   exclusions        Exclusion[]
   secretSantaBudget String?
-  channels          Channel[] // TODO: remove
-  creatorId         String
-  creator           User         @relation("EventCreator", fields: [creatorId], references: [id])
-  eventChannel      String?
-  attendees         User[]
-  managers          User[]       @relation("EventManager")
-  invites           Invite[]     @relation("EventInvite")
-  visibleLists      List[]       @relation("ListVisibleToEvents")
-  createdAt         DateTime     @default(now())
-  updatedAt         DateTime     @updatedAt()
+
+  // Messages
+  eventChannel String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt()
 }
 
 model Assignment {
@@ -244,28 +277,6 @@ model Exclusion {
   from      User     @relation("ExclusionFrom", fields: [fromId], references: [id])
   toId      String
   to        User     @relation("ExclusionTo", fields: [toId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt()
-}
-
-// TODO: remove all channel stuff
-enum ChannelType {
-  family
-  event
-  individual
-}
-
-model Channel {
-  id           String      @id() @default(cuid())
-  name         String
-  lastMessage  String
-  type         ChannelType @default(individual)
-  familyId     String?
-  family       Family?     @relation(fields: [familyId], references: [id])
-  eventId      String?
-  event        Event?      @relation(fields: [eventId], references: [id])
-  groupMembers User[]
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt()
 }

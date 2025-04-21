@@ -4,13 +4,17 @@ import { mutation, query } from './_generated/server';
 
 export const getMessages = query({
   args: {
-    channelId: v.id('channels'),
+    channelId: v.optional(v.id('channels')),
   },
   handler: async (ctx, args) => {
+    if (!args.channelId) {
+      return [];
+    }
     const messages = await ctx.db
       .query('messages')
-      .withIndex('by_channel', (q) => q.eq('channel', args.channelId))
-      .take(10);
+      .withIndex('by_channel', (q) => q.eq('channel', args.channelId!))
+      .order('desc')
+      .take(100);
     return messages;
   },
 });

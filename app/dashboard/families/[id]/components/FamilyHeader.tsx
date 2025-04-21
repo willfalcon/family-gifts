@@ -36,21 +36,8 @@ export default function FamilyHeader({ family, isManager, me }: Props) {
         {family.description && <Viewer className="text-muted-foreground" content={family.description as JSONContent} immediatelyRender={false} />}
       </div>
       <div className="flex gap-2">
-        {/* TODO: Add message all */}
-        <MessageDialog
-          trigger={
-            <Button variant="outline" size="sm">
-              <Mail className="mr-2 h-4 w-4" />
-              Message All
-            </Button>
-          }
-          user={me.id}
-          familyId={family.id}
-        />
-        {/* <Button variant="outline" size="sm">
-          <Mail className="mr-2 h-4 w-4" />
-          Message All
-        </Button> */}
+        <MessageDialog user={me.id} familyId={family.id} />
+
         <ShareButton />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

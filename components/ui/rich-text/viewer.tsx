@@ -9,9 +9,10 @@ interface ViewerProps {
   style?: 'default' | 'prose';
   immediatelyRender?: boolean;
   className?: string;
+  excerpt?: boolean;
 }
 
-const Viewer = ({ content, style = 'prose', immediatelyRender = true, className }: ViewerProps) => {
+const Viewer = ({ content, style = 'prose', immediatelyRender = true, className, excerpt = false }: ViewerProps) => {
   const editor = useEditor({
     extensions: [StarterKit],
     content,
@@ -26,7 +27,7 @@ const Viewer = ({ content, style = 'prose', immediatelyRender = true, className 
 
   if (!editor) return <></>;
 
-  const classes: string = cn(style === 'prose' ? 'prose-mt-0 prose max-w-none dark:prose-invert' : '', className);
+  const classes: string = cn(style === 'prose' ? 'prose-mt-0 prose max-w-none dark:prose-invert' : '', className, { 'line-clamp-2': excerpt });
 
   return (
     <article className={classes}>

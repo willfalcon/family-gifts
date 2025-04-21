@@ -26,6 +26,7 @@ export default async function page() {
   const events = await getEvents(3);
   const eventsCount = await getEventsCount();
   // const { success, message, family } = await getFamily();
+  // TODO: show families where user is waiting approval
 
   return (
     // <SidebarProvider defaultOpen={false} className="min-h-[500px]" style={{ ['--sidebar-width' as string]: '350px' }}>

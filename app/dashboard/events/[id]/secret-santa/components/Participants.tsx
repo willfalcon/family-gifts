@@ -5,11 +5,12 @@ import { useSecretSantaStore } from '../store';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { useTabs } from '@/components/ui/tabs';
+import Link from 'next/link';
 
 type Props = {
   event: EventFromGetEvent;
@@ -88,14 +89,14 @@ export default function Participants({ event }: Props) {
           </div>
         </div>
       </CardContent>
-      <CardFooter className="justify-end">
-        <Button variant="outline" onClick={() => setValue('setup')}>
+      <CardFooter className="justify-between">
+        <Link href="?tab=setup" className={buttonVariants({ variant: 'outline' })} scroll={false}>
           <ArrowLeft className="w-4 h-4" />
           Setup
-        </Button>
-        <Button onClick={() => setValue('exclusions')}>
+        </Link>
+        <Link href="?tab=exclusions" className={buttonVariants()}>
           Next <ArrowRight className="w-4 h-4" />
-        </Button>
+        </Link>
       </CardFooter>
     </Card>
   );

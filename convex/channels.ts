@@ -15,6 +15,8 @@ export const getChannel = query({
   args: {
     familyId: v.optional(v.string()),
     eventId: v.optional(v.string()),
+    dmId: v.optional(v.string()),
+    userId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     if (args.familyId) {
@@ -30,6 +32,14 @@ export const getChannel = query({
         .filter((q) => q.eq(q.field('event'), args.eventId))
         .take(1);
       return channels?.[0];
+    }
+    if (args.dmId && args.userId) {
+      const channels = await ctx.db
+        .query('channels')
+        .filter((q) => q.eq(q.field('type'), 'individual'))
+        .collect();
+      const channel = channels.find((channel) => channel.users.includes(args.dmId!) && channel.users.includes(args.userId!));
+      return channel;
     }
   },
 });

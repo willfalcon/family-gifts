@@ -7,14 +7,41 @@ import { randomBytes } from 'crypto';
 import { addDays } from 'date-fns';
 import { revalidatePath } from 'next/cache';
 
+import { api } from '@/convex/_generated/api';
 import { sendNotification } from '@/lib/notifications';
 import { canManageFamily } from '@/lib/permissions';
 import { getFamilyInclude, getFamily as getFamilyQuery } from '@/lib/queries/families';
+import { ConvexHttpClient } from 'convex/browser';
 import { FamilySchemaType } from '../familySchema';
 import { sendInviteEmail } from '../new/actions';
 import { InvitesSchema, InvitesSchemaType } from './inviteSchema';
 
+const getAuthUser = async () => {
+  const session = await auth();
+  if (!session?.user) {
+    throw new Error('You must be logged in to do this.');
+  }
+  if (!session?.user?.id) {
+    throw new Error('Session error. Try logging out and in again.');
+  }
+  return session.user;
+};
+
+const getAuthUserId = async () => {
+  const session = await auth();
+  if (!session?.user) {
+    throw new Error('You must be logged in to do this.');
+  }
+  if (!session?.user?.id) {
+    throw new Error('Session error. Try logging out and in again.');
+  }
+  return session.user.id;
+};
+
 export async function sendInviteNotification(invite: Invite) {
+  if (!invite.email) {
+    throw new Error('Invite has no email');
+  }
   const res = await sendNotification({
     email: invite.email,
     title: 'You have been invited to a family',
@@ -26,10 +53,7 @@ export async function sendInviteNotification(invite: Invite) {
 }
 
 export async function inviteMembers(familyId: Family['id'], data: InvitesSchemaType) {
-  const session = await auth();
-  if (!session?.user) {
-    throw new Error('You must be logged in to do this.');
-  }
+  await getAuthUserId();
   const strippedInvites = data.invites?.filter((invite) => invite.value) || [];
   const validatedData = InvitesSchema.parse({ ...data, invites: strippedInvites });
 
@@ -97,11 +121,8 @@ export async function getFamily(familyId: Family['id']) {
 }
 
 export async function removeMember(familyId: Family['id'], memberId: User['id']) {
-  const session = await auth();
-  if (!session?.user) {
-    throw new Error('You must be logged in to do this.');
-  }
-  if (memberId === session?.user?.id) {
+  const userId = await getAuthUserId();
+  if (memberId === userId) {
     throw new Error('You cannot remove yourself from the family');
   }
   const family = await prisma.family.findUnique({
@@ -113,7 +134,7 @@ export async function removeMember(familyId: Family['id'], memberId: User['id'])
   if (!family) {
     throw new Error('Family not found');
   }
-  if (!family.managers.some((manager) => manager.id === session?.user?.id)) {
+  if (!family.managers.some((manager) => manager.id === userId)) {
     throw new Error('You are not a manager of this family');
   }
   const updatedFamily = await prisma.family.update({
@@ -131,10 +152,7 @@ export async function removeMember(familyId: Family['id'], memberId: User['id'])
 }
 
 export async function updateFamily(familyId: Family['id'], data: FamilySchemaType) {
-  const session = await auth();
-  if (!session?.user) {
-    throw new Error('You must be logged in to do this.');
-  }
+  const userId = await getAuthUserId();
   const family = await prisma.family.findUnique({
     where: { id: familyId },
     include: {
@@ -144,7 +162,7 @@ export async function updateFamily(familyId: Family['id'], data: FamilySchemaTyp
   if (!family) {
     throw new Error('Family not found');
   }
-  if (!family.managers.some((manager) => manager.id === session?.user?.id)) {
+  if (!family.managers.some((manager) => manager.id === userId)) {
     throw new Error('You must be a manager to edit this family');
   }
   const updatedFamily = await prisma.family.update({
@@ -159,10 +177,7 @@ export async function updateFamily(familyId: Family['id'], data: FamilySchemaTyp
 }
 
 export async function promoteMember(familyId: Family['id'], memberId: User['id']) {
-  const session = await auth();
-  if (!session?.user) {
-    throw new Error('You must be logged in to do this.');
-  }
+  const userId = await getAuthUserId();
   const family = await prisma.family.findUnique({
     where: { id: familyId },
     include: {
@@ -172,7 +187,7 @@ export async function promoteMember(familyId: Family['id'], memberId: User['id']
   if (!family) {
     throw new Error('Family not found');
   }
-  if (!family.managers.some((manager) => manager.id === session?.user?.id)) {
+  if (!family.managers.some((manager) => manager.id === userId)) {
     throw new Error('You must be a manager to promote a member');
   }
   const updatedFamily = await prisma.family.update({
@@ -186,10 +201,8 @@ export async function promoteMember(familyId: Family['id'], memberId: User['id']
 }
 
 export async function demoteMember(familyId: Family['id'], memberId: User['id']) {
-  const session = await auth();
-  if (!session?.user) {
-    throw new Error('You must be logged in to do this.');
-  }
+  const userId = await getAuthUserId();
+
   const family = await prisma.family.findUnique({
     where: { id: familyId },
     include: {
@@ -199,10 +212,10 @@ export async function demoteMember(familyId: Family['id'], memberId: User['id'])
   if (!family) {
     throw new Error('Family not found');
   }
-  if (!family.managers.some((manager) => manager.id === session?.user?.id)) {
+  if (!family.managers.some((manager) => manager.id === userId)) {
     throw new Error('You must be a manager to demote a member');
   }
-  if (memberId === session?.user?.id) {
+  if (memberId === userId) {
     throw new Error('You cannot demote yourself');
   }
   if (family.managers.length === 1) {
@@ -220,16 +233,14 @@ export async function demoteMember(familyId: Family['id'], memberId: User['id'])
 }
 
 export type FamilyPrivacy = {
-  visibility: FamilyVisibility;
-  allowInvites: boolean;
-  requireApproval: boolean;
+  visibility?: FamilyVisibility;
+  allowInvites?: boolean;
+  requireApproval?: boolean;
 };
 
 export async function updateFamilyPrivacy(familyId: Family['id'], data: FamilyPrivacy) {
-  const session = await auth();
-  if (!session?.user) {
-    throw new Error('You must be logged in to do this.');
-  }
+  const userId = await getAuthUserId();
+
   const family = await prisma.family.findUnique({
     where: { id: familyId },
     include: {
@@ -239,26 +250,20 @@ export async function updateFamilyPrivacy(familyId: Family['id'], data: FamilyPr
   if (!family) {
     throw new Error('Family not found');
   }
-  if (!family.managers.some((manager) => manager.id === session?.user?.id)) {
+  if (!family.managers.some((manager) => manager.id === userId)) {
     throw new Error('You must be a manager to update the family privacy');
   }
   const updatedFamily = await prisma.family.update({
     where: { id: familyId },
-    data: {
-      visibility: data.visibility,
-      allowInvites: data.allowInvites,
-      requireApproval: data.requireApproval,
-    },
+    data,
     include: getFamilyInclude,
   });
   return updatedFamily;
 }
 
 export async function deleteFamily(familyId: Family['id']) {
-  const session = await auth();
-  if (!session?.user) {
-    throw new Error('You must be logged in to do this.');
-  }
+  const userId = await getAuthUserId();
+
   const family = await prisma.family.findUnique({
     where: { id: familyId },
     include: {
@@ -268,7 +273,7 @@ export async function deleteFamily(familyId: Family['id']) {
   if (!family) {
     throw new Error('Family not found');
   }
-  if (!family.managers.some((manager) => manager.id === session?.user?.id)) {
+  if (!family.managers.some((manager) => manager.id === userId)) {
     throw new Error('You must be a manager to delete the family');
   }
   const deletedFamily = await prisma.family.delete({
@@ -278,10 +283,8 @@ export async function deleteFamily(familyId: Family['id']) {
 }
 
 export async function transferFamily(familyId: Family['id'], newOwnerId: User['id']) {
-  const session = await auth();
-  if (!session?.user) {
-    throw new Error('You must be logged in to do this.');
-  }
+  const userId = await getAuthUserId();
+
   const family = await prisma.family.findUnique({
     where: { id: familyId },
     include: {
@@ -291,7 +294,7 @@ export async function transferFamily(familyId: Family['id'], newOwnerId: User['i
   if (!family) {
     throw new Error('Family not found');
   }
-  if (family.creatorId !== session?.user?.id) {
+  if (family.creatorId !== userId) {
     throw new Error('You must be the owner to transfer the family');
   }
   const updatedFamily = await prisma.family.update({
@@ -310,10 +313,8 @@ export async function transferFamily(familyId: Family['id'], newOwnerId: User['i
 }
 
 export async function removeSelf(familyId: Family['id']) {
-  const session = await auth();
-  if (!session?.user) {
-    throw new Error('You must be logged in to do this.');
-  }
+  const userId = await getAuthUserId();
+
   const family = await prisma.family.findUnique({
     where: { id: familyId },
     include: {
@@ -325,11 +326,11 @@ export async function removeSelf(familyId: Family['id']) {
     throw new Error('Family not found');
   }
 
-  if (family.creatorId === session?.user?.id) {
+  if (family.creatorId === userId) {
     throw new Error('You cannot leave your own family. Transfer ownership first or delete the family entirely.');
   }
 
-  if (family.managers.some((member) => member.id === session?.user?.id) && family.managers.length === 1) {
+  if (family.managers.some((member) => member.id === userId) && family.managers.length === 1) {
     throw new Error('You are the only manager of this family. Make another manager, transfer ownership or delete the family entirely.');
   }
 
@@ -338,12 +339,12 @@ export async function removeSelf(familyId: Family['id']) {
     data: {
       members: {
         disconnect: {
-          id: session?.user?.id,
+          id: userId,
         },
       },
       managers: {
         disconnect: {
-          id: session?.user?.id,
+          id: userId,
         },
       },
     },
@@ -353,14 +354,7 @@ export async function removeSelf(familyId: Family['id']) {
 }
 
 export async function cancelInvite(inviteId: Invite['id']) {
-  const session = await auth();
-  if (!session?.user) {
-    throw new Error('You must be logged in to do this.');
-  }
-
-  if (!session?.user?.id) {
-    throw new Error('Session error. Try logging out and in again.');
-  }
+  const userId = await getAuthUserId();
 
   const invite = await prisma.invite.findUnique({
     where: { id: inviteId },
@@ -376,7 +370,7 @@ export async function cancelInvite(inviteId: Invite['id']) {
   if (!invite || !invite.familyId) {
     throw new Error('Invite not found');
   }
-  if (!(await canManageFamily(invite.familyId, session?.user?.id))) {
+  if (!(await canManageFamily(invite.familyId, userId))) {
     throw new Error(`You don't have permission to cancel this invite.`);
   }
   const deletedInvite = await prisma.invite.delete({
@@ -384,4 +378,116 @@ export async function cancelInvite(inviteId: Invite['id']) {
   });
   revalidatePath(`/dashboard/families/${deletedInvite.familyId}`);
   return deletedInvite;
+}
+
+export async function generateInviteLink(familyId: Family['id']) {
+  const userId = await getAuthUserId();
+
+  if (!(await canManageFamily(familyId, userId))) {
+    throw new Error("You don't have permission to generate an invite link for this family");
+  }
+  const token = randomBytes(7).toString('hex');
+  const tokenExpiry = addDays(new Date(), 7);
+  const updatedFamily = await prisma.family.update({
+    where: { id: familyId },
+    data: {
+      inviteLinkToken: token,
+      inviteLinkExpiry: tokenExpiry,
+    },
+    include: getFamilyInclude,
+  });
+
+  return updatedFamily;
+}
+
+export async function approveJoinRequest(inviteId: Invite['id']) {
+  const userId = await getAuthUserId();
+
+  const invite = await prisma.invite.findUnique({
+    where: { id: inviteId },
+    include: {
+      family: {
+        include: {
+          managers: true,
+        },
+      },
+    },
+  });
+
+  if (!invite) {
+    throw new Error('Invite not found');
+  }
+  if (!invite.userId) {
+    throw new Error('Invite has no user');
+  }
+  if (!invite.familyId) {
+    throw new Error('Invite has no family');
+  }
+  if (!invite.family?.managers.some((manager) => manager.id === userId)) {
+    throw new Error('You must be a manager to approve a join request.');
+  }
+
+  const updatedFamily = await prisma.family.update({
+    where: { id: invite.familyId },
+    data: {
+      members: { connect: { id: invite.userId } },
+      invites: {
+        delete: {
+          id: inviteId,
+        },
+      },
+    },
+    include: getFamilyInclude,
+  });
+
+  const client = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
+
+  await client.mutation(api.channels.addChannelUser, {
+    family: invite.familyId,
+    user: invite.userId,
+  });
+
+  return updatedFamily;
+}
+export async function rejectJoinRequest(inviteId: Invite['id']) {
+  const userId = await getAuthUserId();
+
+  const invite = await prisma.invite.findUnique({
+    where: { id: inviteId },
+    include: {
+      family: {
+        include: {
+          managers: true,
+        },
+      },
+    },
+  });
+
+  if (!invite) {
+    throw new Error('Invite not found');
+  }
+  if (!invite.userId) {
+    throw new Error('Invite has no user');
+  }
+  if (!invite.familyId) {
+    throw new Error('Invite has no family');
+  }
+  if (!invite.family?.managers.some((manager) => manager.id === userId)) {
+    throw new Error('You must be a manager to reject a join request.');
+  }
+
+  //delete invite
+  const rejectedInvite = await prisma.invite.update({
+    where: { id: inviteId },
+    data: {
+      approvalRejected: true,
+    },
+    include: {
+      family: {
+        include: getFamilyInclude,
+      },
+    },
+  });
+
+  return rejectedInvite.family!;
 }

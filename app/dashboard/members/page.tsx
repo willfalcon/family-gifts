@@ -1,5 +1,5 @@
 import { auth } from '@/auth';
-import { UserPlus, Users2 } from 'lucide-react';
+import { Users2 } from 'lucide-react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
@@ -26,18 +26,12 @@ export default async function MembersPage() {
           <SubTitle>View and connect with all your people</SubTitle>
         </div>
         <div className="flex gap-2">
-          <Link href="/dashboard/members" className={buttonVariants({ variant: 'outline' })}>
+          <Link href="/dashboard/families" className={buttonVariants({ variant: 'outline' })}>
             <Users2 className="mr-2 h-4 w-4" />
             Manage Families
           </Link>
-          {/* TODO: Probably should just be a dialog */}
-          <Link href="/dashboard/members/invite" className={buttonVariants()}>
-            <UserPlus className="mr-2 h-4 w-4" />
-            Invite Member
-          </Link>
         </div>
       </div>
-      {/* TODO: Implement member search */}
       <MembersList members={members} />
     </div>
   );

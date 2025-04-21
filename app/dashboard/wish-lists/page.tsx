@@ -1,18 +1,15 @@
 import { auth } from '@/auth';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { Plus, Gift, Search } from 'lucide-react';
 
 import { getUserLists } from '@/lib/queries/lists';
 
-import { Button, buttonVariants } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import Title, { SubTitle } from '@/components/Title';
 import SetBreadcrumbs from '@/components/SetBreadcrumbs';
-import WishListCard from '@/components/WishListCard';
+import Title, { SubTitle } from '@/components/Title';
+import { buttonVariants } from '@/components/ui/button';
+import WishLists from './WishLists';
 
-export default async function WishLists() {
+export default async function WishListsPage() {
   const session = await auth();
 
   if (!session?.user) {
@@ -40,29 +37,7 @@ export default async function WishLists() {
           </Link>
         </div>
       </div>
-      <div className="flex items-center mb-6">
-        <div className="relative w-full max-w-sm">
-          {/* TODO: Add search functionality */}
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input type="search" placeholder="Search wish lists..." className="w-full pl-8" />
-        </div>
-      </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {lists.map((list) => (
-          <WishListCard key={list.id} list={list} />
-        ))}
-        <Card className="border-dashed flex flex-col items-center justify-center p-8">
-          <Gift className="h-8 w-8 text-muted-foreground mb-4" />
-          <h3 className="font-medium text-center mb-2">Create a new wish list</h3>
-          <p className="text-sm text-muted-foreground text-center mb-4">Add items you'd like to receive as gifts</p>
-          <Button asChild>
-            <Link href="/dashboard/wish-lists/new">
-              <Plus className="mr-2 h-4 w-4" />
-              New List
-            </Link>
-          </Button>
-        </Card>
-      </div>
+      <WishLists lists={lists} />
     </div>
   );
 }

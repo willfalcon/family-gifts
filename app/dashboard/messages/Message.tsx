@@ -7,7 +7,7 @@ import { EllipsisVertical } from 'lucide-react';
 import { api } from '@/convex/_generated/api';
 import { useMe } from '@/hooks/use-me';
 import { GetUser } from '@/lib/queries/user';
-import { formatTime } from '@/lib/utils';
+import { cn, formatTime } from '@/lib/utils';
 import { getSender } from './actions';
 
 import { MessageSkeleton } from '@/components/messages/ChatSkeleton';
@@ -17,6 +17,7 @@ import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarTrigger } fro
 type Props = {
   message: Doc<'messages'>;
   channel: Doc<'channels'>;
+  isRead: boolean;
 };
 
 function userCanDelete(channel: Doc<'channels'>, me: GetUser, sender?: User | string) {
@@ -32,7 +33,7 @@ function userCanDelete(channel: Doc<'channels'>, me: GetUser, sender?: User | st
   }
 }
 
-export default function Message({ message, channel }: Props) {
+export default function Message({ message, channel, isRead }: Props) {
   const { data: sender, isLoading } = useQuery({ queryKey: ['user', message.sender], queryFn: () => getSender(message.sender) });
   const { data: user, isLoading: meLoading } = useMe();
 
@@ -43,14 +44,22 @@ export default function Message({ message, channel }: Props) {
   }
   const hasSender = sender && typeof sender !== 'string';
 
+  const initials =
+    hasSender &&
+    sender.name
+      ?.split(' ')
+      .map((name) => name[0])
+      .join('')
+      .slice(0, 2);
+
   return (
     <>
-      <div className="mb-4">
-        <div className="flex items-start">
+      <div className={cn('mb-2 p-2 rounded-md', { 'bg-muted': !isRead })}>
+        <div className="flex items-center">
           {hasSender && (
             <Avatar className="h-8 w-8 mr-2">
-              <AvatarImage src={sender.image || undefined} alt={sender.name || ''} />
-              <AvatarFallback>{sender.name?.[0] || ''}</AvatarFallback>
+              <AvatarImage src={sender.image || undefined} alt={sender.name || undefined} />
+              <AvatarFallback>{initials}</AvatarFallback>
             </Avatar>
           )}
           <div className="flex-1">

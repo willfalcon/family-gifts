@@ -92,7 +92,7 @@ export async function sendInviteEmail(invite: Invite, family: Family) {
   try {
     const { data, error } = await resend.emails.send({
       from: `Invite <${process.env.FROM_EMAIL_ADDRESS}>`,
-      to: [invite.email],
+      to: [invite.email!],
       subject: 'Join the family',
       react: InviteEmailTemplate(invite, family),
     });

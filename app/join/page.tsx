@@ -1,5 +1,5 @@
 import { auth } from '@/auth';
-import { redirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 
 import { getInvite } from '@/lib/queries/onboarding';
 
@@ -18,7 +18,7 @@ export default async function JoinPage({ searchParams }: PageProps) {
   const { token } = searchParams;
 
   if (!token) {
-    redirect('/');
+    notFound();
   }
 
   const session = await auth();
@@ -130,7 +130,7 @@ export default async function JoinPage({ searchParams }: PageProps) {
                 <SignIn />
               </>
             ) : (
-              <JoinButton name={invite.family?.name || invite.event?.name || ''} token={token} invite={invite} inviteType={inviteType} />
+              <JoinButton name={invite.family?.name || invite.event?.name || ''} invite={invite} inviteType={inviteType} />
             )}
           </CardFooter>
         </Card>

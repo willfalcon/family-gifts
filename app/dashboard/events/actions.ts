@@ -168,7 +168,7 @@ export async function sendInviteEmail(invite: Invite, event: Event) {
   try {
     const { data, error } = await resend.emails.send({
       from: `Invite <${process.env.FROM_EMAIL_ADDRESS}>`,
-      to: [invite.email],
+      to: [invite.email!],
       subject: `You're invited to an event!`,
       react: EventInviteEmailTemplate(invite, event),
     });

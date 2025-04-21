@@ -1,7 +1,7 @@
 import { auth } from '@/auth';
 
 import { getFamily } from '@/lib/queries/families';
-import { redirect } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 
 import SetBreadcrumbs from '@/components/SetBreadcrumbs';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -22,7 +22,11 @@ export default async function FamilyPage({ params }: { params: { id: string } })
     redirect('/sign-in');
   }
 
+  // not found if user is not a member of the family
   const family = await getFamily(params.id);
+  if (!family.members.some((member) => member.id === session.user?.id)) {
+    notFound();
+  }
 
   const isManager = family.managers.some((manager) => manager.id === session.user?.id);
 

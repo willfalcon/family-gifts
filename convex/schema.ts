@@ -25,4 +25,9 @@ export default defineSchema({
   })
     .index('by_user', ['userId'])
     .index('by_read_at', ['readAt']),
+  lastReads: defineTable({
+    userId: v.string(),
+    channel: v.id('channels'),
+    lastRead: v.id('messages'),
+  }).index('by_user', ['userId']),
 });

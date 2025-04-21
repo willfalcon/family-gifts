@@ -10,12 +10,11 @@ import { Button } from '@/components/ui/button';
 
 type Props = {
   name: string;
-  token: string;
   inviteType: 'Family' | 'Event';
   invite: GetInvite;
 };
 
-export default function JoinButton({ name, token, inviteType, invite }: Props) {
+export default function JoinButton({ name, inviteType, invite }: Props) {
   const router = useRouter();
 
   //TODO: add option to join as a maybe right away

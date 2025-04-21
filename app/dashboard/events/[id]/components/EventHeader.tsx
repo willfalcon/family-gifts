@@ -5,18 +5,21 @@ import Link from 'next/link';
 import { EventFromGetEvent } from '@/lib/queries/events';
 import { formatDate, formatTime } from '@/lib/utils';
 
+import MessageDialog from '@/components/messages/MessageDialog';
 import { ShareButton } from '@/components/ShareButton';
 import Title from '@/components/Title';
 import { buttonVariants } from '@/components/ui/button';
 import Viewer from '@/components/ui/rich-text/viewer';
+import { GetUser } from '@/lib/queries/user';
 import EventDropdown from './EventDropdown';
 
 type Props = {
   event: EventFromGetEvent;
   isManager: boolean;
+  me: GetUser;
 };
 
-export default function EventHeader({ event, isManager }: Props) {
+export default function EventHeader({ event, isManager, me }: Props) {
   return (
     <div className="mb-8">
       <div className="flex flex-col md:flex-row justify-between items-start gap-4">
@@ -47,6 +50,7 @@ export default function EventHeader({ event, isManager }: Props) {
         </div>
 
         <div className="flex gap-2">
+          <MessageDialog user={me.id} eventId={event.id} />
           <ShareButton />
 
           {isManager && (

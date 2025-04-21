@@ -5,11 +5,12 @@ import { ArrowLeft, ArrowRight, X } from 'lucide-react';
 import { useSecretSantaStore } from '../store';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useTabs } from '@/components/ui/tabs';
+import Link from 'next/link';
 
 type Props = {};
 
@@ -137,14 +138,14 @@ export default function Exclusions({}: Props) {
           </>
         )}
       </CardContent>
-      <CardFooter className="justify-end">
-        <Button variant="outline" onClick={() => setValue('participants')}>
+      <CardFooter className="justify-between">
+        <Link href="?tab=participants" className={buttonVariants({ variant: 'outline' })} scroll={false}>
           <ArrowLeft className="w-4 h-4" />
           Participants
-        </Button>
-        <Button onClick={() => setValue('review')}>
+        </Link>
+        <Link href="?tab=review" className={buttonVariants()}>
           Next <ArrowRight className="w-4 h-4" />
-        </Button>
+        </Link>
       </CardFooter>
     </Card>
   );

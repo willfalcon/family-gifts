@@ -72,7 +72,7 @@ export default function AttendeesForm({ event }: { event: EventFromGetEvent }) {
 
   // State for external invites
   const [externalInvites, setExternalInvites] = useState<string[]>(
-    event.invites?.filter((invite) => !invite.userId).map((invite) => invite.email) || [],
+    event.invites?.filter((invite) => !invite.userId).map((invite) => invite.email ?? '') || [],
   );
   const [newInviteEmail, setNewInviteEmail] = useState('');
 

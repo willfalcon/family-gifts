@@ -58,7 +58,11 @@ export type ListFromGetFamily = Prisma.ListGetPayload<{
 export type GetFamily = Prisma.FamilyGetPayload<{
   include: {
     managers: true;
-    invites: true;
+    invites: {
+      include: {
+        user: true;
+      };
+    };
     creator: true;
     members: {
       include: {
@@ -98,7 +102,11 @@ export type GetFamily = Prisma.FamilyGetPayload<{
 
 export const getFamilyInclude = {
   managers: true,
-  invites: true,
+  invites: {
+    include: {
+      user: true,
+    },
+  },
   creator: true,
   members: {
     orderBy: {
@@ -228,7 +236,11 @@ export const getFamilies = cache(async () => {
     },
     include: {
       managers: true,
-      invites: true,
+      invites: {
+        include: {
+          user: true,
+        },
+      },
       members: {
         include: {
           events: {
@@ -268,7 +280,7 @@ export const getFamilies = cache(async () => {
   return families;
 });
 
-export type FamilyFromGetFamilies = Prisma.FamilyGetPayload<{
+export type GetFamilies = Prisma.FamilyGetPayload<{
   include: {
     managers: true;
     invites: true;
@@ -309,6 +321,7 @@ export type FamilyFromGetFamilies = Prisma.FamilyGetPayload<{
   };
 }>;
 
+export type FamilyFromGetFamilies = GetFamilies;
 /**
  * Get all families where user is a member plus initial 3 members - for dashboard use.
  */

@@ -1,21 +1,30 @@
 'use client';
 
-import * as React from 'react';
 import * as TabsPrimitive from '@radix-ui/react-tabs';
+import * as React from 'react';
 
 import { cn } from '@/lib/utils';
+import { useSearchParams } from 'next/navigation';
 import { Dispatch, SetStateAction } from 'react';
-
-// const Tabs = TabsPrimitive.Root
 
 const TabsContext = React.createContext<{ value: string; setValue: Dispatch<SetStateAction<string>> }>({ value: '', setValue: () => {} });
 
 const Tabs = React.forwardRef<React.ElementRef<typeof TabsPrimitive.Root>, React.ComponentPropsWithoutRef<typeof TabsPrimitive.Root>>(
   ({ className, ...props }, ref) => {
-    const [value, setValue] = React.useState<string>(props.defaultValue || '');
+    // const [value, setValue] = React.useState<string>(tabParam || props.defaultValue || '');
+
+    const searchParams = useSearchParams();
+    const tabParam = searchParams.get('tab') || props.defaultValue || '';
+
+    const onTabChange = (value: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('tab', value);
+      window.history.pushState(null, '', `?${params.toString()}`);
+    };
+
     return (
-      <TabsPrimitive.Root ref={ref} className={cn(className)} {...props} value={value} onValueChange={setValue}>
-        <TabsContext.Provider value={{ value, setValue }}>{props.children}</TabsContext.Provider>
+      <TabsPrimitive.Root ref={ref} className={cn(className)} {...props} value={tabParam} onValueChange={onTabChange}>
+        {props.children}
       </TabsPrimitive.Root>
     );
   },
@@ -70,4 +79,4 @@ const TabsContent = React.forwardRef<React.ElementRef<typeof TabsPrimitive.Conte
 );
 TabsContent.displayName = TabsPrimitive.Content.displayName;
 
-export { Tabs, TabsList, TabsTrigger, TabsContent, useTabs };
+export { Tabs, TabsContent, TabsList, TabsTrigger, useTabs };

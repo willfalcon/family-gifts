@@ -1,15 +1,15 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
 import { Search } from 'lucide-react';
+import { useState } from 'react';
 
 import { GetFamily } from '@/lib/queries/families';
-import { getFamily } from '../actions';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { TabsContent, useTabs } from '@/components/ui/tabs';
+import { useFamily } from '../../useFamily';
 import InviteMembers from '../components/InviteMembers';
 import MemberListItem from './MemberListItem';
 
@@ -18,14 +18,13 @@ type Props = {
   family: GetFamily;
 };
 
-export default function MembersTab({ isManager, family }: Props) {
-  const query = useQuery({
-    queryKey: ['family', family.id],
-    queryFn: () => getFamily(family.id),
-    initialData: family,
-  });
-  const { members, managers } = query.data;
+export default function MembersTab({ isManager, family: initialFamily }: Props) {
+  const { data: family } = useFamily(initialFamily);
+  const { members, managers } = family;
   const { setValue } = useTabs();
+  const [searchTerm, setSearchTerm] = useState('');
+  // TODO: Smarter search
+  const filteredMembers = members.filter((member) => member.name?.toLowerCase().includes(searchTerm.toLowerCase()));
   return (
     <TabsContent value="members" className="space-y-6">
       <Card>
@@ -43,7 +42,13 @@ export default function MembersTab({ isManager, family }: Props) {
           <>
             <div className="relative w-full mb-4">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input type="search" placeholder="Search members..." className="w-full pl-8" />
+              <Input
+                type="search"
+                placeholder="Search members..."
+                className="w-full pl-8"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
             </div>
 
             <div className="rounded-md border">
@@ -59,8 +64,10 @@ export default function MembersTab({ isManager, family }: Props) {
                     </tr>
                   </thead>
                   <tbody>
-                    {members.map((member) => {
+                    {filteredMembers.map((member) => {
                       const memberIsManager = managers.some((manager) => manager.id === member.id);
+                      const invite = family.invites.find((invite) => invite.userId === member.id);
+                      const needsApproval = invite?.needsApproval;
                       return (
                         <MemberListItem
                           key={member.id}
@@ -68,6 +75,7 @@ export default function MembersTab({ isManager, family }: Props) {
                           isManager={isManager}
                           memberIsManager={memberIsManager}
                           familyId={family.id}
+                          needsApproval={needsApproval}
                         />
                       );
                     })}
@@ -78,9 +86,11 @@ export default function MembersTab({ isManager, family }: Props) {
           </>
         </CardContent>
         <CardFooter>
-          <Button variant="ghost" className="text-sm text-muted-foreground" onClick={() => setValue('invitations')}>
-            {family.invites.length} pending invitation{family.invites.length === 1 ? '' : 's'}
-          </Button>
+          {isManager && (
+            <Button variant="ghost" className="text-sm text-muted-foreground" onClick={() => setValue('invitations')}>
+              {family.invites.length} pending invitation{family.invites.length === 1 ? '' : 's'}
+            </Button>
+          )}
         </CardFooter>
       </Card>
     </TabsContent>

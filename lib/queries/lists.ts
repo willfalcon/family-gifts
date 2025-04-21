@@ -3,6 +3,16 @@ import { prisma } from '@/prisma';
 import { Prisma } from '@prisma/client';
 import { cache } from 'react';
 
+export type GetUserLists = Prisma.ListGetPayload<{
+  include: {
+    _count: {
+      select: {
+        items: true;
+      };
+    };
+  };
+}>[];
+
 export const getUserLists = cache(async () => {
   const session = await auth();
   if (!session?.user) {

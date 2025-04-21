@@ -142,10 +142,10 @@ export default function Participant({ participant: initialParticipant, invite: i
       <div className="flex items-center justify-between p-2 hover:bg-muted rounded-md">
         <div className="flex items-center gap-3 flex-1">
           <Avatar>
-            <AvatarFallback>{invite.email[0]}</AvatarFallback>
+            <AvatarFallback>{invite.email?.[0] ?? ''}</AvatarFallback>
           </Avatar>
           <div>
-            <p className="font-medium">{invite.email}</p>
+            <p className="font-medium">{invite.email ?? ''}</p>
           </div>
         </div>
         <Badge className={cn('rounded-full bg-gray-600')}>Pending</Badge>

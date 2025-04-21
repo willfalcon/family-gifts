@@ -5,11 +5,12 @@ import { ArrowRight } from 'lucide-react';
 import { EventFromGetEvent } from '@/lib/queries/events';
 import { useSecretSantaStore } from '../store';
 
-import { Button } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useTabs } from '@/components/ui/tabs';
+import Link from 'next/link';
 
 type Props = {
   event: EventFromGetEvent;
@@ -41,9 +42,9 @@ export default function Setup({ event }: Props) {
         </div> */}
       </CardContent>
       <CardFooter className="justify-end">
-        <Button onClick={() => setValue('participants')}>
+        <Link href={`?tab=participants`} className={buttonVariants()} scroll={false}>
           Participants <ArrowRight className="w-4 h-4" />
-        </Button>
+        </Link>
       </CardFooter>
     </Card>
   );

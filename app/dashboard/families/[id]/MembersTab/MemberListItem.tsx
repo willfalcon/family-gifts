@@ -15,8 +15,9 @@ type Props = {
   memberIsManager: boolean;
   isManager: boolean;
   familyId: string;
+  needsApproval?: boolean;
 };
-export default function MemberListItem({ member, memberIsManager, isManager, familyId }: Props) {
+export default function MemberListItem({ member, memberIsManager, isManager, familyId, needsApproval }: Props) {
   const [changingRole, setChangingRole] = useState(false);
   return (
     <tr key={member.id} className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
@@ -39,7 +40,7 @@ export default function MemberListItem({ member, memberIsManager, isManager, fam
       <td className="p-4 align-middle">{member.email}</td>
       <td className="p-4 align-middle">
         <Badge variant={changingRole ? 'outline' : memberIsManager ? 'default' : 'secondary'}>
-          {changingRole ? <Loader2 className="h-4 w-4 animate-spin" /> : memberIsManager ? 'Manager' : 'Member'}
+          {changingRole ? <Loader2 className="h-4 w-4 animate-spin" /> : needsApproval ? 'Pending Approval' : memberIsManager ? 'Manager' : 'Member'}
         </Badge>
       </td>
       <td className="p-4 align-middle">{member._count.lists}</td>

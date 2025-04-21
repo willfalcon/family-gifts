@@ -9,6 +9,7 @@ import MessagesSidebar from '@/components/messages/MessagesSidebar';
 import SetBreadcrumbs from '@/components/SetBreadcrumbs';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { getUser } from '@/lib/queries/user';
 import DetailsTab from './components/DetailsTab';
 import EventAttendance from './components/EventAttendance';
 import EventHeader from './components/EventHeader';
@@ -43,10 +44,13 @@ export default async function EventPage({ params }: PageProps) {
   const isManager = event.managers.some((manager) => manager.id === session.user?.id);
   const userAssignment = event.assignments?.find((assignment) => assignment.giverId === session.user?.id);
   const invite = event.invites?.find((invite) => invite.email === session.user?.email);
+  const me = await getUser(session.user.id);
 
   if (!invite) {
     redirect('/dashboard/events');
   }
+
+  // TODO: sync tabs state with url param?
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="space-y-4 p-8 pt-6 relative w-full">
@@ -58,7 +62,7 @@ export default async function EventPage({ params }: PageProps) {
           ]}
         />
 
-        <EventHeader event={event} isManager={isManager} />
+        <EventHeader event={event} isManager={isManager} me={me} />
         <EventAttendance invite={invite} />
         {!!event.assignments.length && <MyAssignment assignment={userAssignment?.recipient} />}
         {!event.assignments.length && isManager && <SetupSecretSanta eventId={event.id} />}

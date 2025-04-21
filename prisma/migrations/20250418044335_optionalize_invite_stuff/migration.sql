@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "Invite" ALTER COLUMN "email" DROP NOT NULL,
+ALTER COLUMN "token" DROP NOT NULL,
+ALTER COLUMN "tokenExpiry" DROP NOT NULL;

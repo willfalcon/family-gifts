@@ -14,6 +14,7 @@ import type {
   FunctionReference,
 } from "convex/server";
 import type * as channels from "../channels.js";
+import type * as lastReads from "../lastReads.js";
 import type * as messages from "../messages.js";
 import type * as notifications from "../notifications.js";
 
@@ -27,6 +28,7 @@ import type * as notifications from "../notifications.js";
  */
 declare const fullApi: ApiFromModules<{
   channels: typeof channels;
+  lastReads: typeof lastReads;
   messages: typeof messages;
   notifications: typeof notifications;
 }>;

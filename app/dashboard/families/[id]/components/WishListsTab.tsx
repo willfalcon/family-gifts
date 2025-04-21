@@ -1,14 +1,13 @@
-import { formatDistanceToNow } from 'date-fns';
 import { Gift, Plus, Search } from 'lucide-react';
 import Link from 'next/link';
 
 import { ListFromGetFamily, MemberFromGetFamily } from '@/lib/queries/families';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button, buttonVariants } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { TabsContent } from '@/components/ui/tabs';
+import WishListCard from '@/components/WishListCard';
 
 type Props = {
   members: MemberFromGetFamily[];
@@ -47,38 +46,39 @@ export default function WishListsTab({ members }: Props) {
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {lists.map((list) => {
               const owner = members.find((m) => m.id === list.userId);
-              return (
-                <Card key={list.id}>
-                  <CardHeader className="p-4 pb-2">
-                    <CardTitle className="text-lg">{list.name}</CardTitle>
-                    <CardDescription className="flex items-center gap-2">
-                      {owner && (
-                        <Avatar className="h-5 w-5">
-                          <AvatarImage src={owner.image || undefined} alt={owner.name || ''} />
-                          <AvatarFallback className="text-[10px]">
-                            {owner.name
-                              ?.split(' ')
-                              .map((n) => n[0])
-                              .join('')}
-                          </AvatarFallback>
-                        </Avatar>
-                      )}
-                      {owner?.name}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="p-4 pt-0">
-                    <div className="flex items-center justify-between text-sm mt-2">
-                      <span>{list._count.items} items</span>
-                      <span className="text-muted-foreground">Updated {formatDistanceToNow(list.updatedAt)}</span>
-                    </div>
-                  </CardContent>
-                  <CardFooter className="p-4 pt-0">
-                    <Button size="sm" className="w-full" asChild>
-                      <Link href={`/dashboard/wish-lists/${list.id}`}>View Wish List</Link>
-                    </Button>
-                  </CardFooter>
-                </Card>
-              );
+              return <WishListCard key={list.id} list={list} includeUser />;
+              // return (
+              //   <Card key={list.id}>
+              //     <CardHeader className="p-4 pb-2">
+              //       <CardTitle className="text-lg">{list.name}</CardTitle>
+              //       <CardDescription className="flex items-center gap-2">
+              //         {owner && (
+              //           <Avatar className="h-5 w-5">
+              //             <AvatarImage src={owner.image || undefined} alt={owner.name || ''} />
+              //             <AvatarFallback className="text-[10px]">
+              //               {owner.name
+              //                 ?.split(' ')
+              //                 .map((n) => n[0])
+              //                 .join('')}
+              //             </AvatarFallback>
+              //           </Avatar>
+              //         )}
+              //         {owner?.name}
+              //       </CardDescription>
+              //     </CardHeader>
+              //     <CardContent className="p-4 pt-0">
+              //       <div className="flex items-center justify-between text-sm mt-2">
+              //         <span>{list._count.items} items</span>
+              //         <span className="text-muted-foreground">Updated {formatDistanceToNow(list.updatedAt)}</span>
+              //       </div>
+              //     </CardContent>
+              //     <CardFooter className="p-4 pt-0">
+              //       <Button size="sm" className="w-full" asChild>
+              //         <Link href={`/dashboard/wish-lists/${list.id}`}>View Wish List</Link>
+              //       </Button>
+              //     </CardFooter>
+              //   </Card>
+              // );
             })}
 
             <Card className="border-dashed flex flex-col items-center justify-center p-8">

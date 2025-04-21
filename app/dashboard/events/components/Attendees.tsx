@@ -3,7 +3,7 @@ import { Mail, Plus, Search, X } from 'lucide-react';
 import { FormEvent, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 
-import { GetFamily } from '@/lib/queries/families';
+import { GetFamilies } from '@/lib/queries/families';
 import { getFamilies } from '../actions';
 
 import { Alert } from '@/components/ui/alert';
@@ -21,9 +21,9 @@ export default function Attendees() {
 
   const [searchQuery, setSearchQuery] = useState('');
 
-  const { data: families, isLoading: familiesLoading } = useQuery({
+  const { data: families, isLoading: familiesLoading } = useQuery<GetFamilies[]>({
     queryKey: ['families'],
-    queryFn: async (): Promise<GetFamily[]> => {
+    queryFn: async () => {
       const response = await getFamilies();
       return response;
     },

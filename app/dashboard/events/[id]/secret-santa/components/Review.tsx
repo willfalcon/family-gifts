@@ -19,10 +19,11 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useTabs } from '@/components/ui/tabs';
+import Link from 'next/link';
 
 type Props = {
   event: EventFromGetEvent;
@@ -218,10 +219,10 @@ export default function Review({ event }: Props) {
         </div>
       </CardContent>
       <CardFooter>
-        <Button variant="outline" onClick={() => setValue('exclusions')}>
+        <Link href="?tab=exclusions" className={buttonVariants({ variant: 'outline' })} scroll={false}>
           <ArrowLeft className="w-4 h-4" />
           Exclusions
-        </Button>
+        </Link>
       </CardFooter>
     </Card>
   );
