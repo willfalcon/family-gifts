@@ -4,8 +4,8 @@ import { notFound, redirect } from 'next/navigation';
 import { canViewEvent } from '@/lib/permissions';
 import { getEvent } from '@/lib/queries/events';
 
-import FloatingMessages from '@/components/messages/FloatingMessages';
-import MessagesSidebar from '@/components/messages/MessagesSidebar';
+import FloatingMessages from '@/components/Messages/FloatingMessages';
+import MessagesSidebar from '@/components/Messages/MessagesSidebar';
 import SetBreadcrumbs from '@/components/SetBreadcrumbs';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';

@@ -5,9 +5,9 @@ import Link from 'next/link';
 
 import { type GetFamily } from '@/lib/queries/families';
 
+import MessageDialog from '@/components/Messages/MessageDialog';
 import { ShareButton } from '@/components/ShareButton';
 import Title from '@/components/Title';
-import MessageDialog from '@/components/messages/MessageDialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';

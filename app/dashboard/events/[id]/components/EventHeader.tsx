@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { EventFromGetEvent } from '@/lib/queries/events';
 import { formatDate, formatTime } from '@/lib/utils';
 
-import MessageDialog from '@/components/messages/MessageDialog';
+import MessageDialog from '@/components/Messages/MessageDialog';
 import { ShareButton } from '@/components/ShareButton';
 import Title from '@/components/Title';
 import { buttonVariants } from '@/components/ui/button';

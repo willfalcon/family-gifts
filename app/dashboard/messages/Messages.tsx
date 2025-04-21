@@ -6,7 +6,7 @@ import { Session } from 'next-auth';
 import { useBreadcrumbs } from '@/components/HeaderBreadcrumbs';
 import { api } from '@/convex/_generated/api';
 
-import { ChannelListSkeleton, ChatSkeleton } from '@/components/messages/ChatSkeleton';
+import { ChannelListSkeleton, ChatSkeleton } from '@/components/Messages/ChatSkeleton';
 import Title from '@/components/Title';
 import ChannelsList from './ChannelsList';
 import Chat from './Chat';

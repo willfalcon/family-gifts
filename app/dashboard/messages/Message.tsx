@@ -10,7 +10,7 @@ import { GetUser } from '@/lib/queries/user';
 import { cn, formatTime } from '@/lib/utils';
 import { getSender } from './actions';
 
-import { MessageSkeleton } from '@/components/messages/ChatSkeleton';
+import { MessageSkeleton } from '@/components/Messages/ChatSkeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarTrigger } from '@/components/ui/menubar';
 

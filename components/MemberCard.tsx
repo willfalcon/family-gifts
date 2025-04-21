@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useMe } from '@/hooks/use-me';
 import { MemberFromDashboardGetFamilies } from '@/lib/queries/families';
-import MessageDialog from './messages/MessageDialog';
+import MessageDialog from './Messages/MessageDialog';
 
 type Props = {
   member: MemberFromDashboardGetFamilies;
