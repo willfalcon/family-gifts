@@ -2,7 +2,6 @@ import { auth } from '@/auth';
 import { Calendar, Gift, Lock, Users } from 'lucide-react';
 import Link from 'next/link';
 
-import SignIn from '@/components/SignIn';
 import { buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -45,7 +44,15 @@ export default async function Home() {
               </div>
               <div className="space-x-4">
                 {!session?.user ? (
-                  <SignIn />
+                  <div className="flex flex-col items-center md:flex-row gap-2 space-2">
+                    <Link href="/sign-in" className={buttonVariants()}>
+                      Sign In
+                    </Link>
+                    or
+                    <Link href="/sign-up" className={buttonVariants()}>
+                      Create a new account
+                    </Link>
+                  </div>
                 ) : (
                   <Link href="/dashboard" className={buttonVariants()}>
                     Dashboard
