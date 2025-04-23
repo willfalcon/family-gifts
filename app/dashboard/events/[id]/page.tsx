@@ -9,7 +9,9 @@ import MessagesSidebar from '@/components/Messages/MessagesSidebar';
 import SetBreadcrumbs from '@/components/SetBreadcrumbs';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { getUser } from '@/lib/queries/user';
+import { getUser as getUserQuery } from '@/lib/queries/user';
+import { User } from '@prisma/client';
+import { cache } from 'react';
 import DetailsTab from './components/DetailsTab';
 import EventAttendance from './components/EventAttendance';
 import EventHeader from './components/EventHeader';
@@ -24,6 +26,10 @@ type PageProps = {
     id: string;
   };
 };
+
+const getUser = cache(async (id: User['id']) => {
+  return await getUserQuery(id);
+});
 
 export default async function EventPage({ params }: PageProps) {
   const event = await getEvent(params.id);

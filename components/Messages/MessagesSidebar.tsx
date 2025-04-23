@@ -18,7 +18,11 @@ type Props = {
 export default function MessagesSidebar({ eventId, familyId, session }: Props) {
   if (!session) return;
   const channels = useQuery(api.channels.getChannels, { userId: session.user!.id! });
-  const channel = eventId || familyId ? channels?.find((channel) => channel.event === eventId || channel.family === familyId) : null;
+
+  const channel =
+    (eventId || familyId) && channels !== 'no channels'
+      ? channels?.find((channel) => channel.event === eventId || channel.family === familyId)
+      : null;
 
   return (
     <Sidebar side="right" collapsible="offcanvas" className="h-auto">

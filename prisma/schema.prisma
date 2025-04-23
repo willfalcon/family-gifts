@@ -12,14 +12,18 @@ model User {
   id String @id() @default(cuid())
 
   // User Info
-  name               String?
-  email              String       @unique()
-  emailVerified      DateTime?
-  image              String?
-  bio                Json?
-  profileVisibility  Visibility[] @default([family, events, lists])
-  wishListVisibility Visibility[] @default([family, events, lists])
-  activityVisibility Visibility[] @default([family, events, lists])
+  name                     String?
+  email                    String       @unique()
+  emailVerified            DateTime?
+  image                    String?
+  bio                      Json?
+  profileVisibility        Visibility[] @default([family, events, lists])
+  wishListVisibility       Visibility[] @default([family, events, lists])
+  activityVisibility       Visibility[] @default([family, events, lists])
+  password                 String?
+  salt                     String?
+  resetPasswordToken       String?
+  resetPasswordTokenExpiry DateTime?
 
   // Next Auth Stuff
   accounts      Account[]

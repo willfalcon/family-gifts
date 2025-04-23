@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { getUser, GetUser } from '@/lib/queries/user';
 import { updatePrivacySettings } from '../actions';
 
+import { useBreadcrumbs } from '@/components/HeaderBreadcrumbs';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -32,7 +33,6 @@ export default function PrivacySettings({ user }: Props) {
     initialData: user,
   });
 
-  console.log(user, query.data);
   const [profileVisibilities, setProfileVisibility] = useState<Visibility[]>(query.data?.profileVisibility || []);
   const [profileMainVisibility, setProfileMainVisibility] = useState<MainVisibility>(
     profileVisibilities.includes(Visibility.public)
@@ -76,6 +76,14 @@ export default function PrivacySettings({ user }: Props) {
       toast.error('Failed to update privacy settings');
     },
   });
+
+  const setBreadcrumbs = useBreadcrumbs();
+  setBreadcrumbs([
+    { name: 'Dashboard', href: '/dashboard' },
+    { name: 'Settings', href: '/dashboard/settings' },
+    { name: 'Privacy', href: '/dashboard/settings?tab=privacy' },
+  ]);
+
   return (
     <Card>
       <CardHeader>

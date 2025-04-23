@@ -1,8 +1,7 @@
 import { prisma } from '@/prisma';
 import { Prisma, User } from '@prisma/client';
-import { cache } from 'react';
 
-export const getUser = cache(async (id: User['id']) => {
+export const getUser = async (id: User['id']) => {
   const user = await prisma.user.findUnique({
     where: {
       id,
@@ -18,7 +17,7 @@ export const getUser = cache(async (id: User['id']) => {
     return user;
   }
   throw new Error('User not found');
-});
+};
 
 export type GetUser = Prisma.UserGetPayload<{
   include: {
@@ -27,3 +26,28 @@ export type GetUser = Prisma.UserGetPayload<{
     families: true;
   };
 }>;
+
+export const getUserByEmail = async (email: User['email']) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      email,
+    },
+  });
+
+  if (user) {
+    return user;
+  }
+  throw new Error('User not found');
+};
+
+export const getUserByResetPasswordToken = async (token: User['resetPasswordToken']) => {
+  const user = await prisma.user.findFirst({
+    where: { resetPasswordToken: token },
+  });
+
+  if (user) {
+    return user;
+  }
+
+  throw new Error('User not found');
+};

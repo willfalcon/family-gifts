@@ -9,6 +9,10 @@ import { prisma } from './prisma';
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma) as Adapter,
   session: { strategy: 'jwt' },
+  pages: {
+    signIn: '/sign-in',
+    newUser: '/sign-up',
+  },
   callbacks: {
     async session({ session, token }) {
       // Fetch the role from the database if not present in token

@@ -1,9 +1,9 @@
 import { auth } from '@/auth';
 import { Bell, CalendarDays, Gift, Home, MessagesSquare, Settings, User, Users } from 'lucide-react';
-import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
-import { buttonVariants } from './ui/button';
+import Logo from './Logo';
+import SidebarItem from './SidebarItem';
 import {
   Sidebar,
   SidebarContent,
@@ -13,8 +13,6 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
   SidebarRail,
 } from './ui/sidebar';
 import UserButton from './UserButton';
@@ -27,23 +25,20 @@ export default async function DashboardSidebar() {
   }
 
   const nav = [
-    { text: 'Dashboard', href: '/dashboard', icon: Home },
-    { text: 'Families', href: '/dashboard/families', icon: Users },
-    { text: 'Members', href: '/dashboard/members', icon: User },
-    { text: 'Wish Lists', href: '/dashboard/wish-lists', icon: Gift },
-    { text: 'Events', href: '/dashboard/events', icon: CalendarDays },
-    { text: 'Messages', href: '/dashboard/messages', icon: MessagesSquare },
-    { text: 'Notifications', href: '/dashboard/notifications', icon: Bell },
-    { text: 'Settings', href: '/dashboard/settings', icon: Settings },
+    { text: 'Dashboard', href: '/dashboard', icon: <Home className="mr-2 h-4 w-4" /> },
+    { text: 'Families', href: '/dashboard/families', icon: <Users className="mr-2 h-4 w-4" /> },
+    { text: 'Members', href: '/dashboard/members', icon: <User className="mr-2 h-4 w-4" /> },
+    { text: 'Wish Lists', href: '/dashboard/wish-lists', icon: <Gift className="mr-2 h-4 w-4" /> },
+    { text: 'Events', href: '/dashboard/events', icon: <CalendarDays className="mr-2 h-4 w-4" /> },
+    { text: 'Messages', href: '/dashboard/messages', icon: <MessagesSquare className="mr-2 h-4 w-4" /> },
+    { text: 'Notifications', href: '/dashboard/notifications', icon: <Bell className="mr-2 h-4 w-4" /> },
+    { text: 'Settings', href: '/dashboard/settings', icon: <Settings className="mr-2 h-4 w-4" /> },
   ];
 
   return (
     <Sidebar collapsible="icon" className="">
       <SidebarHeader>
-        <div className="flex items-center gap-2 py-2">
-          <Gift className="h-6 w-6 text-primary flex-shrink-0 block ml-1" />
-          <span className="font-bold text-xl block flex-shrink overflow-hidden whitespace-nowrap">Family Gifts</span>
-        </div>
+        <Logo />
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
@@ -51,14 +46,7 @@ export default async function DashboardSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {nav.map((item) => (
-                <SidebarMenuItem key={item.href}>
-                  <SidebarMenuButton asChild>
-                    <Link className={buttonVariants({ variant: 'link', className: 'w-full !justify-start' })} href={item.href}>
-                      <item.icon className="mr-2 h-4 w-4" />
-                      <span>{item.text}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
+                <SidebarItem key={item.href} item={item} />
               ))}
             </SidebarMenu>
           </SidebarGroupContent>

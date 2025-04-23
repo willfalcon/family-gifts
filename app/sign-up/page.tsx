@@ -1,18 +1,16 @@
-import Link from 'next/link';
-import { redirect } from 'next/navigation';
-import { FaFacebookF, FaGoogle } from 'react-icons/fa';
-// import { useState } from 'react';
-
 import { auth, signIn } from '@/auth';
+import { redirect } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+
 import { Separator } from '@/components/ui/separator';
 import QueryClientProvider from '@/providers/QueryClientProvider';
-import SignInForm from './SignInForm';
-// import { handleSignIn, handleSignInWithProvider } from './actions';
+import Link from 'next/link';
+import { FaFacebookF, FaGoogle } from 'react-icons/fa';
+import SignUpForm from './SignUpForm';
 
-export default async function SignInPage() {
+export default async function SignUpPage() {
   const session = await auth();
   if (session?.user?.id) {
     redirect('/dashboard');
@@ -43,16 +41,16 @@ export default async function SignInPage() {
               </svg>
             </div>
             <h1 className="text-3xl font-bold">Family Gifts</h1>
-            <p className="text-muted-foreground text-center">Sign in to manage your family gift lists</p>
+            <p className="text-muted-foreground text-center">Create an account to start managing family gifts</p>
           </div>
 
           <Card className="border shadow-lg">
             <CardHeader>
-              <CardTitle>Welcome back</CardTitle>
-              <CardDescription>Sign in to your account to continue</CardDescription>
+              <CardTitle>Create an account</CardTitle>
+              <CardDescription>Enter your information to get started</CardDescription>
             </CardHeader>
             <CardContent>
-              <SignInForm />
+              <SignUpForm />
 
               <div className="relative my-6">
                 <div className="absolute inset-0 flex items-center">
@@ -63,15 +61,7 @@ export default async function SignInPage() {
                 </div>
               </div>
 
-              <div className="flex gap-2 justify-center">
-                {/* {Object.values(providerMap).map((provider) => (
-                <form action={() => handleSignInWithProvider(provider.id)}>
-                  <Button type="submit" variant="outline" size="icon" className="h-10">
-                    <provider.icon className="h-4 w-4" />
-                    <span className="sr-only">{provider.name}</span>
-                  </Button>
-                </form>
-              ))} */}
+              <div className="grid grid-cols-3 gap-3">
                 <form
                   action={async () => {
                     'use server';
@@ -100,21 +90,11 @@ export default async function SignInPage() {
               </Button> */}
               </div>
             </CardContent>
-            <CardFooter className="flex flex-col space-y-4 border-t pt-6">
+            <CardFooter className="flex justify-center border-t pt-6">
               <div className="text-center text-sm">
-                Don&apos;t have an account?{' '}
-                <Link href="/sign-up" className="text-primary hover:underline">
-                  Sign up
-                </Link>
-              </div>
-              <div className="text-center text-xs text-muted-foreground">
-                By signing in, you agree to our{' '}
-                <Link href="/terms" className="underline underline-offset-2 hover:text-foreground">
-                  Terms of Service
-                </Link>{' '}
-                and{' '}
-                <Link href="/privacy-policy" className="underline underline-offset-2 hover:text-foreground">
-                  Privacy Policy
+                Already have an account?{' '}
+                <Link href="/sign-in" className="text-primary hover:underline">
+                  Sign in
                 </Link>
               </div>
             </CardFooter>

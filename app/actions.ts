@@ -7,6 +7,8 @@ import { api } from '@/convex/_generated/api';
 import { getList as getListQuery } from '@/lib/queries/items';
 import { getUser as getUserQuery } from '@/lib/queries/user';
 import { ConvexHttpClient } from 'convex/browser';
+import { cache } from 'react';
+
 export async function serverSignIn({ provider }: { provider?: string }) {
   await signIn(provider);
 }
@@ -19,9 +21,9 @@ export async function getList(id: string) {
   return await getListQuery(id);
 }
 
-export async function getUser(id: User['id']) {
+export const getUser = cache(async (id: User['id']) => {
   return await getUserQuery(id);
-}
+});
 
 export async function createIndividualChannel(starterId: string, recipientId: string) {
   const starter = await getUser(starterId);

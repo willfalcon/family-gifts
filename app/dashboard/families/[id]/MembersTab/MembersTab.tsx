@@ -5,6 +5,7 @@ import { useState } from 'react';
 
 import { GetFamily } from '@/lib/queries/families';
 
+import { useBreadcrumbs } from '@/components/HeaderBreadcrumbs';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -25,6 +26,14 @@ export default function MembersTab({ isManager, family: initialFamily }: Props) 
   const [searchTerm, setSearchTerm] = useState('');
   // TODO: Smarter search
   const filteredMembers = members.filter((member) => member.name?.toLowerCase().includes(searchTerm.toLowerCase()));
+
+  const setBreadcrumbs = useBreadcrumbs();
+  setBreadcrumbs([
+    { name: 'Dashboard', href: '/dashboard' },
+    { name: 'Families', href: '/dashboard/families' },
+    { name: initialFamily.name, href: `/dashboard/families/${initialFamily.id}` },
+    { name: 'Members', href: `/dashboard/families/${initialFamily.id}?tab=members` },
+  ]);
   return (
     <TabsContent value="members" className="space-y-6">
       <Card>

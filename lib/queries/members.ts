@@ -6,7 +6,7 @@ import { cache } from 'react';
 
 import { getFamilies } from './families';
 import { getSharedLists } from './lists';
-import { getUser } from './user';
+import { getUser as getUserQuery } from './user';
 
 export type Relation = {
   relationships: {
@@ -16,6 +16,10 @@ export type Relation = {
   }[];
   member: User;
 };
+
+const getUser = cache(async (id: User['id']) => {
+  return await getUserQuery(id);
+});
 
 export const getRelatedMembers = cache(async () => {
   const session = await auth();

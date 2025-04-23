@@ -61,37 +61,37 @@ export default async function Home() {
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
               <Card>
                 <CardHeader>
-                  <Gift className="h-10 w-10 mb-2" />
-                  <CardTitle>Wish Lists</CardTitle>
+                  <Gift className="h-10 w-10 mb-2 mx-auto lg:mx-0" />
+                  <CardTitle className="text-center lg:text-left">Wish Lists</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="text-center lg:text-left">
                   <p>Create and share personalized wish lists with your family members.</p>
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader>
-                  <Users className="h-10 w-10 mb-2" />
-                  <CardTitle>Family Management</CardTitle>
+                  <Users className="h-10 w-10 mb-2 mx-auto lg:mx-0" />
+                  <CardTitle className="text-center lg:text-left">Family Management</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="text-center lg:text-left">
                   <p>Easily add and manage family members in your gift-giving circle.</p>
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader>
-                  <Calendar className="h-10 w-10 mb-2" />
-                  <CardTitle>Event Planning</CardTitle>
+                  <Calendar className="h-10 w-10 mb-2 mx-auto lg:mx-0" />
+                  <CardTitle className="text-center lg:text-left">Event Planning</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="text-center lg:text-left">
                   <p>Organize family gatherings and track gift-giving occasions.</p>
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader>
-                  <Lock className="h-10 w-10 mb-2" />
-                  <CardTitle>Secret Santa</CardTitle>
+                  <Lock className="h-10 w-10 mb-2 mx-auto lg:mx-0" />
+                  <CardTitle className="text-center lg:text-left">Secret Santa</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="text-center lg:text-left">
                   <p>Set up and manage Secret Santa exchanges with custom rules.</p>
                 </CardContent>
               </Card>

@@ -236,11 +236,7 @@ export const getFamilies = cache(async () => {
     },
     include: {
       managers: true,
-      invites: {
-        include: {
-          user: true,
-        },
-      },
+      invites: true,
       members: {
         include: {
           events: {

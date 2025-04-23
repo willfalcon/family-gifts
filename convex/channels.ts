@@ -7,7 +7,11 @@ export const getChannels = query({
   args: { userId: v.string() },
   handler: async (ctx, args) => {
     const allChannels = await ctx.db.query('channels').collect();
-    return allChannels.filter((channel) => channel.users.includes(args.userId));
+    const filteredChannels = allChannels.filter((channel) => channel.users.includes(args.userId));
+    if (!filteredChannels.length) {
+      return 'no channels';
+    }
+    return filteredChannels;
   },
 });
 

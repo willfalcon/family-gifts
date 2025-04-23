@@ -31,6 +31,7 @@ export default function Visibility({ shareLinkId }: { shareLinkId?: string | nul
   };
 
   // TODO: add a way to handle accessibility of list via view links
+  // TODO: lists should be able to be visible via link and to specific people and groups
   return (
     <Card>
       <CardHeader>

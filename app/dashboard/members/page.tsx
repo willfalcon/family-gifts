@@ -19,7 +19,12 @@ export default async function MembersPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <SetBreadcrumbs items={[{ name: 'Members', href: '/dashboard/members' }]} />
+      <SetBreadcrumbs
+        items={[
+          { name: 'Dashboard', href: '/dashboard' },
+          { name: 'Members', href: '/dashboard/members' },
+        ]}
+      />
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8">
         <div>
           <Title>Members</Title>

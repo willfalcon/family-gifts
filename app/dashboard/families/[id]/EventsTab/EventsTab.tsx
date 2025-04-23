@@ -1,8 +1,11 @@
+'use client';
+
 import { CalendarDays, Plus, Search } from 'lucide-react';
 import Link from 'next/link';
 
-import { EventFromGetFamily, MemberFromGetFamily } from '@/lib/queries/families';
+import { EventFromGetFamily, GetFamily, MemberFromGetFamily } from '@/lib/queries/families';
 
+import { useBreadcrumbs } from '@/components/HeaderBreadcrumbs';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -11,9 +14,10 @@ import EventCard from './EventCard';
 
 type Props = {
   members: MemberFromGetFamily[];
+  family: GetFamily;
 };
 
-export default function EventsTab({ members }: Props) {
+export default function EventsTab({ members, family }: Props) {
   const relatedEvents = members.reduce<EventFromGetFamily[]>((events, member) => {
     member.events.forEach((event) => {
       if (!events.find((e) => e.id === event.id)) {
@@ -22,6 +26,15 @@ export default function EventsTab({ members }: Props) {
     });
     return events;
   }, []);
+
+  const setBreadcrumbs = useBreadcrumbs();
+  setBreadcrumbs([
+    { name: 'Dashboard', href: '/dashboard' },
+    { name: 'Families', href: '/dashboard/families' },
+    { name: family.name, href: `/dashboard/families/${family.id}` },
+    { name: 'Events', href: `/dashboard/families/${family.id}?tab=events` },
+  ]);
+
   return (
     <TabsContent value="events" className="space-y-6">
       <Card>

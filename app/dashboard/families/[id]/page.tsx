@@ -1,16 +1,22 @@
 import { auth } from '@/auth';
+import { User } from '@prisma/client';
+import { cache } from 'react';
 
 import { getFamily } from '@/lib/queries/families';
+import { getUser as getUserQuery } from '@/lib/queries/user';
 import { notFound, redirect } from 'next/navigation';
 
 import SetBreadcrumbs from '@/components/SetBreadcrumbs';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { getUser } from '@/lib/queries/user';
 import EventsTab from './EventsTab/EventsTab';
 import InvitationsTab from './InvitationsTab/InvitationsTab';
 import MembersTab from './MembersTab/MembersTab';
 import FamilyHeader from './components/FamilyHeader';
 import WishListsTab from './components/WishListsTab';
+
+const getUser = cache(async (id: User['id']) => {
+  return await getUserQuery(id);
+});
 
 export default async function FamilyPage({ params }: { params: { id: string } }) {
   const session = await auth();
@@ -52,8 +58,8 @@ export default async function FamilyPage({ params }: { params: { id: string } })
         </TabsList>
 
         <MembersTab isManager={isManager} family={family} />
-        <EventsTab members={family.members} />
-        <WishListsTab members={family.members} />
+        <EventsTab members={family.members} family={family} />
+        <WishListsTab members={family.members} family={family} />
         {isManager && <InvitationsTab family={family} />}
       </Tabs>
     </div>

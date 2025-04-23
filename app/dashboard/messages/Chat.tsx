@@ -1,10 +1,12 @@
 import { isSameDay } from 'date-fns';
-import { ChevronsDown, Send } from 'lucide-react';
+import { ArrowLeft, ChevronsDown, Send } from 'lucide-react';
 import { Fragment, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 import { Doc } from '@/convex/_generated/dataModel';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { cn, formatDate } from '@/lib/utils';
+import useMessages from './useMessages';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,8 +14,8 @@ import { DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/co
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
+import Link from 'next/link';
 import Message from './Message';
-import useMessages from './useMessages';
 
 type Props = {
   channel: Doc<'channels'>;
@@ -43,6 +45,8 @@ export default function Chat({ channel, user, sidebar = false, dialog = false }:
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const [hasInitialized, setHasInitialized] = useState(false);
+
+  const mobile = useIsMobile();
 
   useEffect(() => {
     if (messages !== undefined && scrollAreaRef.current && !hasInitialized) {
@@ -160,6 +164,12 @@ export default function Chat({ channel, user, sidebar = false, dialog = false }:
     </div>
   ) : (
     <div className="flex-1 flex flex-col">
+      {mobile && (
+        <Link href="/dashboard/messages" className="p-4 flex items-center gap-2">
+          <ArrowLeft className="w-4 h-4" />
+          Back to channels
+        </Link>
+      )}
       {channel ? (
         <Card className="flex-1 flex flex-col">
           <CardHeader className="p-4">

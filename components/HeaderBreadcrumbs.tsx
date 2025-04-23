@@ -50,7 +50,7 @@ export function useBreadcrumbs() {
   return setBreadcrumbs;
 }
 
-export default function HeaderBreadcrumbs() {
+export default function HeaderBreadcrumbs({ className }: { className?: string }) {
   const context = useContext(BreadcrumbsContext);
 
   if (!context) {
@@ -64,16 +64,16 @@ export default function HeaderBreadcrumbs() {
   }
 
   return (
-    <Breadcrumb>
+    <Breadcrumb className={className}>
       <BreadcrumbList>
         {items.map((item: Breadcrumb, index: number) => (
           <Fragment key={`${item.href}-${index}`}>
-            <BreadcrumbItem className="hidden md:block">
+            <BreadcrumbItem>
               <BreadcrumbLink asChild>
                 <Link href={item.href}>{item.name}</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
-            {index < items.length - 1 && <BreadcrumbSeparator className="hidden md:block" />}
+            {index < items.length - 1 && <BreadcrumbSeparator />}
           </Fragment>
         ))}
       </BreadcrumbList>
