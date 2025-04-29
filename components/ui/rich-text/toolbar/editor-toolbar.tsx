@@ -1,4 +1,3 @@
-import React from 'react';
 import { Editor } from '@tiptap/react';
 import { Bold, Code, Italic, List, ListOrdered, Minus, Quote, Redo, Strikethrough, Undo } from 'lucide-react';
 
@@ -21,6 +20,7 @@ const EditorToolbar = ({ editor }: EditorToolbarProps) => {
           onPressedChange={() => editor.chain().focus().toggleBold().run()}
           disabled={!editor.can().chain().focus().toggleBold().run()}
           pressed={editor.isActive('bold')}
+          tabIndex={0}
         >
           <Bold className="h-4 w-4" />
         </Toggle>
@@ -32,6 +32,7 @@ const EditorToolbar = ({ editor }: EditorToolbarProps) => {
           disabled={!editor.can().chain().focus().toggleItalic().run()}
           pressed={editor.isActive('italic')}
           value="italic"
+          tabIndex={0}
         >
           <Italic className="h-4 w-4" />
         </Toggle>
@@ -42,6 +43,7 @@ const EditorToolbar = ({ editor }: EditorToolbarProps) => {
           onPressedChange={() => editor.chain().focus().toggleStrike().run()}
           disabled={!editor.can().chain().focus().toggleStrike().run()}
           pressed={editor.isActive('strike')}
+          tabIndex={0}
         >
           <Strikethrough className="h-4 w-4" />
         </Toggle>
@@ -51,6 +53,7 @@ const EditorToolbar = ({ editor }: EditorToolbarProps) => {
           className="mr-1"
           onPressedChange={() => editor.chain().focus().toggleBulletList().run()}
           pressed={editor.isActive('bulletList')}
+          tabIndex={0}
         >
           <List className="h-4 w-4" />
         </Toggle>
@@ -60,6 +63,7 @@ const EditorToolbar = ({ editor }: EditorToolbarProps) => {
           className="mr-1"
           onPressedChange={() => editor.chain().focus().toggleOrderedList().run()}
           pressed={editor.isActive('orderedList')}
+          tabIndex={0}
         >
           <ListOrdered className="h-4 w-4" />
         </Toggle>
@@ -69,6 +73,7 @@ const EditorToolbar = ({ editor }: EditorToolbarProps) => {
           className="mr-1"
           onPressedChange={() => editor.chain().focus().toggleCodeBlock().run()}
           pressed={editor.isActive('codeBlock')}
+          tabIndex={0}
         >
           <Code className="h-4 w-4" />
         </Toggle>
@@ -78,11 +83,12 @@ const EditorToolbar = ({ editor }: EditorToolbarProps) => {
           className="mr-1"
           onPressedChange={() => editor.chain().focus().toggleBlockquote().run()}
           pressed={editor.isActive('blockquote')}
+          tabIndex={0}
         >
           <Quote className="h-4 w-4" />
         </Toggle>
 
-        <Toggle size="sm" className="mr-1" onPressedChange={() => editor.chain().focus().setHorizontalRule().run()}>
+        <Toggle size="sm" className="mr-1" onPressedChange={() => editor.chain().focus().setHorizontalRule().run()} tabIndex={0}>
           <Minus className="h-4 w-4" />
         </Toggle>
 
@@ -95,6 +101,7 @@ const EditorToolbar = ({ editor }: EditorToolbarProps) => {
           className="mr-1"
           onPressedChange={() => editor.chain().focus().undo().run()}
           disabled={!editor.can().chain().focus().undo().run()}
+          tabIndex={0}
         >
           <Undo className="h-4 w-4" />
         </Toggle>
@@ -104,6 +111,7 @@ const EditorToolbar = ({ editor }: EditorToolbarProps) => {
           className="mr-1"
           onPressedChange={() => editor.chain().focus().redo().run()}
           disabled={!editor.can().chain().focus().redo().run()}
+          tabIndex={0}
         >
           <Redo className="h-4 w-4" />
         </Toggle>

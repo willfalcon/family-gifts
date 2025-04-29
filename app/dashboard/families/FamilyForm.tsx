@@ -36,7 +36,7 @@ export default function FamilyForm({ form, onSubmit, submitText, membersArray, n
                   <FormItem>
                     <FormLabel>Name</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input {...field} tabIndex={1} />
                     </FormControl>
                     <FormDescription>This is the name that will be displayed to members.</FormDescription>
                     <FormMessage />
@@ -81,7 +81,7 @@ export default function FamilyForm({ form, onSubmit, submitText, membersArray, n
         <br /> */}
           </CardContent>
           <CardFooter>
-            <Button type="submit" disabled={pending}>
+            <Button type="submit" disabled={pending} tabIndex={1}>
               {pending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

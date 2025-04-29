@@ -13,11 +13,7 @@ import { createFamily } from './actions';
 
 import FamilyForm from '../FamilyForm';
 
-type Props = {
-  afterSubmit?: () => void;
-};
-
-export default function NewFamily({ afterSubmit }: Props) {
+export default function NewFamily() {
   const form = useForm<FamilySchemaType>({
     resolver: zodResolver(FamilySchema),
     defaultValues: {
@@ -30,11 +26,9 @@ export default function NewFamily({ afterSubmit }: Props) {
 
   const mutation = useMutation({
     async mutationFn(values: FamilySchemaType) {
-      const family = await createFamily(values);
-      return family;
+      return await createFamily(values);
     },
     onSuccess(data) {
-      console.log(data);
       toast.success(`${data.name} created!`);
       router.push(`/dashboard/families/${data.id}`);
     },

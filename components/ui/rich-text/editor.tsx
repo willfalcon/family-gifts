@@ -21,6 +21,7 @@ const Editor = ({ content, placeholder, onChange, immediatelyRender = true }: Ed
     editorProps: {
       attributes: {
         class: 'outline-none min-h-[200px] prose-p:my-2',
+        tabindex: '1',
       },
     },
     immediatelyRender,
