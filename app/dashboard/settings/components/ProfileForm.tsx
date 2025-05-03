@@ -9,6 +9,7 @@ import { updateProfile } from '../actions';
 import { ProfileSchema, ProfileSchemaType } from '../profileSchema';
 
 import { useBreadcrumbs } from '@/components/HeaderBreadcrumbs';
+import ImageField from '@/components/ImageField';
 import RichTextField from '@/components/RichTextField';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -23,11 +24,24 @@ interface ProfileFormProps {
 export default function ProfileSettings({ user }: ProfileFormProps) {
   const form = useForm<ProfileSchemaType>({
     resolver: zodResolver(ProfileSchema),
-    defaultValues: { name: user.name || '', email: user.email || '' },
+    defaultValues: { name: user.name || '', email: user.email || '', bio: JSON.parse(JSON.stringify(user.bio || {})), imageUrl: user.image || '' },
   });
   async function onSubmit(values: ProfileSchemaType) {
+    const { image, ...rest } = values;
+    let imageUrl = null;
+    if (image) {
+      imageUrl = await fetch(`/api/uploadImage?name=${image.name}`, {
+        method: 'POST',
+        body: image,
+      })
+        .then((res) => res.text())
+        .catch((err) => {
+          console.error(err);
+          return null;
+        });
+    }
     try {
-      const profile = await updateProfile(values);
+      const profile = await updateProfile({ ...rest, ...(imageUrl ? { imageUrl } : {}) });
       toast.success('Profile updated');
     } catch (err) {
       console.error(err);
@@ -82,7 +96,8 @@ export default function ProfileSettings({ user }: ProfileFormProps) {
                   );
                 }}
               />
-              <RichTextField name="info" />
+              <ImageField name="image" previewField="imageUrl" label="Profile Image" className="min-h-52" />
+              <RichTextField name="bio" />
             </CardContent>
             <CardFooter>
               <Button type="submit">Save</Button>

@@ -36,7 +36,7 @@ export default function ListForm({ form, onSubmit, submitText, shareLinkId }: Li
                   <FormItem>
                     <FormLabel>Name</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input {...field} tabIndex={1} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

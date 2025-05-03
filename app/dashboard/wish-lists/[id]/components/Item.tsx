@@ -4,18 +4,21 @@ import { ExternalLink } from 'lucide-react';
 import Image from 'next/image';
 
 import { ItemFromGetList } from '@/lib/queries/items';
-import { capitalize } from '@/lib/utils';
+import { capitalize, formatCurrency } from '@/lib/utils';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import Viewer from '@/components/ui/rich-text/viewer';
+import DeleteItem from './DeleteItem';
+import EditItem from './EditItem';
 import Purchased from './Purchased';
 
 type Props = {
   item: ItemFromGetList;
   isOwner: boolean;
+  categories: string[];
 };
-export default function WishListItem({ item, isOwner }: Props) {
+export default function WishListItem({ item, isOwner, categories }: Props) {
   return (
     <Card key={item.id} className="overflow-hidden">
       <CardContent className="p-0">
@@ -24,12 +27,12 @@ export default function WishListItem({ item, isOwner }: Props) {
             <Image src={item.image || 'https://placehold.co/300'} alt={item.name} fill className="object-cover" />
           </div>
           <div className="flex-1 p-6">
-            <div className="flex flex-col md:flex-row justify-between gap-4">
+            <div className="flex flex-col md:flex-row justify-between items-start gap-4">
               <div>
                 <h3 className="font-semibold text-xl">{item.name}</h3>
                 <Viewer content={item.notes as JSONContent} className="text-muted-foreground" immediatelyRender={false} />
                 <div className="flex items-center gap-2 mt-2">
-                  <span className="font-medium">${item.price}</span>
+                  {item.price && <span className="font-medium">{formatCurrency(item.price)}</span>}
                   {item.priority && (
                     <>
                       <span className="text-muted-foreground">•</span>
@@ -49,7 +52,7 @@ export default function WishListItem({ item, isOwner }: Props) {
                   </div>
                 )}
               </div>
-              <div className="flex flex-col items-start md:items-end gap-2">
+              <div className="flex items-start  md:items-end gap-2">
                 {item.link && (
                   <Button variant="outline" size="sm" asChild>
                     <a href={item.link} target="_blank" rel="noopener noreferrer">
@@ -59,6 +62,8 @@ export default function WishListItem({ item, isOwner }: Props) {
                   </Button>
                 )}
                 {!isOwner && <Purchased item={item} />}
+                {isOwner && <EditItem categories={categories} item={item} />}
+                {isOwner && <DeleteItem item={item} />}
               </div>
             </div>
           </div>

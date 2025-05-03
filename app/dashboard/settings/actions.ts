@@ -14,19 +14,22 @@ export async function updateProfile(data: ProfileSchemaType) {
     throw new Error('You must be logged in to do this.');
   }
 
-  const validatedData = ProfileSchema.parse(data);
+  const { imageUrl, ...rest } = ProfileSchema.parse(data);
 
   const user = await prisma.user.update({
     where: {
       id: session.user.id,
     },
-    data: validatedData,
+    data: {
+      ...rest,
+      image: imageUrl,
+    },
   });
 
   revalidatePath('/dashboard/profile');
   return user;
 }
-export async function updatePrivacySettings(data: Pick<User, 'profileVisibility' | 'wishListVisibility'>) {
+export async function updatePrivacySettings(data: Pick<User, 'profileVisibility' | 'defaultListVisibility'>) {
   const session = await auth();
   if (!session?.user) {
     throw new Error('You must be logged in to do this.');
@@ -38,7 +41,7 @@ export async function updatePrivacySettings(data: Pick<User, 'profileVisibility'
     },
     data: {
       profileVisibility: data.profileVisibility,
-      wishListVisibility: data.wishListVisibility,
+      defaultListVisibility: data.defaultListVisibility,
     },
   });
 

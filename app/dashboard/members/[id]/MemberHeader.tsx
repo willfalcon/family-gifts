@@ -59,7 +59,7 @@ export default function MemberHeader({ member }: { member: GetMember }) {
             </div>
           </div>
 
-          {member.bio && <Viewer className="mt-4" content={member.bio as JSONContent} />}
+          {member.bio && <Viewer className="mt-4" content={member.bio as JSONContent} immediatelyRender={false} />}
 
           {/* <div className="mt-4">
             <div className="text-sm font-medium mb-2">Connections:</div>

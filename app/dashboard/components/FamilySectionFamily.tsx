@@ -36,9 +36,9 @@ export default function FamilySectionFamily({ family }: { family: FamilyFromDash
   const { data, hasNextPage, fetchNextPage, isFetchingNextPage } = infiniteQuery;
 
   return (
-    <div className="mb-6">
-      <div className="flex items-center justify-between mb-2 cursor-pointer" onClick={() => setExpanded(!expanded)}>
-        <h3 className="text-lg font-medium flex items-center">
+    <div>
+      <div className="flex items-center justify-between mb-2 cursor-pointer">
+        <h3 className="text-lg font-medium flex items-center flex-1" onClick={() => setExpanded(!expanded)}>
           {expanded ? <ChevronDown className="h-4 w-4 mr-2" /> : <ChevronRight className="h-4 w-4 mr-2" />}
           {family.name}
         </h3>
@@ -50,7 +50,7 @@ export default function FamilySectionFamily({ family }: { family: FamilyFromDash
 
       {expanded && (
         <>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-col-4 mb-4">
+          <div className="grid gap-4 @lg:grid-cols-2 @3xl:grid-cols-3">
             {data.pages.map((page) =>
               page.map((member) => {
                 const isManager = member.managing.some((managedFam) => managedFam.id === family.id);

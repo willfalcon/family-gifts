@@ -49,7 +49,7 @@ export default function WishListHeader({ list, categories, isOwner, me }: Props)
           {list.visibilityType === 'public' && <ShareButton />}
           {isOwner && (
             <>
-              <NewItem categories={categories} />
+              <NewItem categories={categories} listId={list.id} />
               <Link href={`/dashboard/wish-lists/${list.id}/edit`} className={buttonVariants({ variant: 'secondary', size: 'sm' })}>
                 <Pencil className="mr-2 h-4 w-4" />
                 Edit

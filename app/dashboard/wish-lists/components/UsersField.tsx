@@ -21,6 +21,8 @@ export default function UsersField() {
     },
   });
 
+  console.log(data);
+
   return (
     <FormField
       control={form.control}

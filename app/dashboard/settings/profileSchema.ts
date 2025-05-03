@@ -3,7 +3,14 @@ import { z } from 'zod';
 export const ProfileSchema = z.object({
   name: z.string().min(1).default(''),
   email: z.string().email().default(''),
-  info: z.any().optional(),
+  bio: z.any().optional(),
+  image: z
+    .instanceof(File)
+    .refine((file) => file.size < 4500000, {
+      message: 'Image must be less than 4.5MB',
+    })
+    .optional(),
+  imageUrl: z.string().optional(),
 });
 
 export type ProfileSchemaType = z.infer<typeof ProfileSchema>;

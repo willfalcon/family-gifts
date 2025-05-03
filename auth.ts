@@ -25,29 +25,5 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return session;
     },
   },
-  events: {
-    async signIn({ user }) {
-      const existing = await prisma.user.findUnique({
-        where: { id: user.id },
-        select: {
-          lists: true,
-        },
-      });
-      if (!existing) {
-        await prisma.user.update({
-          where: {
-            id: user.id,
-          },
-          data: {
-            lists: {
-              create: {
-                name: 'Default List',
-              },
-            },
-          },
-        });
-      }
-    },
-  },
   ...authConfig,
 });

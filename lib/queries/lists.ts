@@ -57,6 +57,13 @@ export const dashboardGetUserLists = cache(async (rest: boolean = false) => {
     },
     take: rest ? undefined : 3,
     skip: rest ? 3 : 0,
+    include: {
+      _count: {
+        select: {
+          items: true,
+        },
+      },
+    },
   });
 
   return {

@@ -19,6 +19,8 @@ export default async function MemberPage({ params }: { params: { id: string } })
         ]}
       />
       <MemberHeader member={member} />
+
+      {/* Add some stuff here or figure out what to do with this page */}
     </div>
   );
 }

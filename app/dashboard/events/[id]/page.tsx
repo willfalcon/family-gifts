@@ -56,7 +56,6 @@ export default async function EventPage({ params }: PageProps) {
     redirect('/dashboard/events');
   }
 
-  // TODO: sync tabs state with url param?
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="space-y-4 p-8 pt-6 relative w-full">

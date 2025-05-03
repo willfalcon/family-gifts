@@ -1,5 +1,5 @@
 import { Globe, LinkIcon, Lock, Users } from 'lucide-react';
-import { FormEvent } from 'react';
+import { FormEvent, useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { toast } from 'sonner';
 
@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { FormControl, FormDescription, FormField, FormItem, FormLabel } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { useMe } from '@/hooks/use-me';
 import EventsField from './EventsField';
 import FamiliesField from './FamiliesField';
 import UsersField from './UsersField';
@@ -30,6 +31,15 @@ export default function Visibility({ shareLinkId }: { shareLinkId?: string | nul
       });
   };
 
+  const defaultListVisibilityValue = form.watch('defaultListVisibility');
+  const { data: me } = useMe();
+  const defaultListVisibility = me?.defaultListVisibility;
+  useEffect(() => {
+    if (defaultListVisibility && !defaultListVisibilityValue) {
+      form.setValue('defaultListVisibility', defaultListVisibility);
+    }
+  }, [defaultListVisibility, defaultListVisibilityValue, form]);
+
   // TODO: add a way to handle accessibility of list via view links
   // TODO: lists should be able to be visible via link and to specific people and groups
   return (
@@ -41,12 +51,12 @@ export default function Visibility({ shareLinkId }: { shareLinkId?: string | nul
       <CardContent>
         <FormField
           control={form.control}
-          name="visibilityType"
+          name="defaultListVisibility"
           render={({ field }) => {
             return (
               <FormItem>
                 <FormControl>
-                  <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex flex-col space-y-2">
+                  <RadioGroup onValueChange={field.onChange} value={field.value} className="flex flex-col space-y-2">
                     <FormItem className="flex items-center space-x-2">
                       <FormControl>
                         <RadioGroupItem value="private" />
@@ -102,7 +112,7 @@ export default function Visibility({ shareLinkId }: { shareLinkId?: string | nul
 
                     <FormItem className="flex items-center space-x-2">
                       <FormControl>
-                        <RadioGroupItem value="specific" />
+                        <RadioGroupItem value="some" />
                       </FormControl>
                       <div className="grid gap-1.5 w-full pointer">
                         <FormLabel className="cursor-pointer space-y-2">
@@ -114,7 +124,7 @@ export default function Visibility({ shareLinkId }: { shareLinkId?: string | nul
                         </FormLabel>
                       </div>
                     </FormItem>
-                    {field.value === 'specific' && (
+                    {field.value === 'some' && (
                       <div className="space-y-4 mt-2 ml-5">
                         <FamiliesField />
                         <EventsField />

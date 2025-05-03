@@ -1,25 +1,31 @@
 'use client';
 
-import { getDefaults } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Plus } from 'lucide-react';
+import { Pencil } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 
-import { createItem, maybeGetImage } from '../actions';
 import { ItemSchema, ItemSchemaType } from '../itemSchema';
 
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { List } from '@prisma/client';
+import { Item } from '@prisma/client';
+import { toast } from 'sonner';
+import { updateItem } from '../edit/actions';
 import ItemForm from './ItemForm';
 
-export default function NewItem({ categories, listId }: { categories: string[]; listId: List['id'] }) {
+export default function EditItem({ categories, item }: { categories: string[]; item: Item }) {
+  const { image, ...initialItem } = item;
+
   const form = useForm<ItemSchemaType>({
     resolver: zodResolver(ItemSchema),
-    defaultValues: getDefaults(ItemSchema),
+    defaultValues: {
+      ...initialItem,
+      notes: JSON.parse(JSON.stringify(initialItem.notes || {})),
+      link: initialItem.link || undefined,
+      imageUrl: image || undefined,
+    },
   });
 
   const [open, setOpen] = useState(false);
@@ -39,29 +45,25 @@ export default function NewItem({ categories, listId }: { categories: string[]; 
         });
     }
     try {
-      const newItem = await createItem({
+      await updateItem(item.id, {
         ...rest,
         notes: JSON.parse(JSON.stringify(values.notes || {})),
-        listId,
         ...(imageUrl ? { imageUrl } : {}),
       });
-      toast.success('Item added!');
-      form.reset();
+      toast.success('Item updated!');
       setOpen(false);
-      if (newItem?.link && !newItem.image) {
-        await maybeGetImage(newItem);
-      }
     } catch (err) {
       console.error(err);
       toast.error('Something went wrong!');
     }
   }
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="sm">
-          <Plus />
-          Add Item
+        <Button size="sm" variant="outline">
+          <Pencil />
+          <span className="sr-only">Edit Item</span>
         </Button>
       </DialogTrigger>
       <DialogContent aria-describedby={undefined} className="max-w-2xl max-h-5/6 flex flex-col">

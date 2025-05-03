@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { api } from '@/convex/_generated/api';
 
 import SignOut from './SignOut';
-import { Avatar, AvatarImage } from './ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,6 +20,7 @@ import {
 } from './ui/dropdown-menu';
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from './ui/sidebar';
 
+import { userInitials } from '@/lib/utils';
 import SidebarNotifications from './notifications/SidebarNotifications';
 
 export default function UserButton({ session }: { session: Session }) {
@@ -37,8 +38,8 @@ export default function UserButton({ session }: { session: Session }) {
                     session.user?.image ?? `https://api.dicebear.com/9.x/thumbs/svg?seed=${Math.floor(Math.random() * 100000) + 1}&randomizeIds=true`
                   }
                   alt={session.user?.name ?? ''}
-                  // alt={''}
                 />
+                <AvatarFallback>{userInitials(session.user?.name || '')}</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">{session.user?.name}</span>
@@ -90,7 +91,7 @@ export default function UserButton({ session }: { session: Session }) {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <Link href="/dashboard/profile" className="flex">
+                <Link href={`/dashboard/members/${session.user?.id}`} className="flex">
                   <UserCog className="mr-2 h-4 w-4" /> <span>Profile</span>
                 </Link>
               </DropdownMenuItem>

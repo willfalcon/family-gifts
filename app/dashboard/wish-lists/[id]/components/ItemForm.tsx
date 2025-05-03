@@ -4,11 +4,12 @@ import { cn } from '@/lib/utils';
 import { ItemSchemaType } from '../itemSchema';
 
 import CurrencyField from '@/components/CurrencyField';
+import ImageField from '@/components/ImageField';
+import { RadioTabs, RadioTabsItem } from '@/components/RadioTabs';
 import RichTextField from '@/components/RichTextField';
 import SubmitButton from '@/components/SubmitButton';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import CategoryField from './CategoryField';
 
 type ItemFormProps = {
@@ -55,6 +56,7 @@ export default function ItemForm({ form, onSubmit, text, categories, className =
             );
           }}
         />
+        <ImageField name="image" label="Image" description="Image of the item. Amazon images are automatically detected." previewField="imageUrl" />
         <FormField
           control={form.control}
           name="price"
@@ -78,18 +80,26 @@ export default function ItemForm({ form, onSubmit, text, categories, className =
             return (
               <FormItem>
                 <FormLabel>Priority</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value || undefined}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a priority" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="low">Low</SelectItem>
-                    <SelectItem value="medium">Medium</SelectItem>
-                    <SelectItem value="high">High</SelectItem>
-                  </SelectContent>
-                </Select>
+                <RadioTabs onValueChange={field.onChange} value={field.value || undefined}>
+                  <RadioTabsItem
+                    value="low"
+                    className="data-[state=checked]:text-green-700 data-[state=checked]:border-green-200 hover:text-green-700 flex-1 data-[state=checked]:bg-green-50 dark:data-[state=checked]:bg-green-950/30"
+                  >
+                    Low
+                  </RadioTabsItem>
+                  <RadioTabsItem
+                    value="medium"
+                    className="data-[state=checked]:text-amber-700 data-[state=checked]:border-amber-200 hover:text-amber-700 flex-1 data-[state=checked]:bg-amber-50 dark:data-[state=checked]:bg-amber-950/30"
+                  >
+                    Medium
+                  </RadioTabsItem>
+                  <RadioTabsItem
+                    value="high"
+                    className="data-[state=checked]:text-rose-700 data-[state=checked]:border-rose-200 hover:text-rose-700 flex-1 data-[state=checked]:bg-rose-50 dark:data-[state=checked]:bg-rose-950/30"
+                  >
+                    High
+                  </RadioTabsItem>
+                </RadioTabs>
                 <FormMessage />
               </FormItem>
             );

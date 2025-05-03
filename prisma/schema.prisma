@@ -18,7 +18,7 @@ model User {
   image                    String?
   bio                      Json?
   profileVisibility        Visibility[] @default([family, events, lists])
-  wishListVisibility       Visibility[] @default([family, events, lists])
+  defaultListVisibility    Visibility   @default(private)
   activityVisibility       Visibility[] @default([family, events, lists])
   password                 String?
   salt                     String?
@@ -60,6 +60,7 @@ model User {
 
 enum Visibility {
   public
+  some
   family
   events
   lists
@@ -214,8 +215,8 @@ enum Priority {
 model Item {
   id          String    @id() @default(cuid())
   name        String
-  listId      String?
-  list        List?     @relation(fields: [listId], references: [id])
+  listId      String
+  list        List      @relation(fields: [listId], references: [id])
   link        String?
   notes       Json?
   priority    Priority?

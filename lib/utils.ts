@@ -55,3 +55,15 @@ export function formatDate(date: Date) {
 export function formatTime(time: Date) {
   return format(time, 'h:mm aaa');
 }
+
+export function formatCurrency(amount: number) {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
+}
+
+export function userInitials(name: string | null) {
+  if (!name) return '';
+  return name
+    .split(' ')
+    .map((n) => n[0])
+    .join('');
+}

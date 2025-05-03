@@ -30,7 +30,7 @@ const Editor = ({ content, placeholder, onChange, immediatelyRender = true }: Ed
   if (!editor) return <></>;
 
   return (
-    <div className="prose max-w-none w-full border border-input bg-background dark:prose-invert">
+    <div className="prose max-w-none w-full border border-input bg-background dark:prose-invert rounded-md">
       <EditorToolbar editor={editor} />
       <div className="editor">
         <EditorContent editor={editor} placeholder={placeholder} className="px-4 min-h-[200px]" />

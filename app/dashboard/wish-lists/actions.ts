@@ -88,7 +88,10 @@ export async function getRelatedUsers() {
     },
   });
 
-  const relatedUsers = userInfo?.families.flatMap((family) => family.members).concat(userInfo?.events.flatMap((event) => event.attendees));
+  const relatedUsers = userInfo?.families
+    .flatMap((family) => family.members)
+    .concat(userInfo?.events.flatMap((event) => event.attendees))
+    .filter((user) => user.id !== session.user?.id);
 
   return relatedUsers;
 }

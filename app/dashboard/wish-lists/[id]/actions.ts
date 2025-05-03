@@ -16,7 +16,7 @@ export async function createItem(data: ItemSchemaType & { listId: string }) {
     throw new Error('You must be logged in to do this.');
   }
 
-  const validatedData = ItemSchema.parse(data);
+  const { imageUrl, ...rest } = ItemSchema.parse(data);
 
   const list = await getList(data.listId);
 
@@ -30,8 +30,9 @@ export async function createItem(data: ItemSchemaType & { listId: string }) {
 
   const item = await prisma.item.create({
     data: {
-      ...validatedData,
-      notes: validatedData.notes as JSONContent,
+      ...rest,
+      notes: rest.notes as JSONContent,
+      image: imageUrl,
       list: {
         connect: {
           id: data.listId,
