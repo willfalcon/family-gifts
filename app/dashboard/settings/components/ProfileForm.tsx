@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { updateProfile } from '../actions';
 import { ProfileSchema, ProfileSchemaType } from '../profileSchema';
 
+import { EnhancedDatePicker } from '@/components/EnhancedDatePicker';
 import { useBreadcrumbs } from '@/components/HeaderBreadcrumbs';
 import ImageField from '@/components/ImageField';
 import RichTextField from '@/components/RichTextField';
@@ -15,7 +16,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import ChangePassword from './ChangePassword';
 
 interface ProfileFormProps {
   user: User;
@@ -24,7 +24,13 @@ interface ProfileFormProps {
 export default function ProfileSettings({ user }: ProfileFormProps) {
   const form = useForm<ProfileSchemaType>({
     resolver: zodResolver(ProfileSchema),
-    defaultValues: { name: user.name || '', email: user.email || '', bio: JSON.parse(JSON.stringify(user.bio || {})), imageUrl: user.image || '' },
+    defaultValues: {
+      name: user.name || '',
+      email: user.email || '',
+      birthday: user.birthday || undefined,
+      bio: JSON.parse(JSON.stringify(user.bio || {})),
+      imageUrl: user.image || '',
+    },
   });
   async function onSubmit(values: ProfileSchemaType) {
     const { image, ...rest } = values;
@@ -57,56 +63,65 @@ export default function ProfileSettings({ user }: ProfileFormProps) {
   ]);
 
   return (
-    <>
-      <Card>
-        <CardHeader>
-          <CardTitle>Profile Information</CardTitle>
-          <CardDescription>Update your personal information</CardDescription>
-        </CardHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <CardContent className="space-y-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => {
-                  return (
-                    <FormItem>
-                      <FormLabel>Name</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => {
-                  return (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
-              <ImageField name="image" previewField="imageUrl" label="Profile Image" className="min-h-52" />
-              <RichTextField name="bio" />
-            </CardContent>
-            <CardFooter>
-              <Button type="submit">Save</Button>
-            </CardFooter>
-          </form>
-        </Form>
-      </Card>
-
-      <ChangePassword hasPassword={!!user.password} />
-    </>
+    <Card>
+      <CardHeader>
+        <CardTitle>Profile Information</CardTitle>
+        <CardDescription>Update your personal information</CardDescription>
+      </CardHeader>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <CardContent className="space-y-4">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <FormField
+              control={form.control}
+              name="birthday"
+              render={({ field }) => {
+                return (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Birthday</FormLabel>
+                    <EnhancedDatePicker date={field.value} setDate={field.onChange} />
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <ImageField name="image" previewField="imageUrl" label="Profile Image" className="min-h-52" />
+            <RichTextField name="bio" />
+          </CardContent>
+          <CardFooter>
+            <Button type="submit">Save</Button>
+          </CardFooter>
+        </form>
+      </Form>
+    </Card>
   );
 }

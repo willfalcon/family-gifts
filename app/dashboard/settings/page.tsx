@@ -8,6 +8,7 @@ import { getUser as getUserQuery } from '@/lib/queries/user';
 import SetBreadcrumbs from '@/components/SetBreadcrumbs';
 import Title, { SubTitle } from '@/components/Title';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import ChangePassword from './components/ChangePassword';
 import PrivacySettings from './components/PrivacySettings';
 import ProfileSettings from './components/ProfileForm';
 
@@ -24,7 +25,7 @@ export default async function ProfilePage() {
   const user = await getUser(session.user?.id || '');
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container px-4 py-8 max-w-screen-lg">
       <SetBreadcrumbs
         items={[
           { name: 'Dashboard', href: '/dashboard' },
@@ -45,7 +46,10 @@ export default async function ProfilePage() {
           <TabsTrigger value="privacy">Privacy</TabsTrigger>
         </TabsList>
         <TabsContent value="profile" className="space-y-4">
-          <ProfileSettings user={user} />
+          <>
+            <ProfileSettings user={user} />
+            <ChangePassword hasPassword={!!user.password} />
+          </>
         </TabsContent>
         {/* <TabsContent value="notifications" className="space-y-4"> */}
         {/* <NotificationsForm user={user} /> */}

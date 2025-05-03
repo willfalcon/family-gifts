@@ -3,6 +3,7 @@ import { z } from 'zod';
 export const ProfileSchema = z.object({
   name: z.string().min(1).default(''),
   email: z.string().email().default(''),
+  birthday: z.date().optional(),
   bio: z.any().optional(),
   image: z
     .instanceof(File)
