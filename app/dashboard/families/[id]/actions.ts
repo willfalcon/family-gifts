@@ -49,7 +49,7 @@ export async function sendInviteNotification(invite: Invite) {
     type: 'info',
     link: `/join?token=${invite.token}`,
   });
-  console.log('sendInviteNotification res: ', res);
+  return res;
 }
 
 export async function inviteMembers(familyId: Family['id'], data: InvitesSchemaType) {

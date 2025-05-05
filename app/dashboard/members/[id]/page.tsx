@@ -4,8 +4,16 @@ import SetBreadcrumbs from '@/components/SetBreadcrumbs';
 import { getMember } from '@/lib/queries/members';
 import MemberHeader from './MemberHeader';
 
-//todo: add a page for a single member
-export default async function MemberPage({ params }: { params: { id: string } }) {
+type Props = { params: { id: string } };
+
+export async function generateMetadata({ params }: Props) {
+  const member = await getMember(params.id);
+  return {
+    title: `${member?.name}`,
+    description: `Manage ${member?.name} on Family Gifts`,
+  };
+}
+export default async function MemberPage({ params }: Props) {
   const member = await getMember(params.id);
   if (!member) {
     notFound();

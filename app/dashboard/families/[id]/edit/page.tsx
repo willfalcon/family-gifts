@@ -10,7 +10,17 @@ import DangerZone from './components/DangerZone';
 import EditFamily from './components/EditFamily';
 import EditFamilyMembers from './components/Members';
 
-export default async function FamilyEditPage({ params }: { params: { id: string } }) {
+type Props = { params: { id: string } };
+
+export async function generateMetadata({ params }: Props) {
+  const family = await getFamily(params.id);
+  return {
+    title: `Edit ${family?.name}`,
+    description: `Edit ${family?.name} on Family Gifts`,
+  };
+}
+
+export default async function FamilyEditPage({ params }: Props) {
   const session = await auth();
   if (!session?.user) {
     redirect('/sign-in');

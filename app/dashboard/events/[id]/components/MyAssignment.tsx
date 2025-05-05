@@ -15,7 +15,7 @@ type Props = {
 };
 
 export default function MyAssignment({ assignment }: Props) {
-  const [revealed, setRevealed] = useState(true);
+  const [revealed, setRevealed] = useState(false);
 
   return (
     <div className="@container">

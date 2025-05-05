@@ -6,17 +6,40 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import QueryClientProvider from '@/providers/QueryClientProvider';
 import { Check, Gift, Info, Users } from 'lucide-react';
+import { cache } from 'react';
 import { getFamilyByInviteLinkToken } from './actions';
 import JoinButton from './JoinButton';
 
-export default async function FamilyInvitePage({ params }: { params: { token: string } }) {
+type Props = { params: { token: string } };
+
+const getFamily = cache(async (token: string) => {
+  const family = await getFamilyByInviteLinkToken(token);
+  return family;
+});
+
+export async function generateMetadata({ params }: Props) {
+  const { token } = params;
+  if (!token) {
+    return {
+      title: 'Family Invite | Family Gifts',
+      description: 'Family Invite on Family Gifts',
+    };
+  }
+  const family = await getFamily(token);
+  return {
+    title: `Join ${family.name} | Family Gifts`,
+    description: `Join ${family.name} on Family Gifts`,
+  };
+}
+
+export default async function FamilyInvitePage({ params }: Props) {
   const { token } = params;
   if (!token) {
     notFound();
   }
 
   const session = await auth();
-  const family = await getFamilyByInviteLinkToken(token);
+  const family = await getFamily(token);
 
   if (family.inviteLinkExpiry && family.inviteLinkExpiry < new Date()) {
     notFound();

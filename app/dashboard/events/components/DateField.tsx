@@ -23,7 +23,11 @@ export default function DateField() {
               <Popover>
                 <PopoverTrigger asChild>
                   <FormControl>
-                    <Button variant="outline" className={cn('flex w-full pl-3 text-left font-normal', !field.value && 'text-muted-foreground')}>
+                    <Button
+                      variant="outline"
+                      className={cn('flex w-full pl-3 text-left font-normal', !field.value && 'text-muted-foreground')}
+                      tabIndex={1}
+                    >
                       {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
                       <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                     </Button>

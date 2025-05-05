@@ -12,6 +12,11 @@ import EventsSection from './components/EventsSection';
 import FamilySection from './components/FamilySection';
 import WishListSection from './components/WishListSection';
 
+export const metadata = {
+  title: 'Dashboard',
+  description: 'Dashboard for Family Gifts',
+};
+
 export default async function page() {
   const session = await auth();
 

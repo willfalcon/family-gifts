@@ -6,6 +6,14 @@ import { SidebarInset } from '@/components/ui/sidebar';
 import Link from 'next/link';
 import Providers from './components/Providers';
 
+export const metadata = {
+  title: {
+    template: '%s | Family Gifts',
+    default: 'Dashboard | Family Gifts',
+  },
+  description: 'Dashboard for Family Gifts',
+};
+
 export default function DashboardLayout({ children }: PropsWithChildren) {
   return (
     <Providers>

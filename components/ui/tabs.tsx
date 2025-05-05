@@ -5,27 +5,27 @@ import * as React from 'react';
 
 import { cn } from '@/lib/utils';
 import { useSearchParams } from 'next/navigation';
-import { Dispatch, SetStateAction } from 'react';
 
-const TabsContext = React.createContext<{ value: string; setValue: Dispatch<SetStateAction<string>> }>({ value: '', setValue: () => {} });
+const TabsContext = React.createContext<{ value: string; setValue: (value: string) => void }>({ value: '', setValue: () => {} });
 
 const Tabs = React.forwardRef<React.ElementRef<typeof TabsPrimitive.Root>, React.ComponentPropsWithoutRef<typeof TabsPrimitive.Root>>(
   ({ className, ...props }, ref) => {
-    // const [value, setValue] = React.useState<string>(tabParam || props.defaultValue || '');
-
     const searchParams = useSearchParams();
     const tabParam = searchParams.get('tab') || props.defaultValue || '';
+    const [value, setValue] = React.useState<string>(tabParam || props.defaultValue || '');
 
     const onTabChange = (value: string) => {
       const params = new URLSearchParams(searchParams.toString());
       params.set('tab', value);
-      window.history.pushState(null, '', `?${params.toString()}`);
+      setValue(value);
     };
 
     return (
-      <TabsPrimitive.Root ref={ref} className={cn(className)} {...props} value={tabParam} onValueChange={onTabChange}>
-        {props.children}
-      </TabsPrimitive.Root>
+      <TabsContext.Provider value={{ value, setValue: onTabChange }}>
+        <TabsPrimitive.Root ref={ref} className={cn(className)} {...props} value={value} onValueChange={setValue}>
+          {props.children}
+        </TabsPrimitive.Root>
+      </TabsContext.Provider>
     );
   },
 );

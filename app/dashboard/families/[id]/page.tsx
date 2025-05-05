@@ -18,7 +18,16 @@ const getUser = cache(async (id: User['id']) => {
   return await getUserQuery(id);
 });
 
-export default async function FamilyPage({ params }: { params: { id: string } }) {
+type Props = { params: { id: string } };
+
+export async function generateMetadata({ params }: Props) {
+  const family = await getFamily(params.id);
+  return {
+    title: `${family?.name}`,
+    description: `Manage ${family?.name} on Family Gifts`,
+  };
+}
+export default async function FamilyPage({ params }: Props) {
   const session = await auth();
   if (!session?.user) {
     redirect('/sign-in');

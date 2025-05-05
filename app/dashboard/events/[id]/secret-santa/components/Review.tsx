@@ -1,9 +1,9 @@
 'use client';
 
-import { ArrowLeft, RefreshCw, Shuffle } from 'lucide-react';
+import { ArrowLeft, Loader2, RefreshCw, Shuffle } from 'lucide-react';
 
 import { EventFromGetEvent } from '@/lib/queries/events';
-import { formatDate } from '@/lib/utils';
+import { formatCurrency, formatDate } from '@/lib/utils';
 import { useSecretSantaStore } from '../store';
 
 import {
@@ -19,11 +19,13 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Button, buttonVariants } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useTabs } from '@/components/ui/tabs';
-import Link from 'next/link';
+import { useMutation } from '@tanstack/react-query';
+import { toast } from 'sonner';
+import { sendSecretSantaNotifications } from '../actions';
 
 type Props = {
   event: EventFromGetEvent;
@@ -33,6 +35,17 @@ export default function Review({ event }: Props) {
   const { budget, participants, exclusions, assignments, generateAssignments, resetAssignments, showAssignments, setShowAssignments } =
     useSecretSantaStore();
   const { setValue } = useTabs();
+  const mutation = useMutation({
+    mutationFn: async () => {
+      return await sendSecretSantaNotifications(event.id);
+    },
+    onSuccess: () => {
+      toast.success('Notifications sent successfully');
+    },
+    onError: () => {
+      toast.error('Failed to send notifications');
+    },
+  });
   return (
     <Card>
       <CardHeader>
@@ -46,7 +59,7 @@ export default function Review({ event }: Props) {
             <div className="space-y-2">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Budget:</span>
-                <span>${budget}</span>
+                <span>{formatCurrency(budget)}</span>
               </div>
               {event.date && (
                 <div className="flex justify-between">
@@ -214,15 +227,25 @@ export default function Review({ event }: Props) {
                   </Table>
                 </div>
               )}
+              <Button onClick={() => mutation.mutate()} className="mt-4" disabled={mutation.isPending}>
+                {mutation.isPending ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Sending...
+                  </>
+                ) : (
+                  'Send Notifications'
+                )}
+              </Button>
             </>
           )}
         </div>
       </CardContent>
       <CardFooter>
-        <Link href="?tab=exclusions" className={buttonVariants({ variant: 'outline' })} scroll={false}>
+        <Button variant="outline" onClick={() => setValue('exclusions')}>
           <ArrowLeft className="w-4 h-4" />
           Exclusions
-        </Link>
+        </Button>
       </CardFooter>
     </Card>
   );

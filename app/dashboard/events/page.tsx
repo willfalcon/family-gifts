@@ -10,6 +10,11 @@ import Title, { SubTitle } from '@/components/Title';
 import { buttonVariants } from '@/components/ui/button';
 import EventsList from './components/EventsList';
 
+export const metadata = {
+  title: 'Events',
+  description: 'Manage your gift-giving events',
+};
+
 export default async function EventsPage() {
   const session = await auth();
 

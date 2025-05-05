@@ -31,7 +31,7 @@ export default function TimeField() {
                     field.onChange(newDate);
                   }}
                 >
-                  <SelectTrigger className="w-[100px]">
+                  <SelectTrigger className="w-[100px]" tabIndex={1}>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -51,7 +51,7 @@ export default function TimeField() {
                     field.onChange(newDate);
                   }}
                 >
-                  <SelectTrigger className="w-[100px]">
+                  <SelectTrigger className="w-[100px]" tabIndex={1}>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -75,7 +75,7 @@ export default function TimeField() {
                     field.onChange(newDate);
                   }}
                 >
-                  <SelectTrigger className="w-[100px]">
+                  <SelectTrigger className="w-[100px]" tabIndex={1}>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>

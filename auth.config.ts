@@ -1,5 +1,5 @@
 import { compare } from 'bcryptjs';
-import type { NextAuthConfig } from 'next-auth';
+import { CredentialsSignin, type NextAuthConfig } from 'next-auth';
 import type { Provider } from 'next-auth/providers';
 import Credentials from 'next-auth/providers/credentials';
 import Google from 'next-auth/providers/google';
@@ -7,6 +7,14 @@ import Google from 'next-auth/providers/google';
 import { getUserByEmail } from './lib/queries/user';
 
 // Notice this is only an object, not a full Auth.js instance
+
+export class InvalidCredentialsError extends CredentialsSignin {
+  code = 'invalid_credentials';
+}
+
+class NoPasswordError extends CredentialsSignin {
+  code = 'no_password';
+}
 
 export const providers: Provider[] = [
   Google,
@@ -16,20 +24,19 @@ export const providers: Provider[] = [
       password: {},
     },
     authorize: async (credentials: any) => {
-      console.log('credentials', credentials);
       if (!credentials?.email || !credentials.password) {
-        throw new Error('Invalid credentials');
+        throw new InvalidCredentialsError();
       }
       const user = await getUserByEmail(credentials.email as string);
       if (!user) {
-        throw new Error('User not found');
+        throw new InvalidCredentialsError();
       }
       if (!user.password) {
-        throw new Error('You have no password set. Use another way to sign in.');
+        throw new NoPasswordError();
       }
       const passwordsMatch = await compare(credentials.password as string, user.password);
       if (!passwordsMatch) {
-        throw new Error('Wrong password.');
+        throw new InvalidCredentialsError();
       }
       return user;
     },

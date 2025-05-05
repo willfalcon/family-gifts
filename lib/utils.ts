@@ -2,6 +2,7 @@ import { clsx, type ClassValue } from 'clsx';
 import { setCookie } from 'cookies-next';
 import { format } from 'date-fns';
 import { twMerge } from 'tailwind-merge';
+import wordsToNumbers from 'words-to-numbers';
 import { z } from 'zod';
 
 export function cn(...inputs: ClassValue[]) {
@@ -56,8 +57,40 @@ export function formatTime(time: Date) {
   return format(time, 'h:mm aaa');
 }
 
-export function formatCurrency(amount: number) {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
+export function formatCurrency(amount: string | number | null) {
+  if (typeof amount === 'number') {
+    const tryFormat =
+      typeof amount === 'number'
+        ? new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            minimumFractionDigits: amount % 1 === 0 ? 0 : 2,
+          }).format(amount)
+        : NaN;
+
+    if (tryFormat !== 'NaN') {
+      return tryFormat;
+    }
+  }
+
+  if (typeof amount === 'string') {
+    const number = wordsToNumbers(amount);
+    const numberInt = typeof number === 'string' ? parseFloat(number) : number;
+    if (numberInt === null) {
+      return '';
+    }
+    const wordsConvert = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: numberInt % 1 === 0 ? 0 : 2,
+    }).format(numberInt);
+
+    if (wordsConvert !== 'NaN') {
+      return wordsConvert;
+    }
+  }
+
+  return '';
 }
 
 export function userInitials(name: string | null) {

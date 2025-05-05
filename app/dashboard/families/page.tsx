@@ -9,6 +9,12 @@ import SetBreadcrumbs from '@/components/SetBreadcrumbs';
 import Title, { SubTitle } from '@/components/Title';
 import { buttonVariants } from '@/components/ui/button';
 import FamiliesPage from './FamiliesPage';
+
+export const metadata = {
+  title: 'Families',
+  description: 'Manage your family groups and invitations',
+};
+
 export default async function page() {
   const session = await auth();
   if (!session?.user?.id) {

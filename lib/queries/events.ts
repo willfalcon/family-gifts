@@ -168,10 +168,39 @@ export const getEventsCount = cache(async () => {
   return count;
 });
 
+export type GetEvent = Prisma.EventGetPayload<{
+  include: {
+    managers: true;
+    attendees: {
+      include: {
+        managedEvents: true;
+      };
+    };
+    assignments: {
+      include: {
+        giver: true;
+        recipient: {
+          include: {
+            lists: true;
+          };
+        };
+      };
+    };
+    exclusions: {
+      include: {
+        from: true;
+        to: true;
+      };
+    };
+    creator: true;
+    invites: true;
+  };
+}>;
+
 /**
  * Get an event by its id, if the user is logged in and is a participant in the event
  */
-export const getEvent = cache(async (id: Event['id']) => {
+export const getEvent = cache(async (id: Event['id']): Promise<GetEvent | null> => {
   const session = await auth();
   if (!session?.user?.id) {
     throw new Error('You must be logged in to do this.');
@@ -182,25 +211,6 @@ export const getEvent = cache(async (id: Event['id']) => {
   const event = await prisma.event.findUnique({
     where: {
       id,
-      // OR: [
-      //   {
-      //     attendees: {
-      //       some: {
-      //         id: session.user.id,
-      //       },
-      //     },
-      //   },
-      //   {
-      //     creatorId: session.user.id,
-      //   },
-      //   {
-      //     managers: {
-      //       some: {
-      //         id: session.user.id,
-      //       },
-      //     },
-      //   },
-      // ],
     },
     include: {
       managers: true,

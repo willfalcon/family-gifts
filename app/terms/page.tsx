@@ -1,5 +1,10 @@
 import Link from 'next/link';
 
+export const metadata = {
+  title: 'Terms of Service | Family Gifts',
+  description: 'Terms of Service for Family Gifts',
+};
+
 export default function TermsOfService() {
   return (
     <div className="container mx-auto py-8 px-4 max-w-4xl">

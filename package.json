@@ -75,6 +75,7 @@
     "tailwind-merge": "^2.5.3",
     "tailwindcss-animate": "^1.0.7",
     "usehooks-ts": "^3.1.1",
+    "words-to-numbers": "^1.5.1",
     "zod": "^3.24.2",
     "zustand": "^5.0.1"
   },

@@ -10,6 +10,11 @@ import Title, { SubTitle } from '@/components/Title';
 import { buttonVariants } from '@/components/ui/button';
 import MembersList from './MembersList';
 
+export const metadata = {
+  title: 'Members',
+  description: 'View and connect with all your people',
+};
+
 export default async function MembersPage() {
   const session = await auth();
   if (!session?.user) {

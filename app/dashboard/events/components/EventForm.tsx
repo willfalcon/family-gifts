@@ -40,7 +40,7 @@ export default function EventForm({ form, onSubmit, submitText, pending }: Event
                   <FormItem>
                     <FormLabel>Event Name</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input {...field} tabIndex={1} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -60,7 +60,7 @@ export default function EventForm({ form, onSubmit, submitText, pending }: Event
                   <FormItem>
                     <FormLabel>Location</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input {...field} tabIndex={1} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

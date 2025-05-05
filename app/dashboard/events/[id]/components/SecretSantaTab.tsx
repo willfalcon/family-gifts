@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 
 import { EventFromGetEvent } from '@/lib/queries/events';
-import { formatDate } from '@/lib/utils';
+import { formatCurrency, formatDate } from '@/lib/utils';
 
 import { Badge } from '@/components/ui/badge';
 import { buttonVariants } from '@/components/ui/button';
@@ -34,13 +34,12 @@ export default function SecretSantaTab({ event, userId, isManager }: Props) {
               <h3 className="font-medium mb-2">Exchange Details</h3>
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Budget:</span>
-                  <span>
-                    {event.secretSantaBudget
-                      ?.split('')
-                      .filter((c) => c !== '$')
-                      .join()}
-                  </span>
+                  {event.secretSantaBudget && (
+                    <>
+                      <span className="text-muted-foreground">Budget:</span>
+                      <span>{formatCurrency(event.secretSantaBudget)}</span>
+                    </>
+                  )}
                 </div>
                 {event.date && (
                   <div className="flex justify-between">

@@ -1,14 +1,24 @@
 import { Gift } from 'lucide-react';
 import { notFound, redirect } from 'next/navigation';
 
-import { getEvent } from '@/lib/queries/events';
 import { auth } from '@/auth';
+import { getEvent } from '@/lib/queries/events';
 
+import SetBreadcrumbs from '@/components/SetBreadcrumbs';
 import Title, { SubTitle } from '@/components/Title';
 import SecretSanta from './SecretSanta';
-import SetBreadcrumbs from '@/components/SetBreadcrumbs';
 
-export default async function SecretSantaPage({ params }: { params: { id: string } }) {
+type Props = { params: { id: string } };
+
+export async function generateMetadata({ params }: Props) {
+  const event = await getEvent(params.id);
+  return {
+    title: `Secret Santa for ${event?.name}`,
+    description: `Manage Secret Santa for ${event?.name} on Family Gifts`,
+  };
+}
+
+export default async function SecretSantaPage({ params }: Props) {
   const session = await auth();
   if (!session?.user) {
     redirect('/sign-in');

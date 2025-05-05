@@ -256,6 +256,7 @@ model Event {
   assignments       Assignment[]
   exclusions        Exclusion[]
   secretSantaBudget String?
+  notificationsSent Boolean      @default(false)
 
   // Messages
   eventChannel String?

@@ -3,7 +3,9 @@ import { redirect } from 'next/navigation';
 
 import Messages from '../Messages';
 
-export default async function MessagePage({ params }: { params: { channelId: string } }) {
+type Props = { params: { channelId: string } };
+
+export default async function MessagePage({ params }: Props) {
   const session = await auth();
 
   if (!session?.user) {

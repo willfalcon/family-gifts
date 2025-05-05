@@ -15,6 +15,7 @@ export type Assignment = {
 
 type SecretSantaState = {
   budget: string;
+  notificationsSent: boolean;
   participants: User[];
   exclusions: Exclusion[];
   assignments: Assignment[];
@@ -37,6 +38,7 @@ type SecretSantaState = {
 
 export const useSecretSantaStore = create<SecretSantaState>((set, get) => ({
   budget: '',
+  notificationsSent: false,
   participants: [],
   exclusions: [],
   assignments: [],
@@ -55,6 +57,7 @@ export const useSecretSantaStore = create<SecretSantaState>((set, get) => ({
 
     set({
       budget: event.secretSantaBudget || '',
+      notificationsSent: event.notificationsSent,
       participants,
       exclusions: event.exclusions.map((exclusion) => ({
         from: exclusion.from,

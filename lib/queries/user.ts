@@ -1,3 +1,4 @@
+import { InvalidCredentialsError } from '@/auth.config';
 import { prisma } from '@/prisma';
 import { Prisma, User } from '@prisma/client';
 
@@ -37,7 +38,7 @@ export const getUserByEmail = async (email: User['email']) => {
   if (user) {
     return user;
   }
-  throw new Error('User not found');
+  throw new InvalidCredentialsError();
 };
 
 export const getUserByResetPasswordToken = async (token: User['resetPasswordToken']) => {

@@ -9,6 +9,10 @@ import Title, { SubTitle } from '@/components/Title';
 import { buttonVariants } from '@/components/ui/button';
 import WishLists from './WishLists';
 
+export const metadata = {
+  title: 'Wish Lists',
+};
+
 export default async function WishListsPage() {
   const session = await auth();
 

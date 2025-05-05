@@ -8,9 +8,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import EditList from './EditList';
 import ListItemsForm from './ListItemsForm';
 
-export default async function EditListPage({ params }: { params: { id: string } }) {
-  const list = await getListForEdit(params.id);
+type Props = { params: { id: string } };
 
+export async function generateMetadata({ params }: Props) {
+  const list = await getListForEdit(params.id);
+  return {
+    title: `Edit ${list?.name}`,
+    description: `Edit ${list?.name} on Family Gifts`,
+  };
+}
+
+export default async function EditListPage({ params }: Props) {
+  const list = await getListForEdit(params.id);
   if (!list) {
     notFound();
   }

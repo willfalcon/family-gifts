@@ -5,6 +5,10 @@ import SetBreadcrumbs from '@/components/SetBreadcrumbs';
 import Title, { SubTitle } from '@/components/Title';
 import NotificationsPage from './NotificationsPage';
 
+export const metadata = {
+  title: 'Notifications',
+};
+
 export default async function page() {
   const session = await auth();
   if (!session?.user) {

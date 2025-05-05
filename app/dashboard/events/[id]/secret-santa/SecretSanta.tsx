@@ -20,13 +20,13 @@ type Props = {
 };
 
 export default function SecretSanta({ event }: Props) {
-  const { assignments, exclusions, initializeStore } = useSecretSantaStore();
+  const { assignments, exclusions, initializeStore, budget } = useSecretSantaStore();
   useEffect(() => {
     initializeStore(event);
   }, [event]);
   const mutation = useMutation({
     mutationFn: async () => {
-      await updateSecretSanta(event.id, assignments, exclusions);
+      await updateSecretSanta(event.id, assignments, exclusions, budget);
     },
     onSuccess: () => {
       toast.success('Secret Santa assignments updated successfully');

@@ -9,6 +9,11 @@ import QueryClientProvider from '@/providers/QueryClientProvider';
 import SignInForm from './SignInForm';
 // import { handleSignIn, handleSignInWithProvider } from './actions';
 
+export const metadata = {
+  title: 'Sign In | Family Gifts',
+  description: 'Sign in to Family Gifts',
+};
+
 export default async function SignInPage() {
   const session = await auth();
   if (session?.user?.id) {

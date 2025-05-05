@@ -4,6 +4,11 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import ResetPasswordForm from './ResetPasswordForm';
 
+export const metadata = {
+  title: 'Reset Password | Family Gifts',
+  description: 'Reset your password for Family Gifts',
+};
+
 type Props = {
   searchParams: {
     token: string;

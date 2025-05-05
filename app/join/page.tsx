@@ -15,6 +15,22 @@ type PageProps = {
   searchParams: { [key: string]: string | undefined };
 };
 
+export async function generateMetadata({ searchParams }: PageProps) {
+  const { token } = searchParams;
+
+  if (!token) {
+    return {
+      title: 'Join | Family Gifts',
+      description: 'Join a family or event on Family Gifts',
+    };
+  }
+  const invite = await getInvite(token);
+  return {
+    title: `${invite.family?.name || invite.event?.name} | Family Gifts`,
+    description: `Join ${invite.family?.name || invite.event?.name} on Family Gifts`,
+  };
+}
+
 export default async function JoinPage({ searchParams }: PageProps) {
   const { token } = searchParams;
 

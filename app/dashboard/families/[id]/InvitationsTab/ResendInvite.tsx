@@ -8,13 +8,14 @@ import { toast } from 'sonner';
 import { sendInviteEmail } from '@/app/dashboard/families/new/actions';
 
 import { Button } from '@/components/ui/button';
-
+import { sendInviteNotification } from '../actions';
 export default function ResendInvite({ invite, family }: { invite: Invite; family: Family }) {
   const [sending, setSending] = useState(false);
   async function resendInvite() {
     setSending(true);
     try {
       await sendInviteEmail(invite, family);
+      await sendInviteNotification(invite);
       toast.success('Invite resent');
       setSending(false);
     } catch (err) {

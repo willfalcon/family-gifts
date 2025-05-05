@@ -24,7 +24,8 @@ export default function secretSantaNotification({ recipient, event }: { recipien
               </Row>
               <Row>
                 <Heading as="h2">Your assignment: {recipient.name}</Heading>
-                <Button href={`${process.env.frontendUrl}/dashboard/family/${recipient.id}`}>View Profile</Button>
+                <Button href={`${process.env.frontendUrl}/dashboard/members/${recipient.id}`}>View Lists</Button>
+                <Button href={`${process.env.frontendUrl}/dashboard/events/${event.id}`}>View Event</Button>
               </Row>
             </Section>
           </Container>

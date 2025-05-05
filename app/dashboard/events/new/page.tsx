@@ -4,6 +4,11 @@ import { redirect } from 'next/navigation';
 import Title, { SubTitle } from '@/components/Title';
 import NewEvent from './NewEvent';
 
+export const metadata = {
+  title: 'New Event',
+  description: 'Create a new gift-giving event',
+};
+
 export default async function NewEventPage() {
   const session = await auth();
   if (!session?.user) {
