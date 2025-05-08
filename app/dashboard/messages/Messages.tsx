@@ -26,7 +26,6 @@ export default function Messages({ session, channelId }: Props) {
   ]);
 
   const channels = useQuery(api.channels.getChannels, { userId: session.user!.id! });
-
   const channel = channelId && channels !== 'no channels' ? channels?.find((channel) => channel._id === channelId) : null;
 
   const mobile = useIsMobile();

@@ -43,7 +43,7 @@ export default function Message({ message, channel, isRead }: Props) {
     return <MessageSkeleton />;
   }
   const hasSender = sender && typeof sender !== 'string';
-
+  const anonymous = hasSender && channel.type === 'anonymous' && channel.anonymousSender === sender.id;
   const initials =
     hasSender &&
     sender.name
@@ -56,14 +56,19 @@ export default function Message({ message, channel, isRead }: Props) {
     <>
       <div className={cn('mb-2 p-2 rounded-md', { 'bg-muted': !isRead })}>
         <div className="flex items-center">
-          {hasSender && (
-            <Avatar className="h-8 w-8 mr-2">
-              <AvatarImage src={sender.image || undefined} alt={sender.name || undefined} />
-              <AvatarFallback>{initials}</AvatarFallback>
-            </Avatar>
-          )}
+          {hasSender &&
+            (anonymous ? (
+              <Avatar className="h-8 w-8 mr-2">
+                <AvatarFallback>??</AvatarFallback>
+              </Avatar>
+            ) : (
+              <Avatar className="h-8 w-8 mr-2">
+                <AvatarImage src={sender.image || undefined} alt={sender.name || undefined} />
+                <AvatarFallback>{initials}</AvatarFallback>
+              </Avatar>
+            ))}
           <div className="flex-1">
-            {hasSender && <h3 className="inline font-semibold h-5">{sender.name}</h3>}
+            {hasSender && <h3 className="inline font-semibold h-5">{anonymous ? 'Anonymous' : sender.name}</h3>}
             <p className="inline text-muted-foreground h-5 text-xs ml-1">{formatTime(new Date(message._creationTime))}</p>
             <div className="text-sm">{message.text}</div>
           </div>

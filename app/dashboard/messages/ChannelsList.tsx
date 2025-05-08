@@ -5,7 +5,6 @@ import { useState } from 'react';
 import { Doc } from '@/convex/_generated/dataModel';
 import { cn } from '@/lib/utils';
 
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -18,8 +17,7 @@ type Props = {
 export default function ChannelsList({ channels }: Props) {
   const familyChannels = channels.filter((channel) => channel.type === 'family');
   const eventChannels = channels.filter((channel) => channel.type === 'event');
-  const individualChannels = channels.filter((channel) => channel.type === 'individual');
-  // const anonymousChannels = channels.filter((channel) => channel.type === 'anonymous');
+  const individualChannels = channels.filter((channel) => channel.type === 'individual' || channel.type === 'anonymous');
 
   const [familiesOpen, setFamiliesOpen] = useState(true);
   const [eventsOpen, setEventsOpen] = useState(true);
@@ -83,18 +81,12 @@ export default function ChannelsList({ channels }: Props) {
 
 function ChannelItem({ channel }: { channel: Doc<'channels'> }) {
   const unread = false;
-
   return (
     <Link
       href={`/dashboard/messages/${channel._id}`}
       key={channel._id}
       className={buttonVariants({ variant: 'ghost', className: 'w-[calc(100%-1.5rem)] justify-start p-5 mb-2 mx-3' })}
     >
-      {channel.type === 'individual' && (
-        <Avatar className="h-6 w-6 mr-2">
-          <AvatarFallback>{channel.name[0]}</AvatarFallback>
-        </Avatar>
-      )}
       <div className="flex-1 text-left">
         <div className={cn('font-medium', { 'font-bold': unread })}>
           # {channel.name}

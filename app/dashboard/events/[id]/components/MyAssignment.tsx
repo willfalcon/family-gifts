@@ -7,8 +7,10 @@ import { useState } from 'react';
 import { Recipient } from '@/lib/queries/events';
 import { cn } from '@/lib/utils';
 
+import AnonymousMessageDialog from '@/components/Messages/AnonymousMessageDialog';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
-import { Button, buttonVariants } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
+import { useMe } from '@/hooks/use-me';
 
 type Props = {
   assignment?: Recipient;
@@ -16,6 +18,7 @@ type Props = {
 
 export default function MyAssignment({ assignment }: Props) {
   const [revealed, setRevealed] = useState(false);
+  const { data: user } = useMe();
 
   return (
     <div className="@container">
@@ -30,9 +33,12 @@ export default function MyAssignment({ assignment }: Props) {
                     <AvatarImage src={assignment.image} alt={assignment.name || undefined} />
                   </Avatar>
                 )}
-                <p className={`text-xl font-bold text-center transition-all duration-500 ${!revealed ? 'blur-md select-none' : ''}`}>
+                <Link
+                  href={`/dashboard/members/${assignment.id}`}
+                  className={`text-xl font-bold text-center transition-all duration-500 ${!revealed ? 'blur-md select-none' : ''}`}
+                >
                   {assignment.name}
-                </p>
+                </Link>
               </div>
               <div className={cn('blur-md overflow-hidden transition-all duration-500', { 'blur-none': revealed })}>
                 {!!assignment?.lists.length ? (
@@ -50,7 +56,7 @@ export default function MyAssignment({ assignment }: Props) {
                 ) : (
                   <div className="mt-4 text-center">
                     <p className="text-muted-foreground">No wish lists yet.</p>
-                    <Button>Message Anonymously</Button>
+                    {user?.id && <AnonymousMessageDialog user={user.id} dmId={assignment.id} />}
                   </div>
                 )}
               </div>

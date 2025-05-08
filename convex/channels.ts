@@ -21,6 +21,7 @@ export const getChannel = query({
     eventId: v.optional(v.string()),
     dmId: v.optional(v.string()),
     userId: v.optional(v.string()),
+    anonymous: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
     if (args.familyId) {
@@ -37,6 +38,14 @@ export const getChannel = query({
         .take(1);
       return channels?.[0];
     }
+    if (args.dmId && args.userId && args.anonymous) {
+      const channels = await ctx.db
+        .query('channels')
+        .filter((q) => q.eq(q.field('type'), 'anonymous'))
+        .collect();
+      const channel = channels.find((channel) => channel.users.includes(args.dmId!) && channel.users.includes(args.userId!));
+      return channel;
+    }
     if (args.dmId && args.userId) {
       const channels = await ctx.db
         .query('channels')
@@ -52,10 +61,11 @@ export const createChannel = mutation({
   args: {
     name: v.string(),
     users: v.array(v.string()),
-    type: v.union(v.literal('family'), v.literal('event'), v.literal('individual')),
+    type: v.union(v.literal('family'), v.literal('event'), v.literal('individual'), v.literal('anonymous')),
     messages: v.array(v.id('messages')),
     family: v.optional(v.string()),
     event: v.optional(v.string()),
+    anonymousSender: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const channel = await ctx.db.insert('channels', args);
@@ -67,9 +77,10 @@ export const updateChannel = mutation({
   args: {
     channel: v.id('channels'),
     name: v.optional(v.string()),
-    type: v.optional(v.union(v.literal('family'), v.literal('event'), v.literal('individual'))),
+    type: v.optional(v.union(v.literal('family'), v.literal('event'), v.literal('individual'), v.literal('anonymous'))),
     family: v.optional(v.string()),
     event: v.optional(v.string()),
+    anonymousSender: v.optional(v.string()),
     users: v.optional(v.array(v.string())),
   },
   handler: async (ctx, args) => {
@@ -79,6 +90,7 @@ export const updateChannel = mutation({
       ...(args.family && { family: args.family }),
       ...(args.event && { event: args.event }),
       ...(args.users && { users: args.users }),
+      ...(args.anonymousSender && { anonymousSender: args.anonymousSender }),
     });
   },
 });

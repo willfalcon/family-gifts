@@ -25,16 +25,17 @@ export const getUser = cache(async (id: User['id']) => {
   return await getUserQuery(id);
 });
 
-export async function createIndividualChannel(starterId: string, recipientId: string) {
+export async function createIndividualChannel(starterId: string, recipientId: string, anonymous: boolean = false) {
   const starter = await getUser(starterId);
   const recipient = await getUser(recipientId);
 
   const client = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
   const channel = await client.mutation(api.channels.createChannel, {
-    type: 'individual',
-    name: `${starter.name} and ${recipient.name}`,
+    type: anonymous ? 'anonymous' : 'individual',
+    name: anonymous ? `Anonymous conversation with ${recipient.name}` : `${starter.name} and ${recipient.name}`,
     users: [starterId, recipientId],
     messages: [],
+    ...(anonymous && { anonymousSender: starterId }),
   });
 
   return channel;

@@ -5,10 +5,11 @@ export default defineSchema({
   channels: defineTable({
     name: v.string(),
     users: v.array(v.string()),
-    type: v.union(v.literal('family'), v.literal('event'), v.literal('individual')),
+    type: v.union(v.literal('family'), v.literal('event'), v.literal('individual'), v.literal('anonymous')),
     messages: v.array(v.id('messages')),
     family: v.optional(v.string()),
     event: v.optional(v.string()),
+    anonymousSender: v.optional(v.string()),
   }),
   messages: defineTable({
     channel: v.id('channels'),
