@@ -8,6 +8,7 @@ export const ListSchema = z.object({
   visibleToUsers: z.array(z.string()).default([]),
   categories: z.array(z.string()).default([]),
   visibilityType: z.enum(['private', 'link', 'public', 'specific']).default('private'),
+  visibibleViaLink: z.boolean().default(false),
 });
 
 export type ListSchemaType = z.infer<typeof ListSchema>;

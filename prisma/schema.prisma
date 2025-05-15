@@ -202,6 +202,7 @@ model List {
   visibleToUsers    User[]        @relation("ListVisibleToUsers")
   shareLink         String?
   visibilityType    VisiblityType @default(private)
+  visibibleViaLink  Boolean       @default(false)
   categories        String[]
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt()
@@ -243,7 +244,7 @@ model Event {
   location String?
 
   // Relationships
-  familyId     String? 
+  familyId     String?
   family       Family?  @relation(fields: [familyId], references: [id])
   creatorId    String
   creator      User     @relation("EventCreator", fields: [creatorId], references: [id])

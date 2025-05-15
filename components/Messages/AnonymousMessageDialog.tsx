@@ -25,7 +25,6 @@ export default function AnonymousMessageDialog({ user, dmId, className }: Props)
     userId: user,
     anonymous: true,
   });
-  console.log(channel);
 
   const { hasUnreadMessages } = useMessages({ channelId: channel?._id, userId: user });
 
@@ -42,7 +41,7 @@ export default function AnonymousMessageDialog({ user, dmId, className }: Props)
       <Dialog>
         <DialogTrigger asChild>
           <Button variant="outline" size="sm" className={cn('relative', className)}>
-            <MessagesSquare className="w-5 h-5" />
+            <MessagesSquare className="w-5 h-5" /> Message anonymously
             {hasUnreadMessages && <div className="w-3 h-3 rounded-full absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 bg-indigo-500" />}
           </Button>
         </DialogTrigger>

@@ -1,14 +1,14 @@
 import { Globe, LinkIcon, Lock, Users } from 'lucide-react';
-import { FormEvent, useEffect } from 'react';
+import { FormEvent } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { FormControl, FormDescription, FormField, FormItem, FormLabel } from '@/components/ui/form';
+import { Checkbox } from '@/components/ui/checkbox';
+import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { useMe } from '@/hooks/use-me';
 import EventsField from './EventsField';
 import FamiliesField from './FamiliesField';
 import UsersField from './UsersField';
@@ -31,14 +31,15 @@ export default function Visibility({ shareLinkId }: { shareLinkId?: string | nul
       });
   };
 
-  const defaultListVisibilityValue = form.watch('defaultListVisibility');
-  const { data: me } = useMe();
-  const defaultListVisibility = me?.defaultListVisibility;
-  useEffect(() => {
-    if (defaultListVisibility && !defaultListVisibilityValue) {
-      form.setValue('defaultListVisibility', defaultListVisibility);
-    }
-  }, [defaultListVisibility, defaultListVisibilityValue, form]);
+  // const defaultListVisibilityValue = form.watch('defaultListVisibility');
+  const visibileViaLinkValue = form.watch('visibibleViaLink');
+  // const { data: me } = useMe();
+  // const defaultListVisibility = me?.defaultListVisibility;
+  // useEffect(() => {
+  //   if (defaultListVisibility && !defaultListVisibilityValue) {
+  //     form.setValue('defaultListVisibility', defaultListVisibility);
+  //   }
+  // }, [defaultListVisibility, defaultListVisibilityValue, form]);
 
   // TODO: add a way to handle accessibility of list via view links
   // TODO: lists should be able to be visible via link and to specific people and groups
@@ -51,7 +52,7 @@ export default function Visibility({ shareLinkId }: { shareLinkId?: string | nul
       <CardContent>
         <FormField
           control={form.control}
-          name="defaultListVisibility"
+          name="visibilityType"
           render={({ field }) => {
             return (
               <FormItem>
@@ -74,29 +75,6 @@ export default function Visibility({ shareLinkId }: { shareLinkId?: string | nul
 
                     <FormItem className="flex items-center space-x-2">
                       <FormControl>
-                        <RadioGroupItem value="link" />
-                      </FormControl>
-                      <div className="grid gap-1.5 w-full">
-                        <FormLabel className="cursor-pointer space-y-2">
-                          <div className="font-medium flex items-center">
-                            <LinkIcon className="h-4 w-4 mr-2" />
-                            Anyone with the link
-                          </div>
-                          <FormDescription>Anyone with the link can see this wish list</FormDescription>
-                        </FormLabel>
-                      </div>
-                    </FormItem>
-                    {field.value === 'link' && (
-                      <div className="flex mt-2">
-                        <Input value={shareLink} readOnly className="rounded-r-none" />
-                        <Button onClick={copyShareLink} className="rounded-l-none" variant="secondary">
-                          Copy
-                        </Button>
-                      </div>
-                    )}
-
-                    <FormItem className="flex items-center space-x-2">
-                      <FormControl>
                         <RadioGroupItem value="public" />
                       </FormControl>
                       <div className="grid gap-1.5 w-full">
@@ -112,7 +90,7 @@ export default function Visibility({ shareLinkId }: { shareLinkId?: string | nul
 
                     <FormItem className="flex items-center space-x-2">
                       <FormControl>
-                        <RadioGroupItem value="some" />
+                        <RadioGroupItem value="specific" />
                       </FormControl>
                       <div className="grid gap-1.5 w-full pointer">
                         <FormLabel className="cursor-pointer space-y-2">
@@ -124,7 +102,7 @@ export default function Visibility({ shareLinkId }: { shareLinkId?: string | nul
                         </FormLabel>
                       </div>
                     </FormItem>
-                    {field.value === 'some' && (
+                    {field.value === 'specific' && (
                       <div className="space-y-4 mt-2 ml-5">
                         <FamiliesField />
                         <EventsField />
@@ -133,10 +111,41 @@ export default function Visibility({ shareLinkId }: { shareLinkId?: string | nul
                     )}
                   </RadioGroup>
                 </FormControl>
+                <FormMessage />
               </FormItem>
             );
           }}
         />
+        <FormField
+          control={form.control}
+          name="visibibleViaLink"
+          render={({ field }) => {
+            return (
+              <FormItem className="flex items-center space-x-2 mt-4">
+                <FormControl>
+                  <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                </FormControl>
+                <div className="grid gap-1.5 w-full">
+                  <FormLabel className="cursor-pointer space-y-2">
+                    <div className="font-medium flex items-center">
+                      <LinkIcon className="h-4 w-4 mr-2" />
+                      Anyone with the link
+                    </div>
+                    <FormDescription>Anyone with the link can see this wish list</FormDescription>
+                  </FormLabel>
+                </div>
+              </FormItem>
+            );
+          }}
+        />
+        {visibileViaLinkValue && (
+          <div className="flex mt-2">
+            <Input value={shareLink} readOnly className="rounded-r-none" />
+            <Button onClick={copyShareLink} className="rounded-l-none" variant="secondary">
+              Copy
+            </Button>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

@@ -17,7 +17,8 @@ type ListFormProps = {
   shareLinkId?: string | null;
 };
 
-// TODO: swap out getFamilies, add categories and items to the form
+// TODO: Visibility setting not being applied, no events in list.
+
 export default function ListForm({ form, onSubmit, submitText, shareLinkId }: ListFormProps) {
   return (
     <Form {...form}>

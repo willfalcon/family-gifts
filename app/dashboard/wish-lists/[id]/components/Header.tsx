@@ -5,10 +5,11 @@ import Link from 'next/link';
 
 import { GetList } from '@/lib/queries/items';
 
+import AnonymousMessageDialog from '@/components/Messages/AnonymousMessageDialog';
 import { ShareButton } from '@/components/ShareButton';
 import Title from '@/components/Title';
 import { Badge } from '@/components/ui/badge';
-import { Button, buttonVariants } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
 import Viewer from '@/components/ui/rich-text/viewer';
 import NewItem from './NewItem';
 
@@ -41,12 +42,11 @@ export default function WishListHeader({ list, categories, isOwner, me }: Props)
                 <Badge variant="outline">{visible}</Badge>
               </>
             ))}
-            {/* TODO: add message anonymously */}
-            {!isOwner && me && <Button variant="secondary">Message Anonymously</Button>}
           </div>
         </div>
         <div className="flex gap-2">
           {list.visibilityType === 'public' && <ShareButton />}
+          {!isOwner && me?.id && <AnonymousMessageDialog user={me.id} dmId={list.user.id} />}
           {isOwner && (
             <>
               <NewItem categories={categories} listId={list.id} />

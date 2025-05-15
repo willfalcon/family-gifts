@@ -16,6 +16,7 @@ export default function EventsField() {
   const { data, isLoading } = useQuery({
     queryKey: ['events'],
     queryFn: () => {
+      // TODO: maybe offer an option to load past events?
       return getEvents();
     },
   });
