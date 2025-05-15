@@ -3,7 +3,7 @@
 import { useBreadcrumbs } from '@/components/HeaderBreadcrumbs';
 
 import { EventFromGetEvent } from '@/lib/queries/events';
-import AttendeesForm from './AttendeesForm';
+import AttendeesForm from './Attendees/AttendeesForm';
 import EventDetailsForm from './EventDetailsForm';
 
 export default function UpdateEvent({ event }: { event: EventFromGetEvent }) {

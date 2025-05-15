@@ -15,7 +15,14 @@ import EventInviteEmailTemplate from '@/emails/eventEnvite';
 import { getEvent, getPastEvents as getPastEventsQuery } from '@/lib/queries/events';
 import { getFamilies as getFamiliesQuery } from '@/lib/queries/families';
 import { Event, Invite } from '@prisma/client';
-import { EventAttendeesSchemaType, EventDetailsSchema, EventDetailsSchemaType, EventSchema, EventSchemaType } from './eventSchema';
+import {
+  EventAttendeesSchema,
+  EventAttendeesSchemaType,
+  EventDetailsSchema,
+  EventDetailsSchemaType,
+  EventSchema,
+  EventSchemaType,
+} from './eventSchema';
 
 export async function getFamilies() {
   return await getFamiliesQuery();
@@ -33,7 +40,7 @@ export async function createEvent(event: EventSchemaType) {
 
   const validatedData = EventSchema.parse(event);
 
-  const { attendees, externalInvites, ...fields } = validatedData;
+  const { attendees, externalInvites, familyId, ...fields } = validatedData;
 
   const knownInvitees = await prisma.user.findMany({
     where: {
@@ -95,6 +102,7 @@ export async function createEvent(event: EventSchemaType) {
     data: {
       ...fields,
       info: validatedData.info as JSONContent,
+      ...(familyId && { family: { connect: { id: familyId } } }),
       invites: {
         create: [...knownInvites, ...unknownInvites],
       },
@@ -233,16 +241,18 @@ export async function updateEventAttendees(id: Event['id'], attendees: EventAtte
     throw new Error('You are not authorized to edit this event');
   }
 
+  const validatedData = EventAttendeesSchema.parse(attendees);
+
   // get the users for all in the attendees list that aren't already in the event
   const knownInvitees = await prisma.user.findMany({
     where: {
       id: {
-        in: attendees.attendees.filter((attendee) => !currentEvent.attendees.some((a) => a.id === attendee)),
+        in: validatedData.attendees.filter((attendee) => !currentEvent.attendees.some((a) => a.id === attendee)),
       },
     },
   });
 
-  // create invites for the known users
+  // create invites for the new known users
   const newKnownInvites = knownInvitees.map((user) => {
     const token = randomBytes(20).toString('hex');
     const tokenExpiry = addDays(new Date(), 30);
@@ -265,7 +275,7 @@ export async function updateEventAttendees(id: Event['id'], attendees: EventAtte
       },
     };
   });
-  const newExternalInvites = attendees.externalInvites
+  const newExternalInvites = validatedData.externalInvites
     .filter((invite) => !currentEvent.invites.some((i) => i.email === invite))
     .map((invite) => {
       const token = randomBytes(20).toString('hex');
@@ -289,6 +299,7 @@ export async function updateEventAttendees(id: Event['id'], attendees: EventAtte
       invites: {
         create: [...newKnownInvites, ...newExternalInvites],
       },
+      ...(validatedData.familyId && { family: { connect: { id: validatedData.familyId } } }),
     },
     include: {
       invites: true,

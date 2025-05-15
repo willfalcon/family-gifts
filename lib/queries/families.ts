@@ -7,16 +7,6 @@ import { getActiveFamilyId } from '../rscUtils';
 
 export type MemberFromGetFamily = Prisma.UserGetPayload<{
   include: {
-    events: {
-      include: {
-        _count: {
-          select: {
-            assignments: true;
-          };
-        };
-        attendees: true;
-      };
-    };
     lists: {
       include: {
         _count: {
@@ -66,16 +56,6 @@ export type GetFamily = Prisma.FamilyGetPayload<{
     creator: true;
     members: {
       include: {
-        events: {
-          include: {
-            _count: {
-              select: {
-                assignments: true;
-              };
-            };
-            attendees: true;
-          };
-        };
         lists: {
           include: {
             _count: {
@@ -92,6 +72,16 @@ export type GetFamily = Prisma.FamilyGetPayload<{
         };
       };
     };
+    events: {
+      include: {
+        _count: {
+          select: {
+            assignments: true;
+          };
+        };
+        attendees: true;
+      };
+    };
     _count: {
       select: {
         members: true;
@@ -100,7 +90,7 @@ export type GetFamily = Prisma.FamilyGetPayload<{
   };
 }>;
 
-export const getFamilyInclude = {
+export const getFamilyInclude = (id: Family['id']) => ({
   managers: true,
   invites: {
     include: {
@@ -113,17 +103,14 @@ export const getFamilyInclude = {
       createdAt: Prisma.SortOrder.asc,
     },
     include: {
-      events: {
-        include: {
-          _count: {
-            select: {
-              assignments: true,
+      lists: {
+        where: {
+          visibleToFamilies: {
+            some: {
+              id,
             },
           },
-          attendees: true,
         },
-      },
-      lists: {
         include: {
           _count: {
             select: {
@@ -139,12 +126,22 @@ export const getFamilyInclude = {
       },
     },
   },
+  events: {
+    include: {
+      _count: {
+        select: {
+          assignments: true,
+        },
+      },
+      attendees: true,
+    },
+  },
   _count: {
     select: {
       members: true,
     },
   },
-};
+});
 
 export const getFamily = cache(async (id: Family['id']): Promise<GetFamily> => {
   const session = await auth();
@@ -157,7 +154,7 @@ export const getFamily = cache(async (id: Family['id']): Promise<GetFamily> => {
     where: {
       id,
     },
-    include: getFamilyInclude,
+    include: getFamilyInclude(id),
   });
 
   if (!family) {

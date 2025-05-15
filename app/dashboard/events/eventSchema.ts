@@ -8,6 +8,7 @@ export const EventSchema = z.object({
   info: z.any().optional(),
   attendees: z.array(z.string()).default([]),
   externalInvites: z.array(z.string()).default([]),
+  familyId: z.string().optional(),
 });
 
 export type EventSchemaType = z.infer<typeof EventSchema>;
@@ -25,6 +26,7 @@ export type EventDetailsSchemaType = z.infer<typeof EventDetailsSchema>;
 export const EventAttendeesSchema = EventSchema.pick({
   attendees: true,
   externalInvites: true,
+  familyId: true,
 });
 
 export type EventAttendeesSchemaType = z.infer<typeof EventAttendeesSchema>;

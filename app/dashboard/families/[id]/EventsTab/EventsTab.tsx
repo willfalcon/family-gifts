@@ -3,7 +3,7 @@
 import { CalendarDays, Plus, Search } from 'lucide-react';
 import Link from 'next/link';
 
-import { EventFromGetFamily, GetFamily, MemberFromGetFamily } from '@/lib/queries/families';
+import { GetFamily } from '@/lib/queries/families';
 
 import { useBreadcrumbs } from '@/components/HeaderBreadcrumbs';
 import { Button, buttonVariants } from '@/components/ui/button';
@@ -13,20 +13,10 @@ import { TabsContent } from '@/components/ui/tabs';
 import EventCard from './EventCard';
 
 type Props = {
-  members: MemberFromGetFamily[];
   family: GetFamily;
 };
 
-export default function EventsTab({ members, family }: Props) {
-  const relatedEvents = members.reduce<EventFromGetFamily[]>((events, member) => {
-    member.events.forEach((event) => {
-      if (!events.find((e) => e.id === event.id)) {
-        events.push(event);
-      }
-    });
-    return events;
-  }, []);
-
+export default function EventsTab({ family }: Props) {
   const setBreadcrumbs = useBreadcrumbs();
   setBreadcrumbs([
     { name: 'Dashboard', href: '/dashboard' },
@@ -56,7 +46,7 @@ export default function EventsTab({ members, family }: Props) {
           </div>
 
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {relatedEvents.map((event) => (
+            {family.events.map((event) => (
               <EventCard key={event.id} event={event} />
             ))}
 

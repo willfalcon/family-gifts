@@ -20,20 +20,9 @@ const getUser = cache(async (id: User['id']) => {
 
 type Props = { params: { id: string } };
 
-export async function generateMetadata({ params }: Props) {
-  const family = await getFamily(params.id);
-  return {
-    title: `${family?.name}`,
-    description: `Manage ${family?.name} on Family Gifts`,
-  };
-}
 export default async function FamilyPage({ params }: Props) {
   const session = await auth();
-  if (!session?.user) {
-    redirect('/sign-in');
-  }
-
-  if (!session.user.id) {
+  if (!session?.user?.id) {
     redirect('/sign-in');
   }
 
@@ -67,10 +56,18 @@ export default async function FamilyPage({ params }: Props) {
         </TabsList>
 
         <MembersTab isManager={isManager} family={family} />
-        <EventsTab members={family.members} family={family} />
+        <EventsTab family={family} />
         <WishListsTab members={family.members} family={family} />
         {isManager && <InvitationsTab family={family} />}
       </Tabs>
     </div>
   );
+}
+
+export async function generateMetadata({ params }: Props) {
+  const family = await getFamily(params.id);
+  return {
+    title: `${family?.name}`,
+    description: `Manage ${family?.name} on Family Gifts`,
+  };
 }

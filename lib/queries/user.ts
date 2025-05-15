@@ -28,6 +28,34 @@ export type GetUser = Prisma.UserGetPayload<{
   };
 }>;
 
+export const getUserForSearch = async (id: User['id']) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      managing: true,
+      createdEvents: true,
+      families: true,
+      events: true,
+    },
+  });
+
+  if (user) {
+    return user;
+  }
+  throw new Error('User not found');
+};
+
+export type GetUserForSearch = Prisma.UserGetPayload<{
+  include: {
+    managing: true;
+    createdEvents: true;
+    families: true;
+    events: true;
+  };
+}>;
+
 export const getUserByEmail = async (email: User['email']) => {
   const user = await prisma.user.findUnique({
     where: {
