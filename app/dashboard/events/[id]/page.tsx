@@ -27,8 +27,6 @@ type PageProps = {
   };
 };
 
-//TODO: probably do something about robots for pages like these
-
 const getUser = cache(async (id: User['id']) => {
   return await getUserQuery(id);
 });
@@ -38,6 +36,9 @@ export async function generateMetadata({ params }: PageProps) {
   return {
     title: `${event?.name}`,
     description: `Manage ${event?.name} on Family Gifts`,
+    robots: {
+      index: false,
+    },
   };
 }
 export default async function EventPage({ params }: PageProps) {

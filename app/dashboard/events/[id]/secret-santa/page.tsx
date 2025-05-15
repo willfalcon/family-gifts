@@ -15,6 +15,9 @@ export async function generateMetadata({ params }: Props) {
   return {
     title: `Secret Santa for ${event?.name}`,
     description: `Manage Secret Santa for ${event?.name} on Family Gifts`,
+    robots: {
+      index: false,
+    },
   };
 }
 

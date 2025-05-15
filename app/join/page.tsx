@@ -22,12 +22,18 @@ export async function generateMetadata({ searchParams }: PageProps) {
     return {
       title: 'Join | Family Gifts',
       description: 'Join a family or event on Family Gifts',
+      robots: {
+        index: false,
+      },
     };
   }
   const invite = await getInvite(token);
   return {
     title: `${invite.family?.name || invite.event?.name} | Family Gifts`,
     description: `Join ${invite.family?.name || invite.event?.name} on Family Gifts`,
+    robots: {
+      index: false,
+    },
   };
 }
 

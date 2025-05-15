@@ -7,6 +7,10 @@ import NotificationsPage from './NotificationsPage';
 
 export const metadata = {
   title: 'Notifications',
+  description: 'Stay updated with your family gift activities.',
+  robots: {
+    index: false,
+  },
 };
 
 export default async function page() {

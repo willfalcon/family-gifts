@@ -7,6 +7,9 @@ import ResetPasswordForm from './ResetPasswordForm';
 export const metadata = {
   title: 'Reset Password | Family Gifts',
   description: 'Reset your password for Family Gifts',
+  robots: {
+    index: false,
+  },
 };
 
 type Props = {

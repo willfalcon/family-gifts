@@ -6,6 +6,13 @@ import { getListInclude } from '@/lib/queries/items';
 import WishListPage from '@/app/dashboard/wish-lists/[id]/components/WishListPage';
 import { cache } from 'react';
 
+export const metadata = {
+  title: 'List',
+  description: 'View a list',
+  robots: {
+    index: false,
+  },
+};
 const getList = cache(async (token: string) => {
   const list = await prisma.list.findFirst({
     where: {

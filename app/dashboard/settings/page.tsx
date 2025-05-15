@@ -18,6 +18,10 @@ const getUser = cache(async (id: User['id']) => {
 
 export const metadata = {
   title: 'Settings',
+  description: 'Manage your account settings and preferences',
+  robots: {
+    index: false,
+  },
 };
 
 export default async function ProfilePage() {

@@ -14,6 +14,9 @@ export async function generateMetadata({ params }: PageProps) {
   return {
     title: `${list?.name}`,
     description: `Manage ${list?.name} on Family Gifts`,
+    robots: {
+      index: false,
+    },
   };
 }
 

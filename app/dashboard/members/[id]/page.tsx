@@ -11,6 +11,9 @@ export async function generateMetadata({ params }: Props) {
   return {
     title: `${member?.name}`,
     description: `Manage ${member?.name} on Family Gifts`,
+    robots: {
+      index: false,
+    },
   };
 }
 export default async function MemberPage({ params }: Props) {

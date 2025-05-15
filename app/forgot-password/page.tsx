@@ -4,6 +4,13 @@ import Link from 'next/link';
 import QueryClientProvider from '@/providers/QueryClientProvider';
 import ForgotPasswordForm from './ForgotPasswordForm';
 
+export const metadata = {
+  title: 'Forgot Password',
+  description: 'Reset your password',
+  robots: {
+    index: false,
+  },
+};
 export default function ForgotPasswordPage() {
   return (
     <QueryClientProvider>

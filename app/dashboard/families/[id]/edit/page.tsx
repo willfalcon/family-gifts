@@ -17,6 +17,9 @@ export async function generateMetadata({ params }: Props) {
   return {
     title: `Edit ${family?.name}`,
     description: `Edit ${family?.name} on Family Gifts`,
+    robots: {
+      index: false,
+    },
   };
 }
 

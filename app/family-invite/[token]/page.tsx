@@ -23,6 +23,9 @@ export async function generateMetadata({ params }: Props) {
     return {
       title: 'Family Invite | Family Gifts',
       description: 'Family Invite on Family Gifts',
+      robots: {
+        index: false,
+      },
     };
   }
   const family = await getFamily(token);
