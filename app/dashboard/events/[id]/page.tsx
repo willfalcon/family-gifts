@@ -22,9 +22,9 @@ import SetupSecretSanta from './components/SetupSecretSanta';
 import WishListsTab from './components/WishListsTab';
 
 type PageProps = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
 
 const getUser = cache(async (id: User['id']) => {
@@ -32,7 +32,8 @@ const getUser = cache(async (id: User['id']) => {
 });
 
 export async function generateMetadata({ params }: PageProps) {
-  const event = await getEvent(params.id);
+  const { id } = await params;
+  const event = await getEvent(id);
   return {
     title: `${event?.name}`,
     description: `Manage ${event?.name} on Family Gifts`,
@@ -42,7 +43,8 @@ export async function generateMetadata({ params }: PageProps) {
   };
 }
 export default async function EventPage({ params }: PageProps) {
-  const event = await getEvent(params.id);
+  const { id } = await params;
+  const event = await getEvent(id);
   if (!event) {
     notFound();
   }
@@ -96,7 +98,7 @@ export default async function EventPage({ params }: PageProps) {
 
         <FloatingMessages />
       </div>
-      <MessagesSidebar eventId={params.id} session={session} />
+      <MessagesSidebar eventId={id} session={session} />
     </SidebarProvider>
   );
 }

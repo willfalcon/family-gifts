@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 
 import Messages from '../Messages';
 
-type Props = { params: { channelId: string } };
+type Props = { params: Promise<{ channelId: string }> };
 
 export default async function MessagePage({ params }: Props) {
   const session = await auth();
@@ -12,5 +12,6 @@ export default async function MessagePage({ params }: Props) {
     redirect('/sign-in');
   }
 
-  return <Messages session={session} channelId={params.channelId} />;
+  const { channelId } = await params;
+  return <Messages session={session} channelId={channelId} />;
 }

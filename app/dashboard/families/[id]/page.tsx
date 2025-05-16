@@ -18,7 +18,7 @@ const getUser = cache(async (id: User['id']) => {
   return await getUserQuery(id);
 });
 
-type Props = { params: { id: string } };
+type Props = { params: Promise<{ id: string }> };
 
 export default async function FamilyPage({ params }: Props) {
   const session = await auth();
@@ -27,7 +27,8 @@ export default async function FamilyPage({ params }: Props) {
   }
 
   // not found if user is not a member of the family
-  const family = await getFamily(params.id);
+  const { id } = await params;
+  const family = await getFamily(id);
   if (!family.members.some((member) => member.id === session.user?.id)) {
     notFound();
   }
@@ -65,7 +66,8 @@ export default async function FamilyPage({ params }: Props) {
 }
 
 export async function generateMetadata({ params }: Props) {
-  const family = await getFamily(params.id);
+  const { id } = await params;
+  const family = await getFamily(id);
   return {
     title: `${family?.name}`,
     description: `Manage ${family?.name} on Family Gifts`,

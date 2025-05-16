@@ -65,7 +65,7 @@ export function ShareButton({
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   // Use the current URL if none is provided
-  const shareUrl = url || (typeof window !== 'undefined' ? window.location.href : '');
+  const shareUrl = url || (process.env.NEXT_PUBLIC_VERCEL_URL ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}` : '');
 
   // Check if the Web Share API is available
   const isWebShareAvailable =

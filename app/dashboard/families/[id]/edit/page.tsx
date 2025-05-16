@@ -10,10 +10,11 @@ import DangerZone from './components/DangerZone';
 import EditFamily from './components/EditFamily';
 import EditFamilyMembers from './components/Members';
 
-type Props = { params: { id: string } };
+type Props = { params: Promise<{ id: string }> };
 
 export async function generateMetadata({ params }: Props) {
-  const family = await getFamily(params.id);
+  const { id } = await params;
+  const family = await getFamily(id);
   return {
     title: `Edit ${family?.name}`,
     description: `Edit ${family?.name} on Family Gifts`,
@@ -33,7 +34,8 @@ export default async function FamilyEditPage({ params }: Props) {
     throw new Error('User ID is not set');
   }
 
-  const family = await getFamily(params.id);
+  const { id } = await params;
+  const family = await getFamily(id);
 
   if (!family.managers.some((m) => m.id === session.user?.id)) {
     throw new Error('You must be a manager to edit this family');

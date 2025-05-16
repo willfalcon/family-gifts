@@ -6,10 +6,11 @@ import { getEvent } from '@/lib/queries/events';
 import Title, { SubTitle } from '@/components/Title';
 import UpdateEvent from './UpdateEvent';
 
-type Props = { params: { id: string } };
+type Props = { params: Promise<{ id: string }> };
 
 export async function generateMetadata({ params }: Props) {
-  const event = await getEvent(params.id);
+  const { id } = await params;
+  const event = await getEvent(id);
   return {
     title: `Edit ${event?.name}`,
     description: `Edit ${event?.name} on Family Gifts`,
@@ -24,7 +25,8 @@ export default async function EditEventPage({ params }: Props) {
   if (!session?.user) {
     redirect('/sign-in');
   }
-  const event = await getEvent(params.id);
+  const { id } = await params;
+  const event = await getEvent(id);
   if (!event) {
     redirect('/dashboard/events');
   }

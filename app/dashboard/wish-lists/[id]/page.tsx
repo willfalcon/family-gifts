@@ -6,11 +6,12 @@ import { getList } from '@/lib/queries/items';
 import WishListPage from './components/WishListPage';
 
 type PageProps = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
 export async function generateMetadata({ params }: PageProps) {
-  const list = await getList(params.id);
+  const { id } = await params;
+  const list = await getList(id);
   return {
     title: `${list?.name}`,
     description: `Manage ${list?.name} on Family Gifts`,
@@ -26,7 +27,8 @@ export default async function page({ params }: PageProps) {
   if (!session?.user) {
     redirect('/sign-in');
   }
-  const list = await getList(params.id);
+  const { id } = await params;
+  const list = await getList(id);
 
   if (!list) {
     notFound();

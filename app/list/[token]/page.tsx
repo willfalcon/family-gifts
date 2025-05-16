@@ -6,13 +6,6 @@ import { getListInclude } from '@/lib/queries/items';
 import WishListPage from '@/app/dashboard/wish-lists/[id]/components/WishListPage';
 import { cache } from 'react';
 
-export const metadata = {
-  title: 'List',
-  description: 'View a list',
-  robots: {
-    index: false,
-  },
-};
 const getList = cache(async (token: string) => {
   const list = await prisma.list.findFirst({
     where: {
@@ -23,10 +16,10 @@ const getList = cache(async (token: string) => {
   return list;
 });
 
-type Props = { params: { token: string } };
+type Props = { params: Promise<{ token: string }> };
 
 export default async function ListLink({ params }: Props) {
-  const { token } = params;
+  const { token } = await params;
   const list = await getList(token);
   if (!list || list?.visibilityType !== 'link') {
     notFound();
@@ -35,7 +28,7 @@ export default async function ListLink({ params }: Props) {
 }
 
 export async function generateMetadata({ params }: Props) {
-  const { token } = params;
+  const { token } = await params;
   const list = await getList(token);
   return {
     title: `${list?.name} | Family Gifts`,

@@ -13,7 +13,7 @@ export async function getActiveFamilyId() {
   // For server components
   let id;
   if (typeof window === 'undefined') {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     id = cookieStore.get(ACTIVE_FAMILY_COOKIE)?.value;
   } else {
     //for client components

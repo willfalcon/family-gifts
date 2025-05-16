@@ -146,7 +146,7 @@ export async function removeMember(familyId: Family['id'], memberId: User['id'])
         },
       },
     },
-    include: getFamilyInclude,
+    include: getFamilyInclude(familyId),
   });
   return updatedFamily;
 }
@@ -195,7 +195,7 @@ export async function promoteMember(familyId: Family['id'], memberId: User['id']
     data: {
       managers: { connect: { id: memberId } },
     },
-    include: getFamilyInclude,
+    include: getFamilyInclude(familyId),
   });
   return updatedFamily;
 }
@@ -227,7 +227,7 @@ export async function demoteMember(familyId: Family['id'], memberId: User['id'])
     data: {
       managers: { disconnect: { id: memberId } },
     },
-    include: getFamilyInclude,
+    include: getFamilyInclude(familyId),
   });
   return updatedFamily;
 }
@@ -256,7 +256,7 @@ export async function updateFamilyPrivacy(familyId: Family['id'], data: FamilyPr
   const updatedFamily = await prisma.family.update({
     where: { id: familyId },
     data,
-    include: getFamilyInclude,
+    include: getFamilyInclude(familyId),
   });
   return updatedFamily;
 }
@@ -307,7 +307,7 @@ export async function transferFamily(familyId: Family['id'], newOwnerId: User['i
         },
       },
     },
-    include: getFamilyInclude,
+    include: getFamilyInclude(familyId),
   });
   return updatedFamily;
 }
@@ -348,7 +348,7 @@ export async function removeSelf(familyId: Family['id']) {
         },
       },
     },
-    include: getFamilyInclude,
+    include: getFamilyInclude(familyId),
   });
   return updatedFamily;
 }
@@ -394,7 +394,7 @@ export async function generateInviteLink(familyId: Family['id']) {
       inviteLinkToken: token,
       inviteLinkExpiry: tokenExpiry,
     },
-    include: getFamilyInclude,
+    include: getFamilyInclude(familyId),
   });
 
   return updatedFamily;
@@ -437,7 +437,7 @@ export async function approveJoinRequest(inviteId: Invite['id']) {
         },
       },
     },
-    include: getFamilyInclude,
+    include: getFamilyInclude(invite.familyId),
   });
 
   const client = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
@@ -484,7 +484,7 @@ export async function rejectJoinRequest(inviteId: Invite['id']) {
     },
     include: {
       family: {
-        include: getFamilyInclude,
+        include: getFamilyInclude(invite.familyId),
       },
     },
   });

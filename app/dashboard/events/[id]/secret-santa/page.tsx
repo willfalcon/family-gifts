@@ -8,10 +8,11 @@ import SetBreadcrumbs from '@/components/SetBreadcrumbs';
 import Title, { SubTitle } from '@/components/Title';
 import SecretSanta from './SecretSanta';
 
-type Props = { params: { id: string } };
+type Props = { params: Promise<{ id: string }> };
 
 export async function generateMetadata({ params }: Props) {
-  const event = await getEvent(params.id);
+  const { id } = await params;
+  const event = await getEvent(id);
   return {
     title: `Secret Santa for ${event?.name}`,
     description: `Manage Secret Santa for ${event?.name} on Family Gifts`,
@@ -27,7 +28,8 @@ export default async function SecretSantaPage({ params }: Props) {
     redirect('/sign-in');
   }
 
-  const event = await getEvent(params.id);
+  const { id } = await params;
+  const event = await getEvent(id);
 
   if (!event) {
     notFound();

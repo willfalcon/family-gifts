@@ -11,12 +11,12 @@ import JoinButton from './JoinButton';
 import SignInOrJoin from './SignInOrJoin';
 
 type PageProps = {
-  params: { slug: string };
-  searchParams: { [key: string]: string | undefined };
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ [key: string]: string | undefined }>;
 };
 
 export async function generateMetadata({ searchParams }: PageProps) {
-  const { token } = searchParams;
+  const { token } = await searchParams;
 
   if (!token) {
     return {
@@ -38,7 +38,7 @@ export async function generateMetadata({ searchParams }: PageProps) {
 }
 
 export default async function JoinPage({ searchParams }: PageProps) {
-  const { token } = searchParams;
+  const { token } = await searchParams;
 
   if (!token) {
     notFound();

@@ -8,10 +8,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import EditList from './EditList';
 import ListItemsForm from './ListItemsForm';
 
-type Props = { params: { id: string } };
+type Props = { params: Promise<{ id: string }> };
 
 export async function generateMetadata({ params }: Props) {
-  const list = await getListForEdit(params.id);
+  const { id } = await params;
+  const list = await getListForEdit(id);
   return {
     title: `Edit ${list?.name}`,
     description: `Edit ${list?.name} on Family Gifts`,
@@ -22,7 +23,8 @@ export async function generateMetadata({ params }: Props) {
 }
 
 export default async function EditListPage({ params }: Props) {
-  const list = await getListForEdit(params.id);
+  const { id } = await params;
+  const list = await getListForEdit(id);
   if (!list) {
     notFound();
   }

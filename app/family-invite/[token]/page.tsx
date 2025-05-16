@@ -10,7 +10,7 @@ import { cache } from 'react';
 import { getFamilyByInviteLinkToken } from './actions';
 import JoinButton from './JoinButton';
 
-type Props = { params: { token: string } };
+type Props = { params: Promise<{ token: string }> };
 
 const getFamily = cache(async (token: string) => {
   const family = await getFamilyByInviteLinkToken(token);
@@ -18,7 +18,7 @@ const getFamily = cache(async (token: string) => {
 });
 
 export async function generateMetadata({ params }: Props) {
-  const { token } = params;
+  const { token } = await params;
   if (!token) {
     return {
       title: 'Family Invite | Family Gifts',
@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: Props) {
 }
 
 export default async function FamilyInvitePage({ params }: Props) {
-  const { token } = params;
+  const { token } = await params;
   if (!token) {
     notFound();
   }

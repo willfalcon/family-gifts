@@ -13,13 +13,13 @@ export const metadata = {
 };
 
 type Props = {
-  searchParams: {
+  searchParams: Promise<{
     token: string;
-  };
+  }>;
 };
 
 export default async function ResetPasswordPage({ searchParams }: Props) {
-  const { token } = searchParams;
+  const { token } = await searchParams;
 
   if (!token) {
     notFound();
