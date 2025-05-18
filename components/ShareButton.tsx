@@ -1,7 +1,7 @@
 'use client';
 
 import { Check, Copy, Facebook, LinkIcon, Mail, Share2, Twitter } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -63,13 +63,18 @@ export function ShareButton({
 }: ShareButtonProps) {
   const [copied, setCopied] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isWebShareAvailable, setIsWebShareAvailable] = useState(false);
+  const [shareUrl, setShareUrl] = useState('');
 
-  // Use the current URL if none is provided
-  const shareUrl = url || (process.env.NEXT_PUBLIC_VERCEL_URL ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}` : '');
+  useEffect(() => {
+    // Initialize URL and Web Share API availability on client side
+    const currentUrl = url || window.location.href;
+    setShareUrl(currentUrl);
 
-  // Check if the Web Share API is available
-  const isWebShareAvailable =
-    typeof navigator !== 'undefined' && navigator.share !== undefined && navigator.canShare && navigator.canShare({ url: shareUrl });
+    const canShare =
+      typeof navigator !== 'undefined' && navigator.share !== undefined && navigator.canShare && navigator.canShare({ url: currentUrl });
+    setIsWebShareAvailable(canShare);
+  }, [url]);
 
   const handleShare = async () => {
     if (isWebShareAvailable) {
@@ -189,13 +194,18 @@ export function ShareDropdown({
   className = '',
 }: ShareButtonProps) {
   const [copied, setCopied] = useState(false);
+  const [isWebShareAvailable, setIsWebShareAvailable] = useState(false);
+  const [shareUrl, setShareUrl] = useState('');
 
-  // Use the current URL if none is provided
-  const shareUrl = url || (typeof window !== 'undefined' ? window.location.href : '');
+  useEffect(() => {
+    // Initialize URL and Web Share API availability on client side
+    const currentUrl = url || window.location.href;
+    setShareUrl(currentUrl);
 
-  // Check if the Web Share API is available
-  const isWebShareAvailable =
-    typeof navigator !== 'undefined' && navigator.share !== undefined && navigator.canShare && navigator.canShare({ url: shareUrl });
+    const canShare =
+      typeof navigator !== 'undefined' && navigator.share !== undefined && navigator.canShare && navigator.canShare({ url: currentUrl });
+    setIsWebShareAvailable(canShare);
+  }, [url]);
 
   const handleShare = async () => {
     if (isWebShareAvailable) {
