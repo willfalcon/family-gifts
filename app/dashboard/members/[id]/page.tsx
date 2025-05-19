@@ -33,7 +33,7 @@ export default async function MemberPage({ params }: Props) {
       />
       <MemberHeader member={member} />
 
-      {/* Add some stuff here or figure out what to do with this page */}
+      {/* TODO: Add some stuff here or figure out what to do with this page */}
     </div>
   );
 }

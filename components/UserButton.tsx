@@ -22,6 +22,7 @@ import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from './u
 
 import { userInitials } from '@/lib/utils';
 import SidebarNotifications from './notifications/SidebarNotifications';
+import ThemeToggle from './ThemeToggle';
 
 export default function UserButton({ session }: { session: Session }) {
   const { isMobile } = useSidebar();
@@ -60,21 +61,26 @@ export default function UserButton({ session }: { session: Session }) {
             // sideOffset={16}
           >
             <DropdownMenuLabel className="p-0 font-normal">
-              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage
-                    src={
-                      session.user?.image ??
-                      `https://api.dicebear.com/9.x/thumbs/svg?seed=${Math.floor(Math.random() * 100000) + 1}&randomizeIds=true`
-                    }
-                    alt={session.user?.name ?? ''}
-                    // alt={''}
-                  />
-                </Avatar>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">{session.user?.name}</span>
-                  <span className="truncate text-xs">{session.user?.email}</span>
+              <div className="flex items-center justify-between gap-2 px-1 py-1.5 text-left text-sm">
+                <div>
+                  <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                    <Avatar className="h-8 w-8 rounded-lg">
+                      <AvatarImage
+                        src={
+                          session.user?.image ??
+                          `https://api.dicebear.com/9.x/thumbs/svg?seed=${Math.floor(Math.random() * 100000) + 1}&randomizeIds=true`
+                        }
+                        alt={session.user?.name ?? ''}
+                        // alt={''}
+                      />
+                    </Avatar>
+                    <div className="grid flex-1 text-left text-sm leading-tight">
+                      <span className="truncate font-semibold">{session.user?.name}</span>
+                      <span className="truncate text-xs">{session.user?.email}</span>
+                    </div>
+                  </div>
                 </div>
+                <ThemeToggle />
               </div>
             </DropdownMenuLabel>
 

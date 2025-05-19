@@ -54,7 +54,7 @@ export default function MemberCard({ member, isManager }: Props) {
         {me?.id && !isSelf && <MessageDialog user={me.id} dmId={member.id} className="align-start" />}
 
         <Button variant="ghost" size="sm" asChild className="col-start-2 self-end">
-          <Link href={`/dashboard/wish-lists/${member.id}`}>
+          <Link href={`/dashboard/members/${member.id}`}>
             <Gift className="h-4 w-4 mr-1" />
             Lists
           </Link>
