@@ -6,9 +6,10 @@ import { Input } from './ui/input';
 
 type Props = {
   field: ControllerRenderProps<ItemSchemaType>;
+  tabIndex?: number;
 };
 
-export default function CurrencyField({ field }: Props) {
+export default function CurrencyField({ field, tabIndex }: Props) {
   const form = useFormContext();
 
   return (
@@ -23,6 +24,7 @@ export default function CurrencyField({ field }: Props) {
         onChange={(e) => {
           form.setValue('price', parseFloat(e.target.value));
         }}
+        tabIndex={tabIndex}
       />
     </div>
   );

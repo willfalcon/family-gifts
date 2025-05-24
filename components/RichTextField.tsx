@@ -15,6 +15,8 @@ export default function RichTextField({ name, description, className }: Props) {
     throw new Error('RichTextField must be used within a Form');
   }
 
+  // console.log(document.activeElement);
+
   return (
     <Controller
       name={name}

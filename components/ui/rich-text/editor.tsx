@@ -1,6 +1,7 @@
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 
+import useMeasure from 'react-use-measure';
 import EditorToolbar from './toolbar/editor-toolbar';
 
 interface EditorProps {
@@ -26,12 +27,13 @@ const Editor = ({ content, placeholder, onChange, immediatelyRender = true }: Ed
     },
     immediatelyRender,
   });
+  const [ref, bounds] = useMeasure();
 
   if (!editor) return <></>;
 
   return (
-    <div className="prose max-w-none w-full border border-input bg-background dark:prose-invert rounded-md">
-      <EditorToolbar editor={editor} />
+    <div ref={ref} className="prose max-w-none w-full border border-input bg-background dark:prose-invert rounded-md">
+      <EditorToolbar editor={editor} containerWidth={bounds.width} />
       <div className="editor">
         <EditorContent editor={editor} placeholder={placeholder} className="px-4 min-h-[200px]" />
       </div>

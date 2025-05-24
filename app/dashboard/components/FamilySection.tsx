@@ -12,7 +12,7 @@ export default async function FamilySection() {
   const families = await dashboardGetFamilies();
 
   return (
-    <section className="@container">
+    <section className="@container space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-semibold">Family Members</h2>
         <Link href="/dashboard/families" className={buttonVariants({ variant: 'outline', size: 'sm' })}>
@@ -20,9 +20,11 @@ export default async function FamilySection() {
           Manage Families
         </Link>
       </div>
-      {families.map((family) => (
-        <FamilySectionFamily key={family.id} family={family} />
-      ))}
+      <div className="space-y-6">
+        {families.map((family) => (
+          <FamilySectionFamily key={family.id} family={family} />
+        ))}
+      </div>
       {!families.length && (
         <Card className="border-dashed flex flex-col items-center justify-center p-8">
           <Users className="h-8 w-8 text-muted-foreground mb-4" />

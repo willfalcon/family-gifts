@@ -14,9 +14,10 @@ type Props = {
   description?: string;
   className?: string;
   previewField: string;
+  tabIndex?: number;
 };
 
-export default function ImageField({ name, previewField, label, description, className }: Props) {
+export default function ImageField({ name, previewField, label, description, className, tabIndex }: Props) {
   const form = useFormContext();
 
   const [preview, setPreview] = useState<string | ArrayBuffer | null>(form.getValues(previewField));
@@ -66,7 +67,7 @@ export default function ImageField({ name, previewField, label, description, cla
                 {/* <div className="flex items-start gap-4"> */}
                 {preview && <img src={preview as string} alt="Preview" className="max-h-[400px] rounded-lg" />}
                 <ImagePlus className={`size-14 text-muted-foreground ${preview ? 'hidden' : 'block'}`} />
-                <Input {...getInputProps()} type="file" />
+                <Input {...getInputProps()} type="file" tabIndex={tabIndex} />
                 {isDragActive ? (
                   <p className="text-sm text-muted-foreground">Drop the image!</p>
                 ) : (
@@ -80,8 +81,8 @@ export default function ImageField({ name, previewField, label, description, cla
                 onClick={(e) => {
                   e.preventDefault();
                   setPreview(null);
-                  form.setValue(name, null);
-                  form.setValue(previewField, null);
+                  form.setValue(name, undefined);
+                  form.setValue(previewField, undefined);
                 }}
               >
                 <X className="size-4" /> Remove
