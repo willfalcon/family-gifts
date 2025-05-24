@@ -43,7 +43,7 @@ export default function DeleteItem({ item }: Props) {
   });
 
   return (
-    <AlertDialog open={open}>
+    <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
         <Button variant="ghost" size="icon" aria-label="Remove item" onClick={() => setOpen(true)}>
           <Trash2 className="h-4 w-4 text-destructive" />

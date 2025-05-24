@@ -41,7 +41,6 @@ export async function updateItem(id: Item['id'], data: ItemSchemaType) {
   const { imageUrl, ...rest } = ItemSchema.parse(data);
 
   const currentItem = await getItemToEdit(id);
-
   const oldImage = currentItem?.image;
   if (oldImage && imageUrl !== oldImage) {
     await del(oldImage);
@@ -57,7 +56,10 @@ export async function updateItem(id: Item['id'], data: ItemSchemaType) {
     data: {
       ...rest,
       notes: rest.notes as JSONContent,
-      image: imageUrl,
+      image: imageUrl || '',
+    },
+    include: {
+      purchasedBy: true,
     },
   });
 

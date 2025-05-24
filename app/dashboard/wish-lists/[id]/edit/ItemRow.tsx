@@ -171,9 +171,13 @@ export default function ItemRow({ item, categories }: Props) {
                   }}
                 />
               </div>
-              <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 my-4">
-                <ImageField name="image" label="Image" className="col-span-1" previewField="imageUrl" />
-                <RichTextField name="notes" className="col-span-2" />
+              <div className="md:grid gap-4 md:grid-cols-3 my-4">
+                <div className="col-span-1">
+                  <ImageField name="image" label="Image" previewField="imageUrl" />
+                </div>
+                <div className="md:col-span-2">
+                  <RichTextField name="notes" />
+                </div>
               </div>
               {/* <Controller
                 name="notes"

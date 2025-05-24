@@ -32,7 +32,7 @@ export default function ItemForm({ form, onSubmit, text, categories, className =
               <FormItem>
                 <FormLabel>Name</FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <Input {...field} tabIndex={1} />
                 </FormControl>
                 <FormDescription>Name of the thing you want.</FormDescription>
                 <FormMessage />
@@ -48,7 +48,7 @@ export default function ItemForm({ form, onSubmit, text, categories, className =
               <FormItem>
                 <FormLabel>Link</FormLabel>
                 <FormControl>
-                  <Input {...field} value={field.value ?? ''} />
+                  <Input {...field} value={field.value ?? ''} tabIndex={1} />
                 </FormControl>
                 <FormDescription>Link to the item.</FormDescription>
                 <FormMessage />
@@ -56,7 +56,13 @@ export default function ItemForm({ form, onSubmit, text, categories, className =
             );
           }}
         />
-        <ImageField name="image" label="Image" description="Image of the item. Amazon images are automatically detected." previewField="imageUrl" />
+        <ImageField
+          name="image"
+          label="Image"
+          description="Image of the item. Amazon images are automatically detected."
+          previewField="imageUrl"
+          tabIndex={1}
+        />
         <FormField
           control={form.control}
           name="price"
@@ -65,7 +71,7 @@ export default function ItemForm({ form, onSubmit, text, categories, className =
               <FormItem>
                 <FormLabel>Price</FormLabel>
                 <FormControl>
-                  <CurrencyField field={field} />
+                  <CurrencyField field={field} tabIndex={1} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

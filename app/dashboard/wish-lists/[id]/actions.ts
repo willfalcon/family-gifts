@@ -6,9 +6,13 @@ import { Item } from '@prisma/client';
 import { JSONContent } from '@tiptap/react';
 import { revalidatePath } from 'next/cache';
 
-import { getList } from '@/lib/queries/items';
+import { getItem as getItemQuery, getListForEdit } from '@/lib/queries/items';
 import { getASIN } from '@/lib/utils';
 import { ItemSchema, ItemSchemaType } from './itemSchema';
+
+export async function getItem(id: Item['id']) {
+  return await getItemQuery(id);
+}
 
 export async function createItem(data: ItemSchemaType & { listId: string }) {
   const session = await auth();
@@ -18,13 +22,13 @@ export async function createItem(data: ItemSchemaType & { listId: string }) {
 
   const { imageUrl, ...rest } = ItemSchema.parse(data);
 
-  const list = await getList(data.listId);
+  const list = await getListForEdit(data.listId);
 
   if (!list) {
     throw new Error('List not found');
   }
 
-  if (list.user.id !== session.user.id) {
+  if (list.userId !== session.user.id) {
     throw new Error('You do not have permission to do this.');
   }
 
@@ -44,7 +48,8 @@ export async function createItem(data: ItemSchemaType & { listId: string }) {
   revalidatePath('/wish-lists/[id]', 'page');
   revalidatePath('/wish-lists');
 
-  return item;
+  list.items.push(item);
+  return list;
 }
 
 export async function maybeGetImage(item: Item) {

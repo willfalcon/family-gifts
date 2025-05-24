@@ -11,6 +11,7 @@ import Title from '@/components/Title';
 import { Badge } from '@/components/ui/badge';
 import { buttonVariants } from '@/components/ui/button';
 import Viewer from '@/components/ui/rich-text/viewer';
+import { Fragment } from 'react';
 import NewItem from './NewItem';
 
 type Props = {
@@ -37,10 +38,10 @@ export default function WishListHeader({ list, categories, isOwner, me }: Props)
           <div className="flex items-center gap-2 mt-2">
             <span className="text-sm">By {list.user.name}</span>
             {visibleTo.map((visible) => (
-              <>
+              <Fragment key={visible}>
                 <span className="text-muted-foreground">•</span>
                 <Badge variant="outline">{visible}</Badge>
-              </>
+              </Fragment>
             ))}
           </div>
         </div>

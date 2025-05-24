@@ -1,6 +1,6 @@
 import { auth } from '@/auth';
 import { prisma } from '@/prisma';
-import { List, Prisma } from '@prisma/client';
+import { Item, List, Prisma } from '@prisma/client';
 import { randomBytes } from 'crypto';
 import { cache } from 'react';
 
@@ -46,6 +46,23 @@ export const getList = cache(async (id: List['id'], shareLink?: string) => {
   });
 
   return list;
+});
+
+export const getItem = cache(async (id: Item['id']) => {
+  const session = await auth();
+  if (!session?.user) {
+    throw new Error('You must be logged in to do this.');
+  }
+
+  const item = await prisma.item.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      purchasedBy: true,
+    },
+  });
+  return item;
 });
 
 export type ItemFromGetList = GetList['items'][number];
