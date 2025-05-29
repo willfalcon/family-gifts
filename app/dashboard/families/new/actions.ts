@@ -5,11 +5,11 @@ import { api } from '@/convex/_generated/api';
 import { prisma } from '@/prisma';
 import { Family, Invite } from '@prisma/client';
 import { ConvexHttpClient } from 'convex/browser';
-import { randomBytes } from 'crypto';
 import { addDays } from 'date-fns';
 import { Resend } from 'resend';
 
 import InviteEmailTemplate from '@/emails/invite';
+import { generateRandomHex } from '@/lib/rscUtils';
 import { FamilySchema, FamilySchemaType } from '../familySchema';
 
 export async function createFamily(data: FamilySchemaType) {
@@ -44,7 +44,7 @@ export async function createFamily(data: FamilySchemaType) {
         invites: {
           create:
             validatedData.members?.map((invite) => {
-              const token = randomBytes(20).toString('hex');
+              const token = generateRandomHex(20);
               const tokenExpiry = addDays(new Date(), 30);
               return {
                 email: invite.value,

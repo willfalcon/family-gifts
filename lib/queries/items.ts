@@ -1,8 +1,8 @@
 import { auth } from '@/auth';
 import { prisma } from '@/prisma';
 import { Item, List, Prisma } from '@prisma/client';
-import { randomBytes } from 'crypto';
 import { cache } from 'react';
+import { generateRandomHex } from '../rscUtils';
 
 export type GetList = Prisma.ListGetPayload<{
   include: {
@@ -89,7 +89,7 @@ export const getListForEdit = cache(async (id: List['id']) => {
   });
 
   if (list && !list.shareLink) {
-    const shareLink = randomBytes(10).toString('hex');
+    const shareLink = generateRandomHex(10);
     const list = await prisma.list.update({
       where: {
         id,

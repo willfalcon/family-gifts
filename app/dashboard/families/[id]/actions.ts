@@ -3,7 +3,7 @@
 import { auth } from '@/auth';
 import { prisma } from '@/prisma';
 import { Family, FamilyVisibility, Invite, User } from '@prisma/client';
-import { randomBytes } from 'crypto';
+
 import { addDays } from 'date-fns';
 import { revalidatePath } from 'next/cache';
 
@@ -11,6 +11,7 @@ import { api } from '@/convex/_generated/api';
 import { sendNotification } from '@/lib/notifications';
 import { canManageFamily } from '@/lib/permissions';
 import { getFamilyInclude, getFamily as getFamilyQuery } from '@/lib/queries/families';
+import { generateRandomHex } from '@/lib/rscUtils';
 import { ConvexHttpClient } from 'convex/browser';
 import { FamilySchemaType } from '../familySchema';
 import { sendInviteEmail } from '../new/actions';
@@ -80,7 +81,7 @@ export async function inviteMembers(familyId: Family['id'], data: InvitesSchemaT
       invites: {
         create:
           uniqueInvites?.map((invite) => {
-            const token = randomBytes(20).toString('hex');
+            const token = generateRandomHex(20);
             const tokenExpiry = addDays(new Date(), 30);
             return {
               email: invite.value,
@@ -386,7 +387,7 @@ export async function generateInviteLink(familyId: Family['id']) {
   if (!(await canManageFamily(familyId, userId))) {
     throw new Error("You don't have permission to generate an invite link for this family");
   }
-  const token = randomBytes(7).toString('hex');
+  const token = generateRandomHex(7);
   const tokenExpiry = addDays(new Date(), 7);
   const updatedFamily = await prisma.family.update({
     where: { id: familyId },

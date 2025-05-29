@@ -4,7 +4,6 @@ import { auth } from '@/auth';
 import { prisma } from '@/prisma';
 import { JSONContent } from '@tiptap/react';
 import { ConvexHttpClient } from 'convex/browser';
-import { randomBytes } from 'crypto';
 import { addDays } from 'date-fns';
 import { revalidatePath } from 'next/cache';
 import { Resend } from 'resend';
@@ -14,6 +13,7 @@ import { Id } from '@/convex/_generated/dataModel';
 import EventInviteEmailTemplate from '@/emails/eventEnvite';
 import { getEvent, getPastEvents as getPastEventsQuery } from '@/lib/queries/events';
 import { getFamilies as getFamiliesQuery } from '@/lib/queries/families';
+import { generateRandomHex } from '@/lib/rscUtils';
 import { Event, Invite } from '@prisma/client';
 import {
   EventAttendeesSchema,
@@ -60,7 +60,7 @@ export async function createEvent(event: EventSchemaType) {
   // They should all get a "Join Event" button with a token to join the event.
   // In-app notifications can be handled after?
   const knownInvites = knownInvitees.map((user) => {
-    const token = randomBytes(20).toString('hex');
+    const token = generateRandomHex(20);
     const tokenExpiry = addDays(new Date(), 30);
     return {
       user: {
@@ -83,7 +83,7 @@ export async function createEvent(event: EventSchemaType) {
   });
 
   const unknownInvites = externalInvites.map((invite) => {
-    const token = randomBytes(20).toString('hex');
+    const token = generateRandomHex(20);
     const tokenExpiry = addDays(new Date(), 30);
     // create invites for the unknown users
     return {
@@ -254,7 +254,7 @@ export async function updateEventAttendees(id: Event['id'], attendees: EventAtte
 
   // create invites for the new known users
   const newKnownInvites = knownInvitees.map((user) => {
-    const token = randomBytes(20).toString('hex');
+    const token = generateRandomHex(20);
     const tokenExpiry = addDays(new Date(), 30);
     return {
       user: {
@@ -278,7 +278,7 @@ export async function updateEventAttendees(id: Event['id'], attendees: EventAtte
   const newExternalInvites = validatedData.externalInvites
     .filter((invite) => !currentEvent.invites.some((i) => i.email === invite))
     .map((invite) => {
-      const token = randomBytes(20).toString('hex');
+      const token = generateRandomHex(20);
       const tokenExpiry = addDays(new Date(), 30);
       // create invites for the unknown users
       return {

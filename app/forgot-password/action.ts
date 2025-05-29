@@ -1,8 +1,8 @@
 'use server';
 
 import ResetPasswordEmailTemplate from '@/emails/passwordReset';
+import { generateRandomHex } from '@/lib/rscUtils';
 import { prisma } from '@/prisma';
-import { randomBytes } from 'crypto';
 import { Resend } from 'resend';
 
 export async function forgotPassword(email: string) {
@@ -16,7 +16,7 @@ export async function forgotPassword(email: string) {
     return;
   }
 
-  const token = randomBytes(20).toString('hex');
+  const token = generateRandomHex(20);
 
   await prisma.user.update({
     where: {
