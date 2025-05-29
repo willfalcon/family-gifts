@@ -1,4 +1,4 @@
-import { compare } from 'bcryptjs';
+import { compare } from 'bcrypt-ts';
 import { CredentialsSignin, type NextAuthConfig } from 'next-auth';
 import type { Provider } from 'next-auth/providers';
 import Credentials from 'next-auth/providers/credentials';

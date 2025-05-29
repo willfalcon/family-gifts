@@ -5,7 +5,7 @@ import { prisma } from '@/prisma';
 import { User } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
 
-import { compare, genSalt, hash } from 'bcryptjs';
+import { compare, genSalt, hash } from 'bcrypt-ts';
 import { passwordErrors, passwordSchema, PasswordSchemaType, ProfileSchema, ProfileSchemaType } from './profileSchema';
 
 export async function updateProfile(data: ProfileSchemaType) {
