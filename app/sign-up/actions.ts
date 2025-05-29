@@ -1,7 +1,7 @@
 'use server';
 
 import { prisma } from '@/prisma';
-import { genSalt, hash } from 'bcrypt-ts';
+import { hash } from 'argon2';
 import { signUpSchema } from './signUpSchema';
 export async function signUp({ email, password, name }: { email: string; password: string; name: string }) {
   const validatedFields = signUpSchema.safeParse({ email, password, name });
@@ -9,14 +9,12 @@ export async function signUp({ email, password, name }: { email: string; passwor
     throw new Error('Invalid fields');
   }
 
-  const salt = await genSalt(10);
-  const hashedPassword = await hash(password, salt);
+  const hashedPassword = await hash(password);
 
   const user = await prisma.user.create({
     data: {
       email,
       password: hashedPassword,
-      salt,
       name,
     },
   });

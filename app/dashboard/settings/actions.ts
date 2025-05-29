@@ -3,9 +3,9 @@
 import { auth } from '@/auth';
 import { prisma } from '@/prisma';
 import { User } from '@prisma/client';
+import { hash, verify } from 'argon2';
 import { revalidatePath } from 'next/cache';
 
-import { compare, genSalt, hash } from 'bcrypt-ts';
 import { passwordErrors, passwordSchema, PasswordSchemaType, ProfileSchema, ProfileSchemaType } from './profileSchema';
 
 export async function updateProfile(data: ProfileSchemaType) {
@@ -75,7 +75,7 @@ export async function changePassword(data: PasswordSchemaType) {
     throw new Error(passwordErrors.PASSWORD_REQUIRED);
   }
 
-  const correctPassword = await compare(validatedData.password, user.password);
+  const correctPassword = await verify(user.password, validatedData.password);
 
   if (!correctPassword) {
     throw new Error(passwordErrors.PASSWORD_INCORRECT);
@@ -85,8 +85,7 @@ export async function changePassword(data: PasswordSchemaType) {
     throw new Error(passwordErrors.PASSWORD_MISMATCH);
   }
 
-  const salt = await genSalt(10);
-  const hashedPassword = await hash(validatedData.newPassword, salt);
+  const hashedPassword = await hash(validatedData.newPassword);
 
   const updatedUser = await prisma.user.update({
     where: {
@@ -94,7 +93,6 @@ export async function changePassword(data: PasswordSchemaType) {
     },
     data: {
       password: hashedPassword,
-      salt,
     },
   });
 
@@ -110,8 +108,7 @@ export async function setPassword(data: PasswordSchemaType) {
 
   const validatedData = passwordSchema.parse(data);
 
-  const salt = await genSalt(10);
-  const hashedPassword = await hash(validatedData.newPassword, salt);
+  const hashedPassword = await hash(validatedData.newPassword);
 
   const user = await prisma.user.update({
     where: {
@@ -119,7 +116,6 @@ export async function setPassword(data: PasswordSchemaType) {
     },
     data: {
       password: hashedPassword,
-      salt,
     },
   });
 

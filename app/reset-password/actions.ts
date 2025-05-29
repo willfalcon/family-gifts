@@ -2,15 +2,14 @@
 
 import { getUserByResetPasswordToken } from '@/lib/queries/user';
 import { prisma } from '@/prisma';
-import { genSalt, hash } from 'bcrypt-ts';
+import { hash } from 'argon2';
 
 export async function resetPassword(token: string, password: string) {
   const user = await getUserByResetPasswordToken(token);
   if (!user) {
     throw new Error('User not found');
   }
-  const salt = await genSalt(10);
-  const hashedPassword = await hash(password, salt);
+  const hashedPassword = await hash(password);
 
   await prisma.user.update({
     where: { id: user.id },

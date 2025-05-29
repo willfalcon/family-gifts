@@ -1,9 +1,9 @@
-import { compare } from 'bcrypt-ts';
 import { CredentialsSignin, type NextAuthConfig } from 'next-auth';
 import type { Provider } from 'next-auth/providers';
 import Credentials from 'next-auth/providers/credentials';
 import Google from 'next-auth/providers/google';
 
+import { verify } from 'argon2';
 import { getUserByEmail } from './lib/queries/user';
 
 // Notice this is only an object, not a full Auth.js instance
@@ -34,7 +34,8 @@ export const providers: Provider[] = [
       if (!user.password) {
         throw new NoPasswordError();
       }
-      const passwordsMatch = await compare(credentials.password as string, user.password);
+      // const passwordsMatch = await compare(credentials.password as string, user.password);
+      const passwordsMatch = await verify(user.password, credentials.password as string);
       if (!passwordsMatch) {
         throw new InvalidCredentialsError();
       }
