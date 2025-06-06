@@ -1,0 +1,67 @@
+# Settings for Backend (on Cloud Run).
+# See https://firebase.google.com/docs/app-hosting/configure#cloud-run
+runConfig:
+  minInstances: 0
+  # maxInstances: 100
+  # concurrency: 80
+  # cpu: 1
+  # memoryMiB: 512
+
+# Environment variables and secrets.
+# env:
+# Configure environment variables.
+# See https://firebase.google.com/docs/app-hosting/configure#user-defined-environment
+# - variable: MESSAGE
+#   value: Hello world!
+#   availability:
+#     - BUILD
+#     - RUNTIME
+
+# Grant access to secrets in Cloud Secret Manager.
+# See https://firebase.google.com/docs/app-hosting/configure#secret-parameters
+# - variable: MY_SECRET
+#   secret: mySecretRef
+
+env:
+  - variable: BLOB_READ_WRITE_TOKEN
+    value: projects/816724819988/secrets/BLOB_READ_WRITE_TOKEN
+  - variable: AUTH_GOOGLE_SECRET
+    value: projects/816724819988/secrets/AUTH_GOOGLE_SECRET
+  - variable: AUTH_GOOGLE_ID
+    value: projects/816724819988/secrets/AUTH_GOOGLE_ID
+  - variable: CONVEX_DEPLOYMENT
+    value: projects/816724819988/secrets/CONVEX_DEPLOYMENT
+  - variable: POSTGRES_PASSWORD
+    value: projects/816724819988/secrets/POSTGRES_PASSWORD
+  - variable: AUTH_SECRET
+    value: projects/816724819988/secrets/AUTH_SECRET
+  - variable: CANOPY_API_KEY
+    value: projects/816724819988/secrets/CANOPY_API_KEY
+  - variable: RESEND_API_KEY
+    value: projects/816724819988/secrets/RESEND_API_KEY
+  - variable: PULSE_API_KEY
+    value: projects/816724819988/secrets/PULSE_API_KEY
+  - variable: DATABASE_URL
+    value: projects/816724819988/secrets/DATABASE_URL
+  - variable: FRONTEND_URL
+    value: https://family-gifts--test-next-1b662.us-central1.hosted.app
+  - variable: POSTGRES_DATABASE
+    value: verceldb
+  - variable: POSTGRES_HOST
+    value: ep-white-bar-a4wkf7z0-pooler.us-east-1.aws.neon.tech
+  - variable: POSTGRES_PRISMA_URL
+    value: projects/816724819988/secrets/POSTGRES_PRISMA_URL
+  - variable: POSTGRES_URL
+    value: projects/816724819988/secrets/POSTGRES_URL
+  - variable: POSTGRES_URL_NON_POOLING
+    value: projects/816724819988/secrets/POSTGRES_URL_NON_POOLING
+  - variable: POSTGRES_URL_NO_SSL
+    value: projects/816724819988/secrets/POSTGRES_URL_NO_SSL
+  - variable: POSTGRES_USER
+    value: default
+  - variable: FROM_EMAIL_ADDRESS
+    value: invites@family-gifts.willhawks.com
+  - variable: NEXT_PUBLIC_CONVEX_URL
+    value: https://hearty-dogfish-953.convex.cloud
+  - variable: NEXT_PUBLIC_FRONTEND_URL
+    value: https://family-gifts--test-next-1b662.us-central1.hosted.app
