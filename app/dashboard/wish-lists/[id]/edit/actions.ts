@@ -104,3 +104,27 @@ export async function deleteItem(id: Item['id']) {
   revalidatePath('/wish-lists/[id]', 'page');
   return newList;
 }
+
+export async function deleteList(id: List['id']) {
+  const session = await auth();
+  if (!session?.user) {
+    throw new Error('You must be logged in to do this.');
+  }
+
+  const list = await getListForEdit(id);
+
+  if (!list) {
+    throw new Error('List not found');
+  }
+
+  if (list.userId !== session.user.id) {
+    throw new Error('You are not allowed to delete this list');
+  }
+
+  await prisma.list.delete({
+    where: { id },
+  });
+
+  revalidatePath('/wish-lists/[id]', 'page');
+  revalidatePath('/wish-lists');
+}

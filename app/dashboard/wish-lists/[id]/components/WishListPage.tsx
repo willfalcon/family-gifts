@@ -12,6 +12,8 @@ type Props = {
   me?: User;
 };
 
+// TODO: condensed view, more like a simple list
+
 export default function WishListPage({ list, me }: Props) {
   // Get all unique categories from items
   const categories = Array.from(new Set(list.items.flatMap((item) => item.categories || []))).sort();

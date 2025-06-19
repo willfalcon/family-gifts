@@ -2,6 +2,7 @@ import { auth } from '@/auth';
 import { prisma } from '@/prisma';
 import { Prisma } from '@prisma/client';
 import { cache } from 'react';
+import { getListInclude } from './items';
 
 export type GetUserLists = Prisma.ListGetPayload<{
   include: {
@@ -25,13 +26,7 @@ export const getUserLists = cache(async () => {
         id: session.user.id,
       },
     },
-    include: {
-      _count: {
-        select: {
-          items: true,
-        },
-      },
-    },
+    include: getListInclude,
   });
 
   return lists;
@@ -57,13 +52,7 @@ export const dashboardGetUserLists = cache(async (rest: boolean = false) => {
     },
     take: rest ? undefined : 3,
     skip: rest ? 3 : 0,
-    include: {
-      _count: {
-        select: {
-          items: true,
-        },
-      },
-    },
+    include: getListInclude,
   });
 
   return {

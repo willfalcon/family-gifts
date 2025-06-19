@@ -1,6 +1,5 @@
 'use client';
 
-import { Prisma } from '@prisma/client';
 import { useQuery } from '@tanstack/react-query';
 import { JSONContent } from '@tiptap/react';
 import { formatDistanceToNow } from 'date-fns';
@@ -8,6 +7,7 @@ import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 
 import { getList } from '@/app/actions';
+import { GetList } from '@/lib/queries/items';
 
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { buttonVariants } from './ui/button';
@@ -16,15 +16,7 @@ import Viewer from './ui/rich-text/viewer';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 
 type Props = {
-  list: Prisma.ListGetPayload<{
-    include: {
-      _count: {
-        select: {
-          items: true;
-        };
-      };
-    };
-  }>;
+  list: GetList;
   includeUser?: boolean;
 };
 
@@ -33,6 +25,7 @@ export default function WishListCard({ list, includeUser = false }: Props) {
   const { data, isLoading } = useQuery({
     queryKey: ['list', list.id],
     queryFn: () => getList(list.id),
+    initialData: list,
   });
   if (isLoading || !data) {
     return (
@@ -46,7 +39,6 @@ export default function WishListCard({ list, includeUser = false }: Props) {
 
   const isOwner = data.user.id === session.data?.user?.id;
 
-  console.log(data.description);
   return (
     <Card>
       <CardHeader className="flex items-center flex-row gap-2 pb-2">

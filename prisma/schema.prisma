@@ -13,14 +13,14 @@ model User {
 
   // User Info
   name                     String?
-  email                    String       @unique()
+  email                    String         @unique()
   emailVerified            DateTime?
   image                    String?
   bio                      Json?
   birthday                 DateTime?
-  profileVisibility        Visibility[] @default([family, events, lists])
-  defaultListVisibility    Visibility   @default(private)
-  activityVisibility       Visibility[] @default([family, events, lists])
+  profileVisibility        Visibility[]   @default([family, events, lists])
+  defaultListVisibility    ListVisibility @default(private)
+  activityVisibility       Visibility[]   @default([family, events, lists])
   password                 String?
   salt                     String?
   resetPasswordToken       String?
@@ -183,29 +183,28 @@ model Family {
   updatedAt DateTime @updatedAt()
 }
 
-enum VisiblityType {
+enum ListVisibility {
   private
-  link
   public
   specific
 }
 
 model List {
-  id                String        @id() @default(cuid())
+  id                String         @id() @default(cuid())
   name              String
   description       Json?
   userId            String
-  user              User          @relation(fields: [userId], references: [id])
+  user              User           @relation(fields: [userId], references: [id])
   items             Item[]
-  visibleToFamilies Family[]      @relation("ListVisibleToFamilies")
-  visibleToEvents   Event[]       @relation("ListVisibleToEvents")
-  visibleToUsers    User[]        @relation("ListVisibleToUsers")
+  visibleToFamilies Family[]       @relation("ListVisibleToFamilies")
+  visibleToEvents   Event[]        @relation("ListVisibleToEvents")
+  visibleToUsers    User[]         @relation("ListVisibleToUsers")
   shareLink         String?
-  visibilityType    VisiblityType @default(private)
-  visibibleViaLink  Boolean       @default(false)
+  visibilityType    ListVisibility @default(private)
+  visibibleViaLink  Boolean        @default(false)
   categories        String[]
-  createdAt         DateTime      @default(now())
-  updatedAt         DateTime      @updatedAt()
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt()
 }
 
 enum Priority {
@@ -218,7 +217,7 @@ model Item {
   id          String    @id() @default(cuid())
   name        String
   listId      String
-  list        List      @relation(fields: [listId], references: [id])
+  list        List      @relation(fields: [listId], references: [id], onDelete: Cascade) 
   link        String?
   notes       Json?
   priority    Priority?

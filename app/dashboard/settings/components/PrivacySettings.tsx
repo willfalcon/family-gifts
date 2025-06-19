@@ -1,6 +1,6 @@
 'use client';
 
-import { Visibility } from '@prisma/client';
+import { ListVisibility, Visibility } from '@prisma/client';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { CalendarDays, Eye, EyeOff, Share2, Users } from 'lucide-react';
 import { useState } from 'react';
@@ -42,7 +42,7 @@ export default function PrivacySettings({ user }: Props) {
         ? MainVisibility.PRIVATE
         : MainVisibility.CUSTOM,
   );
-  const [defaultListVisibility, setDefaultListVisibility] = useState<Visibility>(query.data?.defaultListVisibility || Visibility.private);
+  const [defaultListVisibility, setDefaultListVisibility] = useState<ListVisibility>(query.data?.defaultListVisibility || ListVisibility.private);
 
   const mutation = useMutation({
     mutationFn: async () => {

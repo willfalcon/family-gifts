@@ -6,17 +6,23 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { getDefaults } from '@/lib/utils';
+import { User } from '@prisma/client';
 import { ListSchema, type ListSchemaType } from '../listSchema';
 import { createList } from './actions';
 
 import SetBreadcrumbs from '@/components/SetBreadcrumbs';
 import ListForm from '../components/ListForm';
 
-export default function NewListForm() {
+export default function NewListForm({ user, shareLinkId }: { user: User; shareLinkId: string }) {
   const form = useForm<ListSchemaType>({
     resolver: zodResolver(ListSchema),
-    defaultValues: getDefaults(ListSchema),
+    defaultValues: {
+      ...getDefaults(ListSchema),
+      visibilityType: user.defaultListVisibility,
+      shareLink: shareLinkId,
+    },
   });
+
   const router = useRouter();
   async function onSubmit(values: ListSchemaType) {
     try {
@@ -31,6 +37,7 @@ export default function NewListForm() {
       toast.error('Something went wrong!');
     }
   }
+
   return (
     <>
       <SetBreadcrumbs

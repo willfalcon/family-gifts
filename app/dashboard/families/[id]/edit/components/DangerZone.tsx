@@ -32,9 +32,9 @@ export default function DangerZone({ family }: { family: GetFamily }) {
   const deleteMutation = useMutation({
     mutationFn: async () => {
       await deleteFamily(family.id);
-      router.push('/dashboard/families');
     },
     onSuccess: () => {
+      router.push('/dashboard/families');
       toast.success('Family deleted');
     },
     onError: (error) => {

@@ -42,45 +42,6 @@ export default function ItemForm({ form, onSubmit, text, categories, className =
         />
         <FormField
           control={form.control}
-          name="link"
-          render={({ field }) => {
-            return (
-              <FormItem>
-                <FormLabel>Link</FormLabel>
-                <FormControl>
-                  <Input {...field} value={field.value ?? ''} tabIndex={1} />
-                </FormControl>
-                <FormDescription>Link to the item.</FormDescription>
-                <FormMessage />
-              </FormItem>
-            );
-          }}
-        />
-        <ImageField
-          name="image"
-          label="Image"
-          description="Image of the item. Amazon images are automatically detected."
-          previewField="imageUrl"
-          tabIndex={1}
-        />
-        <FormField
-          control={form.control}
-          name="price"
-          render={({ field }) => {
-            return (
-              <FormItem>
-                <FormLabel>Price</FormLabel>
-                <FormControl>
-                  <CurrencyField field={field} tabIndex={1} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            );
-          }}
-        />
-        <RichTextField name="notes" />
-        <FormField
-          control={form.control}
           name="priority"
           render={({ field }) => {
             return (
@@ -118,6 +79,46 @@ export default function ItemForm({ form, onSubmit, text, categories, className =
             return <CategoryField categories={categories} value={field.value} />;
           }}
         />
+        <FormField
+          control={form.control}
+          name="link"
+          render={({ field }) => {
+            return (
+              <FormItem>
+                <FormLabel>Link</FormLabel>
+                <FormControl>
+                  <Input {...field} value={field.value ?? ''} tabIndex={1} />
+                </FormControl>
+                <FormDescription>Link to the item.</FormDescription>
+                <FormMessage />
+              </FormItem>
+            );
+          }}
+        />
+        <ImageField
+          name="image"
+          label="Image"
+          description="Image of the item. Amazon images are automatically detected."
+          previewField="imageUrl"
+          tabIndex={1}
+        />
+
+        <FormField
+          control={form.control}
+          name="price"
+          render={({ field }) => {
+            return (
+              <FormItem>
+                <FormLabel>Price</FormLabel>
+                <FormControl>
+                  <CurrencyField field={field} tabIndex={1} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            );
+          }}
+        />
+        <RichTextField name="notes" />
         <SubmitButton>{text}</SubmitButton>
       </form>
     </Form>

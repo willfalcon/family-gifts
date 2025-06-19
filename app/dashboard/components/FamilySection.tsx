@@ -14,7 +14,7 @@ export default async function FamilySection() {
   return (
     <section className="@container space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-semibold">Family Members</h2>
+        <h2 className="text-2xl font-semibold">Families</h2>
         <Link href="/dashboard/families" className={buttonVariants({ variant: 'outline', size: 'sm' })}>
           <Users className="mr-2 h-4 w-4" />
           Manage Families

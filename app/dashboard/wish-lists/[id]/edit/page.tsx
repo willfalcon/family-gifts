@@ -5,6 +5,7 @@ import { getListForEdit } from '@/lib/queries/items';
 import SetBreadcrumbs from '@/components/SetBreadcrumbs';
 import Title, { SubTitle } from '@/components/Title';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import DeleteList from './DeleteList';
 import EditList from './EditList';
 import ListItemsForm from './ListItemsForm';
 
@@ -22,9 +23,11 @@ export async function generateMetadata({ params }: Props) {
   };
 }
 
+//TODO: add delete list
 export default async function EditListPage({ params }: Props) {
   const { id } = await params;
   const list = await getListForEdit(id);
+
   if (!list) {
     notFound();
   }
@@ -47,12 +50,16 @@ export default async function EditListPage({ params }: Props) {
         <TabsList>
           <TabsTrigger value="details">Details</TabsTrigger>
           <TabsTrigger value="items">Items</TabsTrigger>
+          <TabsTrigger value="danger-zone">Danger Zone</TabsTrigger>
         </TabsList>
         <TabsContent value="details">
           <EditList list={list} />
         </TabsContent>
         <TabsContent value="items">
           <ListItemsForm list={list} />
+        </TabsContent>
+        <TabsContent value="danger-zone">
+          <DeleteList list={list} />
         </TabsContent>
       </Tabs>
     </div>

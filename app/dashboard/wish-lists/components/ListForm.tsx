@@ -48,7 +48,7 @@ export default function ListForm({ form, onSubmit, submitText, shareLinkId }: Li
           </CardContent>
         </Card>
 
-        <Visibility shareLinkId={shareLinkId} />
+        <Visibility />
 
         <Card>
           <CardHeader>

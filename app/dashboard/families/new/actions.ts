@@ -21,7 +21,6 @@ export async function createFamily(data: FamilySchemaType) {
   const strippedInvites = data.members?.filter((member) => member.value) || [];
   const validatedData = FamilySchema.parse({ ...data, members: strippedInvites });
 
-  console.log(session.user);
   try {
     const family = await prisma.family.create({
       data: {

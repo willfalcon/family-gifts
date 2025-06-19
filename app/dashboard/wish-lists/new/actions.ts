@@ -14,6 +14,7 @@ export async function createList(data: ListSchemaType) {
   }
 
   const validatedData = ListSchema.parse(data);
+
   const newList = await prisma.list.create({
     data: {
       ...validatedData,

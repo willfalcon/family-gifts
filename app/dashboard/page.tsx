@@ -24,17 +24,10 @@ export default async function page() {
     redirect('/sign-in');
   }
 
-  // const activeFamily = await getActiveFamilyId();
-
-  // const membersRes = await getSomeMembers(3);
   const events = await getEvents(3);
   const eventsCount = await getEventsCount();
-  // const { success, message, family } = await getFamily();
-  // TODO: show families where user is waiting approval
 
   return (
-    // <SidebarProvider defaultOpen={false} className="min-h-[500px]" style={{ ['--sidebar-width' as string]: '350px' }}>
-
     <div className="container mx-auto px-4 py-8">
       <SetBreadcrumbs
         items={[
@@ -58,11 +51,9 @@ export default async function page() {
       </div>
 
       <div className="space-y-8">
-        <FamilySection />
-
-        <EventsSection events={events} total={eventsCount} />
-
         <WishListSection />
+        <FamilySection />
+        <EventsSection events={events} total={eventsCount} />
       </div>
     </div>
   );

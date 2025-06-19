@@ -2,10 +2,10 @@
 
 import { Event } from '@prisma/client';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { format } from 'date-fns';
 import { Calendar, CalendarDays, ChevronDown, ChevronRight, Loader2, Plus } from 'lucide-react';
 import Link from 'next/link';
 
+import { formatDate } from '@/lib/utils';
 import { dashboardGetEvents } from '../actions';
 
 import { Button, buttonVariants } from '@/components/ui/button';
@@ -58,7 +58,7 @@ export default function EventsSection({ events, total }: Props) {
                   <CalendarDays className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  {event.date && <div className="text-2xl font-bold">{format(event.date, 'MMM, d, yyyy')}</div>}
+                  {event.date && <div className="text-2xl font-bold">{formatDate(event.date)}</div>}
                   <p className="text-xs text-muted-foreground">{event.location}</p>
                 </CardContent>
                 <CardFooter>

@@ -21,7 +21,7 @@ type Props = { params: Promise<{ token: string }> };
 export default async function ListLink({ params }: Props) {
   const { token } = await params;
   const list = await getList(token);
-  if (!list || list?.visibilityType !== 'link') {
+  if (!list || !list.visibibleViaLink) {
     notFound();
   }
   return <WishListPage list={list} />;

@@ -3,16 +3,15 @@
 import { Gift, Plus, Search } from 'lucide-react';
 import Link from 'next/link';
 
-import { GetUserLists } from '@/lib/queries/lists';
-
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import WishListCard from '@/components/WishListCard';
+import { GetList } from '@/lib/queries/items';
 import { useState } from 'react';
 
 type Props = {
-  lists: GetUserLists;
+  lists: GetList[];
 };
 
 export default function WishLists({ lists }: Props) {

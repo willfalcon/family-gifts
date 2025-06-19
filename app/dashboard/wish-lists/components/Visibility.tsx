@@ -9,12 +9,15 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+
 import EventsField from './EventsField';
 import FamiliesField from './FamiliesField';
 import UsersField from './UsersField';
 
-export default function Visibility({ shareLinkId }: { shareLinkId?: string | null }) {
+export default function Visibility() {
   const form = useFormContext();
+
+  const shareLinkId = form.getValues('shareLink');
 
   const shareLink = process.env.NEXT_PUBLIC_FRONTEND_URL + '/list/' + shareLinkId;
   const copyShareLink = (e: FormEvent) => {
@@ -31,16 +34,7 @@ export default function Visibility({ shareLinkId }: { shareLinkId?: string | nul
       });
   };
 
-  // const defaultListVisibilityValue = form.watch('defaultListVisibility');
   const visibileViaLinkValue = form.watch('visibibleViaLink');
-  // const { data: me } = useMe();
-  // const defaultListVisibility = me?.defaultListVisibility;
-  // useEffect(() => {
-  //   if (defaultListVisibility && !defaultListVisibilityValue) {
-  //     form.setValue('defaultListVisibility', defaultListVisibility);
-  //   }
-  // }, [defaultListVisibility, defaultListVisibilityValue, form]);
-
   // TODO: add a way to handle accessibility of list via view links
   // TODO: lists should be able to be visible via link and to specific people and groups
   return (

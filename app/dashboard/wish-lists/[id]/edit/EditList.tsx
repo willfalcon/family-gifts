@@ -15,7 +15,6 @@ type Props = {
 };
 
 export default function EditList({ list }: Props) {
-  console.log(list);
   const form = useForm<ListSchemaType>({
     resolver: zodResolver(ListSchema),
     defaultValues: {
@@ -26,7 +25,7 @@ export default function EditList({ list }: Props) {
       visibleToUsers: list.visibleToUsers.map((user) => user.id),
     },
   });
-  console.log(form.getValues());
+
   async function onSubmit(values: ListSchemaType) {
     try {
       await updateList(list.id, values);
