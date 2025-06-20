@@ -13,6 +13,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import useViewMode from './useViewMode';
 
 type Props = {
   item: ItemFromGetList;
@@ -20,6 +21,8 @@ type Props = {
 
 export default function Purchased({ item }: Props) {
   const session = useSession();
+
+  const [viewMode] = useViewMode();
 
   const {
     data: purchasedBy,
@@ -50,7 +53,19 @@ export default function Purchased({ item }: Props) {
     return <Skeleton className="h-6 w-[150px]" />;
   }
 
-  return (
+  return viewMode === 'compact' ? (
+    <Checkbox
+      checked={currentUserPurchased}
+      onCheckedChange={(checked) => {
+        if (checked) {
+          mutation.mutate({ action: 'mark', itemId: item.id });
+        } else {
+          mutation.mutate({ action: 'unmark', itemId: item.id });
+        }
+      }}
+      className="flex-shrink-0"
+    />
+  ) : (
     <div className="flex flex-col gap-2 w-full md:w-auto md:items-end">
       {/* Purchase status indicator */}
       {!!purchasedBy?.length && (

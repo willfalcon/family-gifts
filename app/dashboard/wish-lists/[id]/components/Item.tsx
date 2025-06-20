@@ -9,7 +9,9 @@ import Image from 'next/image';
 import { ItemFromGetList } from '@/lib/queries/items';
 import { capitalize, formatCurrency } from '@/lib/utils';
 import { getItem } from '../actions';
+import useViewMode from './useViewMode';
 
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import Viewer from '@/components/ui/rich-text/viewer';
@@ -30,13 +32,69 @@ export default function WishListItem({ item: initialItem, isOwner, categories }:
     initialData: initialItem,
   });
 
-  if (isLoading) {
+  const [viewMode] = useViewMode();
+
+  if (isLoading || !item) {
     return <ItemSkeleton />;
   }
 
+  if (viewMode === 'compact') {
+    return (
+      <div className="flex items-center gap-3 py-2 px-3 border-b last:border-b-0 hover:bg-muted/30 transition-colors">
+        {!isOwner && <Purchased item={item} />}
+
+        {/* Item name - takes up most space */}
+        <div className="flex-1 min-w-0">
+          <span className="font-medium truncate">{item.name}</span>
+        </div>
+
+        {/* Priority indicator - compact badge */}
+        {item.priority && (
+          <Badge
+            variant={item.priority === 'high' ? 'destructive' : item.priority === 'medium' ? 'default' : 'secondary'}
+            className="text-xs px-2 py-0 flex-shrink-0"
+          >
+            {item.priority.charAt(0)}
+          </Badge>
+        )}
+
+        {/* Price */}
+        <span className="font-medium text-sm flex-shrink-0 min-w-[60px] text-right">{item.price}</span>
+
+        {/* Purchase status indicator - compact */}
+        {item.purchasedBy.length > 0 && (
+          <div className="flex items-center gap-1 flex-shrink-0">
+            <div className="flex -space-x-1">
+              {item.purchasedBy.slice(0, 2).map((purchaser) => (
+                <Avatar key={purchaser.id} className="h-5 w-5 border border-background">
+                  <AvatarImage src={purchaser.image || '/placeholder.svg'} alt={purchaser.name || ''} />
+                  <AvatarFallback className="text-xs">{purchaser.name?.charAt(0)}</AvatarFallback>
+                </Avatar>
+              ))}
+              {item.purchasedBy.length > 2 && (
+                <div className="h-5 w-5 rounded-full bg-muted flex items-center justify-center text-xs border border-background">
+                  +{item.purchasedBy.length - 2}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* External link - compact icon button */}
+        {item.link && (
+          <Button variant="ghost" size="icon" className="h-7 w-7 flex-shrink-0" asChild>
+            <a href={item.link} target="_blank" rel="noopener noreferrer">
+              <ExternalLink className="h-3 w-3" />
+              <span className="sr-only">View item</span>
+            </a>
+          </Button>
+        )}
+      </div>
+    );
+  }
   return (
     item && (
-      <Card key={item.id} className="overflow-hidden">
+      <Card key={item.id} className="overflow-hidden mb-4">
         <CardContent className="p-0">
           <div className="flex flex-col md:flex-row">
             <div className="w-full md:w-48 h-48 relative">

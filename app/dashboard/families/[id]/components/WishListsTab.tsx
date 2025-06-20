@@ -1,7 +1,7 @@
 import { Gift, Plus, Search } from 'lucide-react';
 import Link from 'next/link';
 
-import { GetFamily, ListFromGetFamily, MemberFromGetFamily } from '@/lib/queries/families';
+import { GetFamily, MemberFromGetFamily } from '@/lib/queries/families';
 
 import SetBreadcrumbs from '@/components/SetBreadcrumbs';
 import { Button, buttonVariants } from '@/components/ui/button';
@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { TabsContent } from '@/components/ui/tabs';
 import WishListCard from '@/components/WishListCard';
+import { GetList } from '@/lib/queries/items';
 
 type Props = {
   members: MemberFromGetFamily[];
@@ -16,7 +17,7 @@ type Props = {
 };
 
 export default function WishListsTab({ members, family }: Props) {
-  const lists = members.reduce<ListFromGetFamily[]>((lists, member) => {
+  const lists = members.reduce<GetList[]>((lists, member) => {
     member.lists.forEach((list) => {
       if (!lists.some((l) => l.id === list.id)) {
         lists.push(list);

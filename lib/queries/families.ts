@@ -4,16 +4,21 @@ import { Family, Prisma } from '@prisma/client';
 import { cache } from 'react';
 
 import { getActiveFamilyId } from '../rscUtils';
+import { getListInclude } from './items';
 
 export type MemberFromGetFamily = Prisma.UserGetPayload<{
   include: {
     lists: {
       include: {
-        _count: {
-          select: {
-            items: true;
+        items: {
+          include: {
+            purchasedBy: true;
           };
         };
+        user: true;
+        visibleToFamilies: true;
+        visibleToEvents: true;
+        visibleToUsers: true;
       };
     };
     _count: {
@@ -58,11 +63,15 @@ export type GetFamily = Prisma.FamilyGetPayload<{
       include: {
         lists: {
           include: {
-            _count: {
-              select: {
-                items: true;
+            items: {
+              include: {
+                purchasedBy: true;
               };
             };
+            user: true;
+            visibleToFamilies: true;
+            visibleToEvents: true;
+            visibleToUsers: true;
           };
         };
         _count: {
@@ -111,13 +120,7 @@ export const getFamilyInclude = (id: Family['id']) => ({
             },
           },
         },
-        include: {
-          _count: {
-            select: {
-              items: true,
-            },
-          },
-        },
+        include: getListInclude,
       },
       _count: {
         select: {

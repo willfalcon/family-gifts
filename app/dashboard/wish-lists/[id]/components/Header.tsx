@@ -1,7 +1,10 @@
+'use client';
+
 import { JSONContent } from '@tiptap/react';
 import { Pencil } from 'lucide-react';
 import { User } from 'next-auth';
 import Link from 'next/link';
+import { Fragment } from 'react';
 
 import { GetList } from '@/lib/queries/items';
 
@@ -11,8 +14,9 @@ import Title from '@/components/Title';
 import { Badge } from '@/components/ui/badge';
 import { buttonVariants } from '@/components/ui/button';
 import Viewer from '@/components/ui/rich-text/viewer';
-import { Fragment } from 'react';
+
 import NewItem from './NewItem';
+import ViewModeToggle from './ViewModeToggle';
 
 type Props = {
   list: GetList;
@@ -58,6 +62,7 @@ export default function WishListHeader({ list, categories, isOwner, me }: Props)
             </>
           )}
         </div>
+        <ViewModeToggle />
       </div>
     </div>
   );

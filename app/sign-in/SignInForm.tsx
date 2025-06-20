@@ -12,8 +12,8 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { signIn } from 'next-auth/react';
 import { useSearchParams } from 'next/navigation';
-import { FaFacebookF, FaGoogle } from 'react-icons/fa';
-import { handleSignInWithFacebook, handleSignInWithGoogle } from './actions';
+import { FaGoogle } from 'react-icons/fa';
+import { handleSignInWithGoogle } from './actions';
 
 export default function SignInForm() {
   const mutation = useMutation({
@@ -102,12 +102,12 @@ export default function SignInForm() {
                   </Button>
                 </form>
               ))} */}
-        <form action={handleSignInWithFacebook}>
+        {/* <form action={handleSignInWithFacebook}>
           <Button variant="outline" size="icon" className="h-10" type="submit">
             <FaFacebookF className="h-4 w-4" />
             <span className="sr-only">Facebook</span>
           </Button>
-        </form>
+        </form> */}
         <form action={handleSignInWithGoogle}>
           <Button variant="outline" size="icon" className="h-10" type="submit">
             <FaGoogle className="h-4 w-4" />

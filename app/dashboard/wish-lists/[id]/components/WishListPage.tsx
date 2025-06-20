@@ -48,14 +48,14 @@ export default function WishListPage({ list, me }: Props) {
           ))}
         </TabsList>
 
-        <TabsContent value="all" className="space-y-6">
+        <TabsContent value="all" className="">
           {list.items.map((item) => (
             <WishListItem key={item.id} item={item} isOwner={isOwner} categories={categories} />
           ))}
         </TabsContent>
 
         {categories.map((category) => (
-          <TabsContent key={category} value={category} className="space-y-4">
+          <TabsContent key={category} value={category} className="">
             {itemsByCategory[category]?.map((item) => <WishListItem key={item.id} item={item} isOwner={isOwner} categories={categories} />)}
           </TabsContent>
         ))}
