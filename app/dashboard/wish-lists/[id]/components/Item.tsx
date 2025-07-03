@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import Viewer from '@/components/ui/rich-text/viewer';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import DeleteItem from './DeleteItem';
 import EditItem from './EditItem';
 import Purchased from './Purchased';
@@ -44,25 +45,32 @@ export default function WishListItem({ item: initialItem, isOwner, categories }:
         {!isOwner && <Purchased item={item} />}
 
         {/* Item name - takes up most space */}
-        <div className="flex-1 min-w-0">
+        <div className="min-w-0">
           <span className="font-medium truncate">{item.name}</span>
         </div>
 
         {/* Priority indicator - compact badge */}
         {item.priority && (
-          <Badge
-            variant={item.priority === 'high' ? 'destructive' : item.priority === 'medium' ? 'default' : 'secondary'}
-            className="text-xs px-2 py-0 flex-shrink-0"
-          >
-            {item.priority.charAt(0)}
-          </Badge>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Badge
+                variant={item.priority === 'high' ? 'destructive' : item.priority === 'medium' ? 'default' : 'secondary'}
+                className="text-xs px-2 py-0 flex-shrink-0 mr-auto"
+              >
+                {item.priority.charAt(0)}
+              </Badge>
+            </TooltipTrigger>
+            <TooltipContent>
+              {item.priority === 'high' ? 'High Priority' : item.priority === 'medium' ? 'Medium Priority' : 'Low Priority'}
+            </TooltipContent>
+          </Tooltip>
         )}
 
         {/* Price */}
-        <span className="font-medium text-sm flex-shrink-0 min-w-[60px] text-right">{item.price}</span>
+        {item.price && <span className="font-medium text-sm flex-shrink-0 min-w-[60px] text-right">{formatCurrency(item.price)}</span>}
 
         {/* Purchase status indicator - compact */}
-        {item.purchasedBy.length > 0 && (
+        {!isOwner && item.purchasedBy.length > 0 && (
           <div className="flex items-center gap-1 flex-shrink-0">
             <div className="flex -space-x-1">
               {item.purchasedBy.slice(0, 2).map((purchaser) => (
@@ -89,6 +97,8 @@ export default function WishListItem({ item: initialItem, isOwner, categories }:
             </a>
           </Button>
         )}
+        {isOwner && <EditItem categories={categories} item={item} />}
+        {isOwner && <DeleteItem item={item} />}
       </div>
     );
   }
