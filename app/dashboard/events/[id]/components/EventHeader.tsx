@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { EventFromGetEvent } from '@/lib/queries/events';
 import { formatDate, formatTime } from '@/lib/utils';
 
+import Favorite from '@/app/dashboard/components/Favorite';
 import MessageDialog from '@/components/Messages/MessageDialog';
 import { ShareButton } from '@/components/ShareButton';
 import Title from '@/components/Title';
@@ -24,7 +25,10 @@ export default function EventHeader({ event, isManager, me }: Props) {
     <div className="mb-8">
       <div className="flex flex-col md:flex-row justify-between items-start gap-4">
         <div>
-          <Title>{event.name}</Title>
+          <div className="flex items-center gap-2">
+            <Title>{event.name}</Title>
+            <Favorite id={event.id} type="event" />
+          </div>
           {event.info && <Viewer className="text-muted-foreground mt-1" content={event.info as JSONContent} immediatelyRender={false} />}
 
           <div className="flex flex-wrap gap-4 mt-4">

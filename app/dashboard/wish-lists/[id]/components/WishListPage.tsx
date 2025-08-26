@@ -3,7 +3,6 @@ import { User } from 'next-auth';
 import { GetList } from '@/lib/queries/items';
 
 import SetBreadcrumbs from '@/components/SetBreadcrumbs';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import WishListHeader from './Header';
 import WishListItem from './Item';
 
@@ -38,28 +37,28 @@ export default function WishListPage({ list, me }: Props) {
 
       <WishListHeader list={list} categories={categories} isOwner={isOwner} me={me} />
 
-      <Tabs defaultValue="all" className="space-y-6">
-        <TabsList className="flex flex-wrap">
+      {/* <Tabs defaultValue="all" className="space-y-6"> */}
+      {/* <TabsList className="flex flex-wrap">
           <TabsTrigger value="all">All Items</TabsTrigger>
           {categories.map((category) => (
             <TabsTrigger key={category} value={category}>
               {category}
             </TabsTrigger>
           ))}
-        </TabsList>
+        </TabsList> */}
 
-        <TabsContent value="all" className="">
-          {list.items.map((item) => (
-            <WishListItem key={item.id} item={item} isOwner={isOwner} categories={categories} />
-          ))}
-        </TabsContent>
+      {/* <TabsContent value="all" className=""> */}
+      {list.items.map((item) => (
+        <WishListItem key={item.id} item={item} isOwner={isOwner} categories={categories} />
+      ))}
+      {/* </TabsContent> */}
 
-        {categories.map((category) => (
+      {/* {categories.map((category) => (
           <TabsContent key={category} value={category} className="">
             {itemsByCategory[category]?.map((item) => <WishListItem key={item.id} item={item} isOwner={isOwner} categories={categories} />)}
           </TabsContent>
         ))}
-      </Tabs>
+      </Tabs> */}
       {/* <WishList categories={categories} {...list} /> */}
     </div>
   );

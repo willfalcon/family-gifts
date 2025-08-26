@@ -5,6 +5,7 @@ import Link from 'next/link';
 
 import { type GetFamily } from '@/lib/queries/families';
 
+import Favorite from '@/app/dashboard/components/Favorite';
 import MessageDialog from '@/components/Messages/MessageDialog';
 import { ShareButton } from '@/components/ShareButton';
 import Title from '@/components/Title';
@@ -29,6 +30,7 @@ export default function FamilyHeader({ family, isManager, me }: Props) {
           <Badge variant="outline">
             {family._count.members} member{family._count.members === 1 ? '' : 's'}
           </Badge>
+          <Favorite id={family.id} type="family" />
         </div>
         <p className="text-sm text-muted-foreground mt-1">
           Created by {family.creator.name} • {format(family.createdAt, 'yyyyI-mm-dd')}

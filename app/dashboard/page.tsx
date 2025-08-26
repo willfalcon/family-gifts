@@ -10,6 +10,7 @@ import Title from '@/components/Title';
 import { buttonVariants } from '@/components/ui/button';
 import EventsSection from './components/EventsSection';
 import FamilySection from './components/FamilySection';
+import FavoritesSection from './components/FavoritesSection';
 import WishListSection from './components/WishListSection';
 
 export const metadata = {
@@ -51,6 +52,7 @@ export default async function page() {
       </div>
 
       <div className="space-y-8">
+        <FavoritesSection />
         <WishListSection />
         <FamilySection />
         <EventsSection events={events} total={eventsCount} />

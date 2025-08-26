@@ -76,7 +76,7 @@ export default function EditItem({ categories, item }: { categories: string[]; i
           <span className="sr-only">Edit Item</span>
         </Button>
       </DialogTrigger>
-      <DialogContent aria-describedby={undefined} className="max-w-2xl max-h-5/6 flex flex-col">
+      <DialogContent aria-describedby={undefined} className="max-w-2xl h-5/6 flex flex-col">
         <DialogHeader>
           <DialogTitle>Add Item</DialogTitle>
         </DialogHeader>

@@ -10,7 +10,6 @@ import RichTextField from '@/components/RichTextField';
 import SubmitButton from '@/components/SubmitButton';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import CategoryField from './CategoryField';
 
 type ItemFormProps = {
   form: UseFormReturn<ItemSchemaType>;
@@ -72,13 +71,13 @@ export default function ItemForm({ form, onSubmit, text, categories, className =
             );
           }}
         />
-        <FormField
+        {/* <FormField
           control={form.control}
           name="categories"
           render={({ field }) => {
             return <CategoryField categories={categories} value={field.value} />;
           }}
-        />
+        /> */}
         <FormField
           control={form.control}
           name="link"

@@ -51,7 +51,7 @@ export default function CategoryField(props: Props) {
             </Button>
           </FormControl>
         </PopoverTrigger>
-        <PopoverContent className={`p-0`} style={{ width: `${bounds.width}px` }}>
+        <PopoverContent className={`p-0 z-[51]`} style={{ width: `${bounds.width}px` }}>
           <Command>
             <CommandInput
               placeholder="Search or add categories..."

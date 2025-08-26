@@ -15,6 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import { buttonVariants } from '@/components/ui/button';
 import Viewer from '@/components/ui/rich-text/viewer';
 
+import Favorite from '@/app/dashboard/components/Favorite';
 import NewItem from './NewItem';
 import ViewModeToggle from './ViewModeToggle';
 
@@ -37,7 +38,10 @@ export default function WishListHeader({ list, categories, isOwner, me }: Props)
     <div className="mb-6">
       <div className="flex flex-col md:flex-row justify-between items-start gap-4">
         <div>
-          <Title>{list.name}</Title>
+          <div className="flex items-center gap-2">
+            <Title>{list.name}</Title>
+            <Favorite id={list.id} type="list" />
+          </div>
           <Viewer content={list.description as JSONContent} className="text-muted-foreground" immediatelyRender={false} />
           <div className="flex items-center gap-2 mt-2">
             <span className="text-sm">By {list.user.name}</span>

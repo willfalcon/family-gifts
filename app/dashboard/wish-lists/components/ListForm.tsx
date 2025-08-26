@@ -7,7 +7,7 @@ import SubmitButton from '@/components/SubmitButton';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import CategoriesField from './CategoriesField';
+// import CategoriesField from './CategoriesField';
 import Visibility from './Visibility';
 
 type ListFormProps = {
@@ -50,7 +50,7 @@ export default function ListForm({ form, onSubmit, submitText, shareLinkId }: Li
 
         <Visibility />
 
-        <Card>
+        {/* <Card>
           <CardHeader>
             <CardTitle>Categories</CardTitle>
             <CardDescription>Create categories to organize your items.</CardDescription>
@@ -58,7 +58,7 @@ export default function ListForm({ form, onSubmit, submitText, shareLinkId }: Li
           <CardContent>
             <CategoriesField />
           </CardContent>
-        </Card>
+        </Card> */}
 
         <SubmitButton>{submitText}</SubmitButton>
       </form>

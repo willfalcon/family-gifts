@@ -97,3 +97,38 @@ export async function deleteNotification(notificationId: Doc<'notifications'>['_
     notificationId,
   });
 }
+
+export async function getFavorite(id: string, type: 'family' | 'event' | 'list') {
+  const session = await auth();
+  if (!session?.user) {
+    throw new Error('You must be logged in to do this.');
+  }
+
+  return await prisma.favorite.findFirst({
+    where: {
+      [type === 'family' ? 'familyId' : type === 'event' ? 'eventId' : 'listId']: id,
+      userId: session.user.id,
+    },
+  });
+}
+
+export async function toggleFavorite(id: string, type: 'family' | 'event' | 'list') {
+  const session = await auth();
+  if (!session?.user?.id) {
+    throw new Error('You must be logged in to do this.');
+  }
+
+  const favorite = await getFavorite(id, type);
+  if (favorite) {
+    await prisma.favorite.delete({
+      where: { id: favorite.id },
+    });
+  } else {
+    await prisma.favorite.create({
+      data: {
+        userId: session.user.id,
+        [type === 'family' ? 'familyId' : type === 'event' ? 'eventId' : 'listId']: id,
+      },
+    });
+  }
+}

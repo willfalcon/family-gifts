@@ -54,7 +54,25 @@ model User {
   excludedFrom Exclusion[]  @relation("ExclusionFrom")
   excludedTo   Exclusion[]  @relation("ExclusionTo")
 
+  // Favorites
+  favorites Favorite[] @relation("FavoriteUser")
+
   // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+}
+
+model Favorite {
+  id String @id() @default(cuid())
+  userId String
+  user User @relation("FavoriteUser", fields: [userId], references: [id])
+  familyId String?
+  family Family? @relation("FavoriteFamily", fields: [familyId], references: [id])
+  eventId String?
+  event Event? @relation("FavoriteEvent", fields: [eventId], references: [id])
+  listId String?
+  list List? @relation("FavoriteList", fields: [listId], references: [id])
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt()
 }
@@ -173,7 +191,7 @@ model Family {
   members      User[]  @relation("FamilyUser")
   events       Event[]
   visibleLists List[]  @relation("ListVisibleToFamilies")
-
+  favorites Favorite[] @relation("FavoriteFamily")
   // Invites
   invites          Invite[]  @relation("FamilyInvite")
   inviteLinkToken  String?
@@ -203,6 +221,8 @@ model List {
   visibilityType    ListVisibility @default(private)
   visibibleViaLink  Boolean        @default(false)
   categories        String[]
+  favorites Favorite[] @relation("FavoriteList")
+  
   createdAt         DateTime       @default(now())
   updatedAt         DateTime       @updatedAt()
 }
@@ -251,7 +271,7 @@ model Event {
   managers     User[]   @relation("EventManager")
   invites      Invite[] @relation("EventInvite")
   visibleLists List[]   @relation("ListVisibleToEvents")
-
+  favorites Favorite[] @relation("FavoriteEvent")
   // Secret Santa
   assignments       Assignment[]
   exclusions        Exclusion[]

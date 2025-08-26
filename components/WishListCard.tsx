@@ -3,12 +3,12 @@
 import { useQuery } from '@tanstack/react-query';
 import { JSONContent } from '@tiptap/react';
 import { formatDistanceToNow } from 'date-fns';
-import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 
 import { getList } from '@/app/actions';
 import { GetList } from '@/lib/queries/items';
 
+import { useMe } from '@/hooks/use-me';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { buttonVariants } from './ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './ui/card';
@@ -21,12 +21,13 @@ type Props = {
 };
 
 export default function WishListCard({ list, includeUser = false }: Props) {
-  const session = useSession();
+  const { data: me } = useMe();
   const { data, isLoading } = useQuery({
     queryKey: ['list', list.id],
     queryFn: () => getList(list.id),
     initialData: list,
   });
+
   if (isLoading || !data) {
     return (
       <Card>
@@ -37,7 +38,7 @@ export default function WishListCard({ list, includeUser = false }: Props) {
     );
   }
 
-  const isOwner = data.user.id === session.data?.user?.id;
+  const isOwner = data.user.id === me?.id;
 
   return (
     <Card>

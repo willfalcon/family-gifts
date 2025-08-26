@@ -47,6 +47,27 @@ export const getList = cache(async (id: List['id'], shareLink?: string) => {
   return list;
 });
 
+export const getMostRecentlyUpdatedItem = cache(async (listId: List['id']) => {
+  const session = await auth();
+  if (!session?.user) {
+    throw new Error('You must be logged in to do this.');
+  }
+
+  const item = await prisma.item.findFirst({
+    where: {
+      listId,
+    },
+    orderBy: {
+      updatedAt: 'desc',
+    },
+    select: {
+      updatedAt: true,
+    },
+  });
+  console.log('item', item);
+  return item?.updatedAt;
+});
+
 export const getItem = cache(async (id: Item['id']) => {
   const session = await auth();
   if (!session?.user) {

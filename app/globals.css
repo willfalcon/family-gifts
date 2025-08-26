@@ -73,3 +73,7 @@
     @apply bg-background text-foreground;
   }
 }
+/* 
+[data-radix-popper-content-wrapper] {
+  pointer-events: auto;
+} */

@@ -2,14 +2,15 @@
 
 import { Event } from '@prisma/client';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { Calendar, CalendarDays, ChevronDown, ChevronRight, Loader2, Plus } from 'lucide-react';
+import { Calendar, ChevronDown, ChevronRight, Loader2, Plus } from 'lucide-react';
 import Link from 'next/link';
 
-import { formatDate } from '@/lib/utils';
 import { dashboardGetEvents } from '../actions';
 
+import EventCard from '@/components/EventCard';
 import { Button, buttonVariants } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
+import { GetEvents } from '@/lib/queries/events';
 
 type Props = {
   events: Event[];
@@ -51,23 +52,7 @@ export default function EventsSection({ events, total }: Props) {
       <div className="grid gap-4 @lg:grid-cols-2 @3xl:grid-cols-3">
         {data?.pages.map((page) =>
           page.events.map((event) => {
-            return (
-              <Card key={event.id}>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">{event.name}</CardTitle>
-                  <CalendarDays className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  {event.date && <div className="text-2xl font-bold">{formatDate(event.date)}</div>}
-                  <p className="text-xs text-muted-foreground">{event.location}</p>
-                </CardContent>
-                <CardFooter>
-                  <Link href={`/dashboard/events/${event.id}`} className={buttonVariants({ variant: 'outline', size: 'sm', className: 'w-full' })}>
-                    View Details
-                  </Link>
-                </CardFooter>
-              </Card>
-            );
+            return <EventCard key={event.id} event={event as unknown as GetEvents[number]} />;
           }),
         )}
         {total === 0 && (
