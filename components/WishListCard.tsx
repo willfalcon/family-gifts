@@ -6,9 +6,9 @@ import { formatDistanceToNow } from 'date-fns';
 import Link from 'next/link';
 
 import { getList } from '@/app/actions';
-import { GetList } from '@/lib/queries/items';
 
 import { useMe } from '@/hooks/use-me';
+import { GetList } from '@/lib/queries/items';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { buttonVariants } from './ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './ui/card';

@@ -5,6 +5,7 @@ import { prisma } from '@/prisma';
 import { EventResponse, Prisma } from '@prisma/client';
 
 import { getEvent as getEventQuery } from '@/lib/queries/events';
+import { getListInclude } from '@/lib/queries/items';
 
 export async function getEvent(id: string) {
   return await getEventQuery(id);
@@ -201,13 +202,7 @@ export async function getListsByEvent(eventId: string) {
         },
       },
     },
-    include: {
-      _count: {
-        select: {
-          items: true,
-        },
-      },
-    },
+    include: getListInclude,
   });
   return lists;
 }
