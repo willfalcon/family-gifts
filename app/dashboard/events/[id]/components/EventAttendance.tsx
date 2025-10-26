@@ -37,7 +37,7 @@ export default function EventAttendance({ invite }: { invite: Invite }) {
         <CardDescription className="text-pretty">Let everyone know if you&apos;ll be attending this event.</CardDescription>
       </CardHeader>
       <CardContent className="p-6">
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>

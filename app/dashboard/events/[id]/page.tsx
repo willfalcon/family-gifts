@@ -84,12 +84,14 @@ export default async function EventPage({ params }: PageProps) {
         {!!event.assignments.length && <MyAssignment assignment={userAssignment?.recipient} />}
         {!event.assignments.length && isManager && <SetupSecretSanta eventId={event.id} />}
         <Tabs defaultValue="details" className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="details">Details</TabsTrigger>
-            <TabsTrigger value="participants">Participants</TabsTrigger>
-            <TabsTrigger value="wishlists">Wish Lists</TabsTrigger>
-            {(!!event.assignments.length || isManager) && <TabsTrigger value="secretsanta">Secret Santa</TabsTrigger>}
-          </TabsList>
+          <div className="max-w-full overflow-x-auto">
+            <TabsList>
+              <TabsTrigger value="details">Details</TabsTrigger>
+              <TabsTrigger value="participants">Participants</TabsTrigger>
+              <TabsTrigger value="wishlists">Wish Lists</TabsTrigger>
+              {(!!event.assignments.length || isManager) && <TabsTrigger value="secretsanta">Secret Santa</TabsTrigger>}
+            </TabsList>
+          </div>
           <DetailsTab event={event} />
           <ParticipantsTab event={event} />
           <WishListsTab event={event} />

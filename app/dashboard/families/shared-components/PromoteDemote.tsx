@@ -26,7 +26,7 @@ export default function PromoteDemote({ isManager, familyId, memberId, setChangi
       setChangingRole(false);
     },
     onError: (error) => {
-      console.error(error);
+      // console.error(error);
       toast.error(error.message);
       setChangingRole(false);
     },

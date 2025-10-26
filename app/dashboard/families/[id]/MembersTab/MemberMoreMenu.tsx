@@ -32,19 +32,21 @@ export default function MemberMoreMenu({ member, isManager, memberIsManager, fam
 
         <DropdownMenuContent align="end">
           <DropdownMenuItem asChild>
-            <Link href={`/dashboard/family-members/${member.id}`}>View Profile</Link>
+            <Link className="cursor-pointer" href={`/dashboard/family-members/${member.id}`}>
+              View Profile
+            </Link>
           </DropdownMenuItem>
-
-          <DropdownMenuItem>
-            <PromoteDemote isManager={memberIsManager} familyId={familyId} memberId={member.id} setChangingRole={setChangingRole} />
-          </DropdownMenuItem>
-
-          <DropdownMenuSeparator />
 
           {isManager && (
-            <DropdownMenuItem className="text-destructive" onClick={() => setRemoveOpen(true)}>
-              Remove Member
-            </DropdownMenuItem>
+            <>
+              <DropdownMenuItem>
+                <PromoteDemote isManager={memberIsManager} familyId={familyId} memberId={member.id} setChangingRole={setChangingRole} />
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="text-destructive" onClick={() => setRemoveOpen(true)}>
+                Remove Member
+              </DropdownMenuItem>
+            </>
           )}
         </DropdownMenuContent>
       </DropdownMenu>
