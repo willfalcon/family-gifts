@@ -11,8 +11,16 @@ export type GetList = Prisma.ListGetPayload<{
       };
     };
     user: true;
-    visibleToFamilies: true;
-    visibleToEvents: true;
+    visibleToFamilies: {
+      include: {
+        members: true;
+      };
+    };
+    visibleToEvents: {
+      include: {
+        attendees: true;
+      };
+    };
     visibleToUsers: true;
   };
 }>;
@@ -24,8 +32,16 @@ export const getListInclude = {
     },
   },
   user: true,
-  visibleToFamilies: true,
-  visibleToEvents: true,
+  visibleToFamilies: {
+    include: {
+      members: true,
+    },
+  },
+  visibleToEvents: {
+    include: {
+      attendees: true,
+    },
+  },
   visibleToUsers: true,
 };
 

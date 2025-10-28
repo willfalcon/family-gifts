@@ -2,6 +2,7 @@ import { auth } from '@/auth';
 import { prisma } from '@/prisma';
 import { Prisma } from '@prisma/client';
 import { cache } from 'react';
+import { canViewList } from '../permissions';
 import { getListInclude } from './items';
 
 export type GetUserLists = Prisma.ListGetPayload<{
@@ -90,3 +91,15 @@ export type GetSharedLists = Prisma.ListGetPayload<{
     items: true;
   };
 }>;
+
+export const getListsByMember = cache(async (memberId: string) => {
+  const lists = await prisma.list.findMany({
+    where: {
+      user: {
+        id: memberId,
+      },
+    },
+    include: getListInclude,
+  });
+  return lists.filter(canViewList);
+});

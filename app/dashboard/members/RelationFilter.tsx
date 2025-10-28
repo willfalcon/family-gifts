@@ -25,7 +25,7 @@ export default function RelationFilter({ relationshipFilter, setRelationshipFilt
         case 'event':
           return await getAllEvents();
         default:
-          return undefined;
+          return [];
       }
     },
   });

@@ -1,6 +1,10 @@
 import { notFound } from 'next/navigation';
 
 import SetBreadcrumbs from '@/components/SetBreadcrumbs';
+import { SubTitle } from '@/components/Title';
+import WishListCard from '@/components/WishListCard';
+import { GetList } from '@/lib/queries/items';
+import { getListsByMember } from '@/lib/queries/lists';
 import { getMember } from '@/lib/queries/members';
 import MemberHeader from './MemberHeader';
 
@@ -20,6 +24,7 @@ export async function generateMetadata({ params }: Props) {
 export default async function MemberPage({ params }: Props) {
   const { id } = await params;
   const member = await getMember(id);
+  const lists = await getListsByMember(id);
   if (!member) {
     notFound();
   }
@@ -33,7 +38,14 @@ export default async function MemberPage({ params }: Props) {
       />
       <MemberHeader member={member} />
 
-      {/* TODO: Add some stuff here or figure out what to do with this page */}
+      <div>
+        <SubTitle>Wish Lists</SubTitle>
+        <div className="flex flex-wrap gap-2">
+          {lists.map((list) => (
+            <WishListCard key={list.id} list={list as GetList} />
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

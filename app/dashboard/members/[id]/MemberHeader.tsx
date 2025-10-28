@@ -4,6 +4,7 @@ import { Mail, Share2 } from 'lucide-react';
 import { GetMember } from '@/lib/queries/members';
 import { formatDate } from '@/lib/utils';
 
+import Title from '@/components/Title';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import Viewer from '@/components/ui/rich-text/viewer';
@@ -26,7 +27,7 @@ export default function MemberHeader({ member }: { member: GetMember }) {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-3xl font-bold tracking-tight">{member.name}</h1>
+                <Title>{member.name}</Title>
                 {/* <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -48,7 +49,7 @@ export default function MemberHeader({ member }: { member: GetMember }) {
             </div>
 
             <div className="flex gap-2">
-              <Button>
+              <Button size="sm">
                 <Mail className="mr-2 h-4 w-4" />
                 Message
               </Button>
@@ -60,29 +61,6 @@ export default function MemberHeader({ member }: { member: GetMember }) {
           </div>
 
           {member.bio && <Viewer className="mt-4" content={member.bio as JSONContent} immediatelyRender={false} />}
-
-          {/* <div className="mt-4">
-            <div className="text-sm font-medium mb-2">Connections:</div>
-            <div className="flex flex-wrap gap-2">
-              {member.relationships.map((rel, idx) => (
-                <TooltipProvider key={idx}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Badge variant="outline" className="flex items-center gap-1">
-                        {getRelationshipIcon(rel.type)}
-                        <span>{rel.name}</span>
-                      </Badge>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      {rel.type === 'family' && 'Family Member'}
-                      {rel.type === 'event' && 'Event Attendee'}
-                      {rel.type === 'shared_list' && 'Shared List'}
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              ))}
-            </div>
-          </div> */}
         </div>
       </div>
     </div>

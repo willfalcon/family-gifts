@@ -51,7 +51,7 @@ export default function MemberListItem({ member, memberIsManager, isManager, fam
         <div className="flex items-center gap-2">
           {user?.id && <MessageDialog user={user.id} dmId={member.id} />}
           <Button variant="ghost" size="sm" asChild>
-            <Link href={`/dashboard/wish-lists?member=${member.id}`}>
+            <Link href={`/dashboard/members/${member.id}`}>
               <Gift className="h-4 w-4" />
               <span className="sr-only">View Wish Lists</span>
             </Link>
