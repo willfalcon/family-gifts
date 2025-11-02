@@ -64,7 +64,7 @@ export default async function EventPage({ params }: PageProps) {
   const invite = event.invites?.find((invite) => invite.email === session.user?.email);
   const me = await getUser(session.user.id);
 
-  if (!invite) {
+  if (!invite && !isManager) {
     redirect('/dashboard/events');
   }
 
