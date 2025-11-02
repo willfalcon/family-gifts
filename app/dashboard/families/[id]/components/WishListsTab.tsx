@@ -20,7 +20,7 @@ export default function WishListsTab({ members, family }: Props) {
   const lists = members.reduce<GetList[]>((lists, member) => {
     member.lists.forEach((list) => {
       if (!lists.some((l) => l.id === list.id)) {
-        lists.push(list);
+        lists.push(list as GetList);
       }
     });
     return lists;
