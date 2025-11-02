@@ -80,7 +80,7 @@ export default async function EventPage({ params }: PageProps) {
         />
 
         <EventHeader event={event} isManager={isManager} me={me} />
-        <EventAttendance invite={invite} />
+        {invite && <EventAttendance invite={invite} />}
         {!!event.assignments.length && <MyAssignment assignment={userAssignment?.recipient} />}
         {!event.assignments.length && isManager && <SetupSecretSanta eventId={event.id} />}
         <Tabs defaultValue="details" className="space-y-6">
